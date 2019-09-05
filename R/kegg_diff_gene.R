@@ -1,22 +1,22 @@
 
 #' Title
 #'
-#' @param profile a data.frame
+#' @param profile_input a data.frame
 #'
 #' @return a data.frame
 #' @export
 #'
 #' @examples
 #' profile2 <- classify_sample(profile)
-classify_sample<-function(profile){
-  biaoqian<-profile[1,]
+classify_sample<-function(profile_input){
+  biaoqian<-profile_input[1,]
   dada<-biaoqian
   for(i in 2:length(biaoqian)){
     dada[i]<-unlist(strsplit(biaoqian[i],"-"))[4]
     dada[i]<-unlist(strsplit(dada[i],"_"))[1]
   }
 
-  file2<-profile
+  file2<-profile_input
   file2[1,]<-dada
   return(file2)
 }
@@ -24,7 +24,7 @@ classify_sample<-function(profile){
 
 #' Title
 #'
-#' @param profile2 a result of classify_sample
+#' @param profile2_input a result of classify_sample
 #'
 #' @return a matrix
 #' @export
@@ -32,13 +32,13 @@ classify_sample<-function(profile){
 #' @examples
 #' profile2 <- classify_sample(profile)
 #' jieguo <- diff_gene(profile2)
-diff_gene<-function(profile2){
+diff_gene<-function(profile2_input){
   if(requireNamespace("DESeq2", quielty = TRUE)) {
-  database<-profile2[-1,-1]
+  database<-profile2_input[-1,-1]
 
   database<-matrix(as.numeric(database),nrow=nrow(database))
-  rownames(database)<-profile2[-1,1]
-  condition<-profile2[1,-1]
+  rownames(database)<-profile2_input[-1,1]
+  condition<-profile2_input[1,-1]
   database <- round(as.matrix(database))
   condition<-as.numeric(condition)
   condition<-round(condition)

@@ -17,5 +17,5 @@ a matrix
 Title
 }
 \examples{
-Merge_methy_tcga("direc")
+mearge_result <- Merge_methy_tcga("direc")
 }

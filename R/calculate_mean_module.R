@@ -3,14 +3,14 @@
 #'
 #' @param geneExpress a data.frame
 #' @param module a data.frame
-#' @param result a string
 #'
 #' @return a matrix
 #' @export
 #'
 #' @examples
-#' cal_mean_module(geneExpress,module,"result.txt")
-cal_mean_module<-function(geneExpress,module,result){
+#' result <- cal_mean_module(geneExpress,module)
+cal_mean_module<-function(geneExpress,module){
+  out <- file.path(tempdir(), "module_result.txt")
   geneExpress=as.matrix(geneExpress)
   rownames(geneExpress)<-geneExpress[,1]
   genes<-geneExpress[,1]
@@ -27,10 +27,12 @@ cal_mean_module<-function(geneExpress,module,result){
     modulen_matrix<-matrix(as.numeric(modulen_matrix),nrow<-nrow(modulen_matrix))
     module_mean<-colMeans(modulen_matrix)
     module_mean<-matrix(module_mean,nrow<-1)
-	utils::write.table(cbind(module[i,1],module_mean),result,sep="\t",
+	utils::write.table(cbind(module[i,1],module_mean),out,sep="\t",
 	append=T,row.names=F,col.names=F,quote=F)
   }
-
+  output_module <- data.table::fread(out,sep="\t",header=F)
+  file.remove(out)
+  return(output_module)
 
 }
 

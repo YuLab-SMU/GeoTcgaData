@@ -46,16 +46,13 @@ library(GeoTcgaData)
 #' param result a string
 #'
 #' return: a matrix
-
-
-cal_mean_module(geneExpress,module,"result.txt")
+result <- cal_mean_module(geneExpress,module)
 
 #' Average the expression data of different ids for the same gene in the chip
 #' expression profile of GEO or TCGA
 #'
 #' param file1 a data.frame
 #' param k a number
-#'param result a string for output file name
 #'
 #' return a data.frame
 
@@ -65,7 +62,7 @@ aa <- c("Gene Symbol","MARCH1","MARC1","MARCH1","MARCH1","MARCH1")
 bb <- c("GSM1629982","2.969058399","4.722410064","8.165514853","8.24243893","8.60815086")
 cc <- c("GSM1629982","3.969058399","5.722410064","7.165514853","6.24243893","7.60815086")
 file1 <- data.frame(aa=aa,bb=bb,cc=cc)
-gene_ave(file1)
+result <- gene_ave(file1)
 
 #' Get the differentially expressioned genes using DESeq2 package 
 #'
@@ -94,7 +91,7 @@ jieguo <- diff_gene(profile2)
 #' return a matrix
 #'
 #' examples
-Merge_methy_tcga("direc")
+mearge_result <- Merge_methy_tcga("direc")
 
 #' Combine clinical information obtained from TCGA and extract survival data
 #'
@@ -111,20 +108,19 @@ tcga_cli_deal("your_clinical_directory")
 #' this id should be deleted. The result of rep1 is to assign the expression
 #' of this id to each gene, and rep2 deletes the expression.
 #'
-#' param file1 input file, a data.frame or a matrix
-#' param file2 output file name,a string
+#' param file1 input file, a data.frame or a matrixg
 #' param string a string,sep of the gene
 #'
-#' return a matrix
+#' return a data.frame
 #'
 #' examples
 aa <- c("MARCH1 /// MMA","MARC1","MARCH2 /// MARCH3",
         "MARCH3 /// MARCH4","MARCH1")
 bb <- c("2.969058399","4.722410064","8.165514853","8.24243893","8.60815086")
 cc <- c("3.969058399","5.722410064","7.165514853","6.24243893","7.60815086")
-file1 <- data.frame(aa=aa,bb=bb,cc=cc)
-rep1(file1,"jieguo.txt"," /// ")
-rep2(file1,"jieguo.txt"," /// ")
+input_fil <- data.frame(aa=aa,bb=bb,cc=cc)
+rep1_result <- rep1(input_fil," /// ")
+rep1_result <- rep2(input_fil," /// ")
 
 #' Convert  ENSEMBL gene id to gene Symbol in TCGA
 #'

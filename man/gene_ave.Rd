@@ -4,14 +4,12 @@
 \alias{gene_ave}
 \title{Title}
 \usage{
-gene_ave(file1, k = 1, result = "result.txt")
+gene_ave(file_gene_ave, k = 1)
 }
 \arguments{
-\item{file1}{a data.frame}
+\item{file_gene_ave}{a data.frame}
 
 \item{k}{a number}
-
-\item{result}{a string for output file name}
 }
 \value{
 a data.frame
@@ -23,6 +21,6 @@ Title
 aa <- c("Gene Symbol","MARCH1","MARC1","MARCH1","MARCH1","MARCH1")
 bb <- c("GSM1629982","2.969058399","4.722410064","8.165514853","8.24243893","8.60815086")
 cc <- c("GSM1629982","3.969058399","5.722410064","7.165514853","6.24243893","7.60815086")
-file1 <- data.frame(aa=aa,bb=bb,cc=cc)
-gene_ave(file1)
+file3 <- data.frame(aa=aa,bb=bb,cc=cc)
+result <- gene_ave(file3)
 }

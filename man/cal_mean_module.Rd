@@ -4,14 +4,12 @@
 \alias{cal_mean_module}
 \title{Title}
 \usage{
-cal_mean_module(geneExpress, module, result)
+cal_mean_module(geneExpress, module)
 }
 \arguments{
 \item{geneExpress}{a data.frame}
 
 \item{module}{a data.frame}
-
-\item{result}{a string}
 }
 \value{
 a matrix
@@ -20,5 +18,5 @@ a matrix
 Title
 }
 \examples{
-cal_mean_module(geneExpress,module,"result.txt")
+result <- cal_mean_module(geneExpress,module)
 }

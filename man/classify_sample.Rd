@@ -4,10 +4,10 @@
 \alias{classify_sample}
 \title{Title}
 \usage{
-classify_sample(profile)
+classify_sample(profile_input)
 }
 \arguments{
-\item{profile}{a data.frame}
+\item{profile_input}{a data.frame}
 }
 \value{
 a data.frame

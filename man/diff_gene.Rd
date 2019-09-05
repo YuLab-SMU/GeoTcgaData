@@ -4,10 +4,10 @@
 \alias{diff_gene}
 \title{Title}
 \usage{
-diff_gene(profile2)
+diff_gene(profile2_input)
 }
 \arguments{
-\item{profile2}{a result of classify_sample}
+\item{profile2_input}{a result of classify_sample}
 }
 \value{
 a matrix
