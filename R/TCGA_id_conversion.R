@@ -1,10 +1,10 @@
 
 
-#' Title
+#' Convert  ENSEMBL gene id to gene Symbol in TCGA
 #'
 #' @param profile a data.frame
 #'
-#' @return a data.frame
+#' @return a data.frame, gene symbols and their expression value
 #' @export
 #'
 #' @examples

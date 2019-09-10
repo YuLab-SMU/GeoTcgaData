@@ -2,7 +2,7 @@
 % Please edit documentation in R/kegg_diff_gene.R
 \name{classify_sample}
 \alias{classify_sample}
-\title{Title}
+\title{Get the differentially expressioned genes using DESeq2 package}
 \usage{
 classify_sample(profile_input)
 }
@@ -10,10 +10,10 @@ classify_sample(profile_input)
 \item{profile_input}{a data.frame}
 }
 \value{
-a data.frame
+a data.frame, a intermediate results of DESeq2
 }
 \description{
-Title
+Get the differentially expressioned genes using DESeq2 package
 }
 \examples{
 profile2 <- classify_sample(profile)

@@ -1,9 +1,9 @@
 
-#' Title
+#' Get the differentially expressioned genes using DESeq2 package
 #'
 #' @param profile_input a data.frame
 #'
-#' @return a data.frame
+#' @return a data.frame, a intermediate results of DESeq2
 #' @export
 #'
 #' @examples
@@ -22,11 +22,11 @@ classify_sample<-function(profile_input){
 }
 
 
-#' Title
+#' Get the differentially expressioned genes using DESeq2 package
 #'
 #' @param profile2_input a result of classify_sample
 #'
-#' @return a matrix
+#' @return a matrix, information of differential expression genes
 #' @export
 #'
 #' @examples

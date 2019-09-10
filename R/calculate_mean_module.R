@@ -1,10 +1,11 @@
 
-#' Title
+#' Find the mean value of the gene in each module
 #'
 #' @param geneExpress a data.frame
 #' @param module a data.frame
 #'
-#' @return a matrix
+#' @return a matrix, means the mean of gene expression value in
+#' the same module
 #' @export
 #'
 #' @examples
@@ -28,9 +29,9 @@ cal_mean_module<-function(geneExpress,module){
     module_mean<-colMeans(modulen_matrix)
     module_mean<-matrix(module_mean,nrow<-1)
 	utils::write.table(cbind(module[i,1],module_mean),out,sep="\t",
-	append=T,row.names=F,col.names=F,quote=F)
+	append=TRUE,row.names=FALSE,col.names=FALSE,quote=FALSE)
   }
-  output_module <- data.table::fread(out,sep="\t",header=F)
+  output_module <- data.table::fread(out,sep="\t",header=FALSE)
   file.remove(out)
   return(output_module)
 

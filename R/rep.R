@@ -1,10 +1,11 @@
 
-#' Title
+#' Handle the case where one id corresponds to multiple genes
 #'
 #' @param input_file1 input file, a data.frame or a matrix
 #' @param string a string,sep of the gene
 #'
-#' @return a data.frame
+#' @return a data.frame, when an id corresponds to multiple genes, 
+#' the expression value is assigned to each gene
 #' @export
 #'
 #' @examples
@@ -18,13 +19,13 @@
 rep1<-function(input_file1,string){
   input_file1 = as.matrix(input_file1)
   out <- file.path(tempdir(), "rep1_result.txt")
-  utils::write.table(t(as.matrix(colnames(input_file1))),out,sep = "\t", append = T, row.names = F, 
-                col.names = F, quote = F)
+  utils::write.table(t(as.matrix(colnames(input_file1))),out,sep = "\t", append = TRUE, row.names = FALSE, 
+                col.names = FALSE, quote = FALSE)
   for(i in 1 : dim(input_file1)[1]){
     gene<-unlist(strsplit(input_file1[i,1],string))
     for(j in 1 : length(gene)){
-      utils::write.table(cbind(gene[j],matrix(input_file1[i,-1],nrow=1)),out,sep="\t",append=T,
-	  row.names=F,col.names=F,quote=F)
+      utils::write.table(cbind(gene[j],matrix(input_file1[i,-1],nrow=1)),out,sep="\t",append=TRUE,
+	  row.names=FALSE,col.names=FALSE,quote=FALSE)
     }
 }
   output_rep1 <- data.table::fread(out,sep="\t",header=F)
@@ -33,12 +34,13 @@ rep1<-function(input_file1,string){
 
 }
 
-#' Title
+#' Handle the case where one id corresponds to multiple genes
 #'
 #' @param input_file1 input file, a data.frame or a matrix
 #' @param string a string,sep of the gene
 #'
-#' @return a matrix
+#' @return a matrix,when an id corresponds to multiple genes,
+#' the expression value is deleted
 #' @export
 #'
 #' @examples

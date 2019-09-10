@@ -1,10 +1,10 @@
 
-#' Title
+#' Average the values of same genes in gene expression profile
 #'
 #' @param file_gene_ave a data.frame
 #' @param k a number
 #'
-#' @return a data.frame
+#' @return a data.frame, the values of same genes in gene expression profile
 #' @export
 #'
 #' @examples

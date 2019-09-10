@@ -2,7 +2,7 @@
 % Please edit documentation in R/Proce_cli.R
 \name{tcga_cli_deal}
 \alias{tcga_cli_deal}
-\title{Title}
+\title{Combine clinical information obtained from TCGA and extract survival data}
 \usage{
 tcga_cli_deal(Files_dir1)
 }
@@ -10,11 +10,11 @@ tcga_cli_deal(Files_dir1)
 \item{Files_dir1}{a dir data}
 }
 \value{
-a matrix
+a matrix, survival time and survival state in TCGA
 }
 \description{
-Title
+Combine clinical information obtained from TCGA and extract survival data
 }
 \examples{
-tcga_cli_deal("your_clinical_directory")
+tcga_cli_deal(system.file(file.path("extdata","tcga_cli"),package="GeoTcgaData"))
 }

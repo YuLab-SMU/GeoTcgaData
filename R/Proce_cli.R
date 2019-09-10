@@ -1,15 +1,16 @@
 
-#' Title
+#' Combine clinical information obtained from TCGA and extract survival data
 #'
 #' @param Files_dir1 a dir data
 #'
-#' @return a matrix
+#' @return a matrix, survival time and survival state in TCGA
 #' @export
 #'
 #' @examples
-#' tcga_cli_deal("your_clinical_directory")
+#' tcga_cli_deal(system.file(file.path("extdata","tcga_cli"),package="GeoTcgaData"))
 tcga_cli_deal<-function(Files_dir1){
   if(Files_dir1!="your_clinical_directory") {
+  out <- file.path(tempdir(), "clin2.txt")
   Files_dir <- dir(Files_dir1)
   Files=Files_dir
   file_id<-Files
@@ -24,7 +25,7 @@ tcga_cli_deal<-function(Files_dir1){
     #haha means the sample has no survival data
     timee="haha"
     statee<-"haha"
-    aa<-as.matrix(utils::read.table(file,sep="\t",header=T))
+    aa<-as.matrix(utils::read.table(file.path(Files_dir1,file),sep="\t",header=T))
     for(i in 1:dim(aa)[1]){
         if(length(grep(time,aa[i,1]))>0){
              timee<-unlist(strsplit(aa[i,1],">"))[2]
@@ -49,7 +50,10 @@ tcga_cli_deal<-function(Files_dir1){
     }
     file_idd<-unlist(strsplit(file,"\\."))[3]
 
-    utils::write.table(cbind(file_idd,timee,statee),"clin2.txt",
-	sep="\t",row.names=F,col.names=F,append=T,quote=F)
+    utils::write.table(cbind(file_idd,timee,statee),out,
+	sep="\t",row.names=FALSE,col.names=FALSE,append=TRUE,quote=FALSE)
   }
+    output_cli <- data.table::fread(out,sep="\t",header=F)
+    file.remove(out)
+    return(output_cli)
 } else {message("please give your directory!")} }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/TCGA_id_conversion.R
 \name{id_conversion}
 \alias{id_conversion}
-\title{Title}
+\title{Convert  ENSEMBL gene id to gene Symbol in TCGA}
 \usage{
 id_conversion(profile)
 }
@@ -10,10 +10,10 @@ id_conversion(profile)
 \item{profile}{a data.frame}
 }
 \value{
-a data.frame
+a data.frame, gene symbols and their expression value
 }
 \description{
-Title
+Convert  ENSEMBL gene id to gene Symbol in TCGA
 }
 \examples{
 result <- id_conversion(profile)

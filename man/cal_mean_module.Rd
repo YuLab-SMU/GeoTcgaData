@@ -2,7 +2,7 @@
 % Please edit documentation in R/calculate_mean_module.R
 \name{cal_mean_module}
 \alias{cal_mean_module}
-\title{Title}
+\title{Find the mean value of the gene in each module}
 \usage{
 cal_mean_module(geneExpress, module)
 }
@@ -12,10 +12,11 @@ cal_mean_module(geneExpress, module)
 \item{module}{a data.frame}
 }
 \value{
-a matrix
+a matrix, means the mean of gene expression value in
+the same module
 }
 \description{
-Title
+Find the mean value of the gene in each module
 }
 \examples{
 result <- cal_mean_module(geneExpress,module)

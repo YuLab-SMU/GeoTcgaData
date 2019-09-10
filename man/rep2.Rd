@@ -2,7 +2,7 @@
 % Please edit documentation in R/rep.R
 \name{rep2}
 \alias{rep2}
-\title{Title}
+\title{Handle the case where one id corresponds to multiple genes}
 \usage{
 rep2(input_file1, string)
 }
@@ -12,10 +12,11 @@ rep2(input_file1, string)
 \item{string}{a string,sep of the gene}
 }
 \value{
-a matrix
+a matrix,when an id corresponds to multiple genes,
+the expression value is deleted
 }
 \description{
-Title
+Handle the case where one id corresponds to multiple genes
 }
 \examples{
 aa <- c("MARCH1 /// MMA","MARC1","MARCH2 /// MARCH3","MARCH3 /// MARCH4","MARCH1")

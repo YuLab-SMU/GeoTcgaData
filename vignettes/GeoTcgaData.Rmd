@@ -34,7 +34,8 @@ library(GeoTcgaData)
 #' param module a data.frame
 #' param result a string
 #'
-#' return: a matrix
+#' @return a matrix, means the mean of gene expression value in
+#' the same module
 result <- cal_mean_module(geneExpress,module)
 
 #' Average the expression data of different ids for the same gene in the chip
@@ -43,7 +44,7 @@ result <- cal_mean_module(geneExpress,module)
 #' param file1 a data.frame
 #' param k a number
 #'
-#' return a data.frame
+#' @return a data.frame, the values of same genes in gene expression profile
 
 #'
 #' examples
@@ -57,17 +58,17 @@ result <- gene_ave(file1)
 #'
 #' param profile a data.frame
 #'
-#' return a data.frame
+#' @return a data.frame, a intermediate results of DESeq2
 #'
 #' examples
 profile2 <- classify_sample(profile)
 
 
-#' Title
+#' Get the differentially expressioned genes using DESeq2 package
 #'
 #' param profile2 a result of classify_sample
 #'
-#' return a matrix
+#' @return a matrix, information of differential expression genes
 #'
 #' examples
 profile2 <- classify_sample(profile)
@@ -77,19 +78,19 @@ jieguo <- diff_gene(profile2)
 #'
 #' param dirr a string for the directory of methylation data download from tcga
 #' useing the tools gdc
-#' return a matrix
+#' @return a matrix, a combined methylation expression spectrum matrix
 #'
 #' examples
-mearge_result <- Merge_methy_tcga("direc")
+mearge_result <- Merge_methy_tcga(system.file(file.path("extdata","methy"),package="GeoTcgaData"))
 
 #' Combine clinical information obtained from TCGA and extract survival data
 #'
 #' param Files_dir1 a dir data
 #'
-#' return a matrix
+#' @return a matrix, survival time and survival state in TCGA
 #'
 #' examples
-tcga_cli_deal("your_clinical_directory")
+tcga_cli_deal(system.file(file.path("extdata","tcga_cli"),package="GeoTcgaData"))
 
 #' Multiple genes symbols may correspond to a same id. Some people think 
 #' that the expression value of this id should be 
@@ -100,7 +101,8 @@ tcga_cli_deal("your_clinical_directory")
 #' param file1 input file, a data.frame or a matrixg
 #' param string a string,sep of the gene
 #'
-#' return a data.frame
+#' return a data.frame,rep1 is to assign the expression
+#' of this id to each gene, and rep2 deletes the expression.
 #'
 #' examples
 aa <- c("MARCH1 /// MMA","MARC1","MARCH2 /// MARCH3",
@@ -115,7 +117,7 @@ rep1_result <- rep2(input_fil," /// ")
 #'
 #' param profile a data.frame
 #'
-#' return a data.frame
+#' @return a data.frame, gene symbols and their expression value
 #'
 #' examples
 result <- id_conversion(profile)

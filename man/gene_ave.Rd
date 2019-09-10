@@ -2,7 +2,7 @@
 % Please edit documentation in R/calculate_mean_profile.R
 \name{gene_ave}
 \alias{gene_ave}
-\title{Title}
+\title{Average the values of same genes in gene expression profile}
 \usage{
 gene_ave(file_gene_ave, k = 1)
 }
@@ -12,10 +12,10 @@ gene_ave(file_gene_ave, k = 1)
 \item{k}{a number}
 }
 \value{
-a data.frame
+a data.frame, the values of same genes in gene expression profile
 }
 \description{
-Title
+Average the values of same genes in gene expression profile
 }
 \examples{
 aa <- c("Gene Symbol","MARCH1","MARC1","MARCH1","MARCH1","MARCH1")

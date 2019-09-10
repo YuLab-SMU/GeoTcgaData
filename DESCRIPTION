@@ -1,9 +1,10 @@
 Package: GeoTcgaData
 Type: Package
-Title: Processed rna-seq data, copy number variation data, and methylation data on GEO and TCGA
+Title: Processed a various types of data on GEO and TCGA
 Version: 0.1.0
 Authors@R: person(given = "Erqiang", family = "Hu", email = "13766876214@163.com", role  = c("aut", "cre"))
-Description: GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation, 
+Description: Gene Expression Omnibus(GEO) and The Cancer Genome Atlas (TCGA) 
+    provide us with a wealth of data, such as RNA-seq, DNA Methylation, 
     and Copy number variation data. It's easy to download data from TCGA using the 
     gdc tool, but processing these data into a format suitable for bioinformatics 
     analysis requires more work. This R package was developed to handle these data.

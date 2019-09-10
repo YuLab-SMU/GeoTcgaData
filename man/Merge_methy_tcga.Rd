@@ -2,7 +2,7 @@
 % Please edit documentation in R/Merge_methylation.R
 \name{Merge_methy_tcga}
 \alias{Merge_methy_tcga}
-\title{Title}
+\title{Merge methylation data downloaded from TCGA}
 \usage{
 Merge_methy_tcga(dirr)
 }
@@ -11,11 +11,11 @@ Merge_methy_tcga(dirr)
 useing the tools gdc}
 }
 \value{
-a matrix
+a matrix, a combined methylation expression spectrum matrix
 }
 \description{
-Title
+Merge methylation data downloaded from TCGA
 }
 \examples{
-mearge_result <- Merge_methy_tcga("direc")
+mearge_result <- Merge_methy_tcga(system.file(file.path("extdata","methy"),package="GeoTcgaData"))
 }

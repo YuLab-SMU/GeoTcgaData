@@ -1,12 +1,12 @@
-#' Title
+#' Merge methylation data downloaded from TCGA
 #'
 #' @param dirr a string for the directory of methylation data download from tcga
 #' useing the tools gdc
-#' @return a matrix
+#' @return a matrix, a combined methylation expression spectrum matrix
 #' @export
 #'
 #' @examples
-#' mearge_result <- Merge_methy_tcga("direc")
+#' mearge_result <- Merge_methy_tcga(system.file(file.path("extdata","methy"),package="GeoTcgaData"))
 Merge_methy_tcga <- function(dirr) {
     if(dirr != "direc") {
         tcga_dir <- dir(dirr)
@@ -21,7 +21,7 @@ Merge_methy_tcga <- function(dirr) {
             }
         }
 		
-        file_l <- data.table::fread(file_name,header=F)
+        file_l <- data.table::fread(file_name,header=FALSE)
         cpg <- file_l[,1]
         sample_l <- unlist(strsplit(dir(dirr_l)[1],"\\."))[6]
         beta <- file_l[,2]
@@ -40,7 +40,7 @@ Merge_methy_tcga <- function(dirr) {
                 }
             }
 
-            file_l <- data.table::fread(file_name,header=F)
+            file_l <- data.table::fread(file_name,header=FALSE)
             cpg <- file_l[,1]
             beta <- file_l[,2]
             beta[1] <- sample_l
@@ -65,7 +65,7 @@ Merge_methy_tcga <- function(dirr) {
     #rep1(file1,"methy_gene.txt",";")
 
 
-    #ventricle <- data.table::fread("methy_gene.txt",sep="\t",header=F)
+    #ventricle <- data.table::fread("methy_gene.txt",sep="\t",header=FALSE)
     #gene_ave(ventricle
     ave_result <- gene_ave(rep1_result)
     } else {message("please give your directory of methylation data!")}
