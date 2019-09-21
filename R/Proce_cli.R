@@ -14,6 +14,7 @@ tcga_cli_deal<-function(Files_dir1){
   Files_dir <- dir(Files_dir1)
   Files=Files_dir
   file_id<-Files
+  #Modify an error
   for(i in 1:length(file_id)){
     file_id[i]<-unlist(strsplit(file_id[i],"\\."))[3]
   }

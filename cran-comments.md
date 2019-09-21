@@ -7,4 +7,10 @@
 
 0 errors | 0 warnings | 1 note
 
-* This is a new release.
+* There was q NOTE:
+installed size is  5.4Mb
+    sub-directories of 1Mb or more:
+	
+This R package requires some internal data for id conversion.
+So it is bigger than 1Mb.
+	
