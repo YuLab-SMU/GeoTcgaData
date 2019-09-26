@@ -104,6 +104,7 @@ differential_cnv <- function(rt) {
     pvalue=as.numeric(as.vector(outTab[,"Pvalue"]))
     adjP=stats::p.adjust(pvalue,method ="bonferroni")
     outTab=cbind(outTab,adjPvalue=adjP)
+	rownames(outTab) <- rownames(rt)
 	return(outTab)
 }
 
