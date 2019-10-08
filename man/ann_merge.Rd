@@ -2,7 +2,7 @@
 % Please edit documentation in R/ann_merge.r
 \name{ann_merge}
 \alias{ann_merge}
-\title{Title merge the copy number variation data downloaded from TCGA using gdc}
+\title{Merge the copy number variation data downloaded from TCGA using gdc}
 \usage{
 ann_merge(dirr, metadatafile)
 }
@@ -15,7 +15,7 @@ ann_merge(dirr, metadatafile)
 a matrix,each column is a sample, each row is a gene
 }
 \description{
-Title merge the copy number variation data downloaded from TCGA using gdc
+Merge the copy number variation data downloaded from TCGA using gdc
 }
 \examples{
 metadatafile_name <- "metadata.cart.2018-11-09.json"

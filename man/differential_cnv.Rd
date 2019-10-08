@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepareChi.r
 \name{differential_cnv}
 \alias{differential_cnv}
-\title{Title do chi-square test to find differential genes}
+\title{Do chi-square test to find differential genes}
 \usage{
 differential_cnv(rt)
 }
@@ -13,7 +13,7 @@ differential_cnv(rt)
 a matrix
 }
 \description{
-Title do chi-square test to find differential genes
+Do chi-square test to find differential genes
 }
 \examples{
 jieguo3 <- matrix(c(-1.09150,-1.47120,-0.87050,-0.50880,

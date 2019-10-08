@@ -2,7 +2,7 @@
 % Please edit documentation in R/fpkm_count_conversion.r
 \name{countToFpkm_matrix}
 \alias{countToFpkm_matrix}
-\title{Title Convert count to FPKM}
+\title{Convert count to FPKM}
 \usage{
 countToFpkm_matrix(counts_matrix)
 }
@@ -14,7 +14,7 @@ rownames of counts_matrix are gene symbols}
 a matrix
 }
 \description{
-Title Convert count to FPKM
+Convert count to FPKM
 }
 \examples{
 lung_squ_count2 <- matrix(c(1,2,3,4,5,6,7,8,9),ncol=3)

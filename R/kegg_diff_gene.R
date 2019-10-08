@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-#' profile2 <- classify_sample(profile)
+#' profile2 <- classify_sample(kegg_liver)
 classify_sample<-function(profile_input){
   biaoqian<-profile_input[1,]
   dada<-biaoqian
@@ -30,7 +30,7 @@ classify_sample<-function(profile_input){
 #' @export
 #'
 #' @examples
-#' profile2 <- classify_sample(profile)
+#' profile2 <- classify_sample(kegg_liver)
 #' jieguo <- diff_gene(profile2)
 diff_gene<-function(profile2_input){
   if(requireNamespace("DESeq2", quielty = TRUE)) {

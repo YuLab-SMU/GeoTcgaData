@@ -14,7 +14,7 @@ deal_meta <- function(metadata_file) {
 	return(cbind(file2,file3))
 }
 
-#' Title merge the copy number variation data downloaded from TCGA using gdc
+#' Merge the copy number variation data downloaded from TCGA using gdc
 #'
 #' @param dirr a string of direction, catalogue of copy number variation data
 #' @param metadatafile a metadata file download from TCGA

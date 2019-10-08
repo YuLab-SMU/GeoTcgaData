@@ -16,5 +16,5 @@ a data.frame, a intermediate results of DESeq2
 Get the differentially expressioned genes using DESeq2 package
 }
 \examples{
-profile2 <- classify_sample(profile)
+profile2 <- classify_sample(kegg_liver)
 }

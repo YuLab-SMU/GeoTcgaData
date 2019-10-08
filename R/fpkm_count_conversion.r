@@ -32,7 +32,7 @@ fpkmToCount <- function(fpkm, effLen, N=1e9)
 
 
 
-#' Title Convert count to FPKM
+#' Convert count to FPKM
 #'
 #' @param counts_matrix a matrix, colnames of counts_matrix are sample name,
 #' rownames of counts_matrix are gene symbols
@@ -58,7 +58,7 @@ countToFpkm_matrix <- function(counts_matrix) {
 }
 
 
-#' Title Convert count to Tpm
+#' Convert count to Tpm
 #'
 #' @param counts_matrix a matrix, colnames of counts_matrix are sample name,
 #' rownames of counts_matrix are gene symbols
@@ -84,7 +84,7 @@ countToTpm_matrix <- function(counts_matrix) {
 }
 
 
-#' Title Convert fpkm to Tpm
+#' Convert fpkm to Tpm
 #'
 #' @param fpkm_matrix a matrix, colnames of fpkm_matrix are sample name,
 #' rownames of fpkm_matrix are gene symbols

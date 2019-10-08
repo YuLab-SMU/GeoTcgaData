@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepareChi.r
 \name{prepare_chi}
 \alias{prepare_chi}
-\title{Title preparer file for chi-square test}
+\title{Preparer file for chi-square test}
 \usage{
 prepare_chi(jieguo2)
 }
@@ -13,7 +13,7 @@ prepare_chi(jieguo2)
 a matrix
 }
 \description{
-Title preparer file for chi-square test
+Preparer file for chi-square test
 }
 \examples{
 jieguo3 <- matrix(c(-1.09150,-1.47120,-0.87050,-0.50880,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/id_conversion_all.r
 \name{id_conversion_vector}
 \alias{id_conversion_vector}
-\title{Title gene id conversion}
+\title{Gene id conversion}
 \usage{
 id_conversion_vector(from, to, IDs)
 }
@@ -17,7 +17,7 @@ id_conversion_vector(from, to, IDs)
 a vector of genes
 }
 \description{
-Title gene id conversion
+Gene id conversion
 }
 \examples{
 id_conversion_vector("symbol","Ensembl_ID",c("A2ML1","A2ML1-AS1","A4GALT","A12M1","AAAS"))

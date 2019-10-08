@@ -16,7 +16,7 @@ id_conversion_one <- function(from,to,ID) {
 	return(con)
 }
 
-#' Title gene id conversion
+#' Gene id conversion
 #'
 #' @param from one of "symbol","RefSeq_ID","Ensembl_ID","NCBI_Gene_ID","UCSC_ID","UniProt_ID"
 #' @param to one of "symbol","RefSeq_ID","Ensembl_ID","NCBI_Gene_ID","UCSC_ID","UniProt_ID"

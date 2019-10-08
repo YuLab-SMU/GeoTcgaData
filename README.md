@@ -66,12 +66,12 @@ result <- gene_ave(file1)
 
 #' Get the differentially expressioned genes using DESeq2 package 
 #'
-#' param profile a data.frame
+#' param kegg_liver a data.frame or matrix of gene expression data in TCGA
 #'
 #' @return a data.frame, a intermediate results of DESeq2
 #'
 #' examples
-profile2 <- classify_sample(profile)
+profile2 <- classify_sample(kegg_liver)
 
 
 #' Get the differentially expressioned genes using DESeq2 package
@@ -81,7 +81,7 @@ profile2 <- classify_sample(profile)
 #' @return a matrix, information of differential expression genes
 #'
 #' examples
-profile2 <- classify_sample(profile)
+profile2 <- classify_sample(kegg_liver)
 jieguo <- diff_gene(profile2)
 
 #' Merge methylation data downloaded from TCGA

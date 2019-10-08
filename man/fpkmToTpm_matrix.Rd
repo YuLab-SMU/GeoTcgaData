@@ -2,7 +2,7 @@
 % Please edit documentation in R/fpkm_count_conversion.r
 \name{fpkmToTpm_matrix}
 \alias{fpkmToTpm_matrix}
-\title{Title Convert fpkm to Tpm}
+\title{Convert fpkm to Tpm}
 \usage{
 fpkmToTpm_matrix(fpkm_matrix)
 }
@@ -14,7 +14,7 @@ rownames of fpkm_matrix are gene symbols}
 a matrix
 }
 \description{
-Title Convert fpkm to Tpm
+Convert fpkm to Tpm
 }
 \examples{
 lung_squ_count2 <- matrix(c(0.11,0.22,0.43,0.14,0.875,0.66,0.77,0.18,0.29),ncol=3)

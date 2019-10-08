@@ -25,7 +25,7 @@ analysis requires more work. This R package was developed to handle these data.
 library(GeoTcgaData)
 ```
 
-# Common operations on prioGene
+# Common operations on GeoTcgaData
 ```{r}
 
 #' This function can find the mean value of the gene in each module.
@@ -71,7 +71,7 @@ profile2 <- classify_sample(profile)
 #' @return a matrix, information of differential expression genes
 #'
 #' examples
-profile2 <- classify_sample(profile)
+profile2 <- classify_sample(kegg_liver)
 jieguo <- diff_gene(profile2)
 
 #' Merge methylation data downloaded from TCGA
