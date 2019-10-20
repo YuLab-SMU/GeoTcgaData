@@ -179,7 +179,7 @@ jieguo <- countToTpm_matrix(lung_squ_count2)
 
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
 
-#' Title merge the copy number variation data downloaded from TCGA using gdc
+#' Merge the copy number variation data downloaded from TCGA using gdc
 #'
 #' @param dirr a string of direction, catalogue of copy number variation data
 #' @param metadatafile a metadata file download from TCGA
@@ -188,7 +188,7 @@ jieguo <- countToTpm_matrix(lung_squ_count2)
 #' @export
 #'
 #' @examples
-#' metadatafile_name <- "metadata.cart.2018-11-09.json"
+metadatafile_name <- "metadata.cart.2018-11-09.json"
 jieguo2 <- ann_merge(dirr = system.file(file.path("extdata","cnv"),package="GeoTcgaData"),metadatafile=metadatafile_name)
 
 ```
