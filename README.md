@@ -49,7 +49,7 @@ The parameter ` kegg_liver` is a matrix or data.frame of gene expression data(co
 The function Merge_methy_tcga could Merge methylation data downloaded from TCGA. This makes it easier to extract differentially methylated genes in the downstream analysis. For example:
 
 ```r
-mearge_result <- Merge_methy_tcga(dirr))
+mearge_result <- Merge_methy_tcga(dirr)
 ```
 
 ## Copy number variation data integration and differential gene extraction
@@ -68,7 +68,7 @@ jieguo3 <- matrix(c(-1.09150,-1.47120,-0.87050,-0.50880,
 -0.50880,2.0,2.0,2.0,2.0,2.0,2.601962,2.621332,2.621332,
                     2.621332,2.621332,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,
                     2.0,2.0,2.0,2.0,2.0,2.0,2.0),nrow=5)
- rownames(jieguo3) <- c("AJAP1", "FHAD1", "CLCNKB", "CROCCP2", "AL137798.3")
+rownames(jieguo3) <- c("AJAP1", "FHAD1", "CLCNKB", "CROCCP2", "AL137798.3")
 colnames(jieguo3) <- c("TCGA-DD-A4NS-10A-01D-A30U-01", "TCGA-ED-A82E-01A-11D-A34Y-01", 
 "TCGA-WQ-A9G7-01A-11D-A36W-01", "TCGA-DD-AADN-01A-11D-A40Q-01", 
 "TCGA-ZS-A9CD-10A-01D-A36Z-01", "TCGA-DD-A1EB-11A-11D-A12Y-01")
@@ -103,7 +103,7 @@ rep1_result <- rep2(input_fil," /// ")
 
 ## Other downstream analyses
 
-i. The function id_conversion_vector could convert gene id from one of "symbol", "RefSeq_ID", "Ensembl_ID", "NCBI_Gene_ID", "UCSC_ID", and "UniProt_ID" to another. For example:
+1. The function id_conversion_vector could convert gene id from one of "symbol", "RefSeq_ID", "Ensembl_ID", "NCBI_Gene_ID", "UCSC_ID", and "UniProt_ID" to another. For example:
 
 ``r
 id_conversion_vector("symbol", "Ensembl_ID", c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS")) 
@@ -116,7 +116,8 @@ result <- id_conversion(profile)
 ```
 
 The parameter profile is a data.frame or matrix of gene expression data in TCGA.
-ii. The function `countToFpkm_matrix` and `countToTpm_matrix` could convert count data to FPKM or TPM data.
+
+2. The function `countToFpkm_matrix` and `countToTpm_matrix` could convert count data to FPKM or TPM data.
 
 ```r
 lung_squ_count2 <- matrix(c(1,2,3,4,5,6,7,8,9),ncol=3)
@@ -131,7 +132,7 @@ rownames(lung_squ_count2) <- c("DISC1","TCOF1","SPPL3")
 colnames(lung_squ_count2) <- c("sample1","sample2","sample3")
 jieguo <- countToTpm_matrix(lung_squ_count2)
 ```
-iii. The function `tcga_cli_deal` could combine clinical information obtained from TCGA and extract survival data. For example:
+3. The function `tcga_cli_deal` could combine clinical information obtained from TCGA and extract survival data. For example:
 
 ```r
 tcga_cli <- tcga_cli_deal(system.file(file.path("extdata","tcga_cli"),package="GeoTcgaData"))
