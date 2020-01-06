@@ -49,11 +49,12 @@ The parameter ` kegg_liver` is a matrix or data.frame of gene expression data(co
 The function Merge_methy_tcga could Merge methylation data downloaded from TCGA. This makes it easier to extract differentially methylated genes in the downstream analysis. For example:
 
 ```r
-mearge_result <- Merge_methy_tcga(dirr)
+dirr = system.file(file.path("extdata","methy"),package="GeoTcgaData")
+merge_result <- Merge_methy_tcga(dirr)
 ```
 
 ## Copy number variation data integration and differential gene extraction
-The function ann_merge could merge the copy number variation data downloaded from TCGA using gdc. For example:
+The function `ann_merge` could merge the copy number variation data downloaded from TCGA using gdc. For example:
 
 ```r
 metadatafile_name <- "metadata.cart.2018-11-09.json"
@@ -61,7 +62,7 @@ jieguo2 <- ann_merge(dirr = system.file(file.path("extdata","cnv"),package="GeoT
 ```
 
 The parameter `dirr` is a string for the direction of copy number variation data downloaded from TCGA. The parameter `metadatafile` is the metadata file download from TCGA.
-The function prepare_chi and differential_cnv could do chi-square test to find copy number variation differential genes. For example:
+The function `prepare_chi` and `differential_cnv` could do chi-square test to find copy number variation differential genes. For example:
 
 ```r
 jieguo3 <- matrix(c(-1.09150,-1.47120,-0.87050,-0.50880,
@@ -89,7 +90,7 @@ file1 <- data.frame(aa=aa,bb=bb,cc=cc)
 result <- gene_ave(file1)
 ```
 
-Multiple genes symbols may correspond to a same chip id. The result of function rep1 is to assign the expression of this id to each gene, and function rep2 deletes the expression. For example:
+Multiple genes symbols may correspond to a same chip id. The result of function `rep1` is to assign the expression of this id to each gene, and function `rep2` deletes the expression. For example:
 
 ```r
 aa <- c("MARCH1 /// MMA","MARC1","MARCH2 /// MARCH3",
@@ -103,9 +104,9 @@ rep1_result <- rep2(input_fil," /// ")
 
 ## Other downstream analyses
 
-1. The function `id_conversion_vector` could convert gene id from one of "symbol", "RefSeq_ID", "Ensembl_ID", "NCBI_Gene_ID", "UCSC_ID", and "UniProt_ID" to another. For example:
+1. The function `id_conversion_vector` could convert gene id from one of `symbol`, `RefSeq_ID`, `Ensembl_ID`, `NCBI_Gene_ID`, `UCSC_ID`, and `UniProt_ID` to another. For example:
 
-``r
+```r
 id_conversion_vector("symbol", "Ensembl_ID", c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS")) 
 
 ```
