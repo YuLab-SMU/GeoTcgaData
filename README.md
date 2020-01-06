@@ -103,15 +103,17 @@ rep1_result <- rep2(input_fil," /// ")
 
 ## Other downstream analyses
 
-1. The function id_conversion_vector could convert gene id from one of "symbol", "RefSeq_ID", "Ensembl_ID", "NCBI_Gene_ID", "UCSC_ID", and "UniProt_ID" to another. For example:
+1. The function `id_conversion_vector` could convert gene id from one of "symbol", "RefSeq_ID", "Ensembl_ID", "NCBI_Gene_ID", "UCSC_ID", and "UniProt_ID" to another. For example:
 
 ``r
 id_conversion_vector("symbol", "Ensembl_ID", c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS")) 
+
 ```
+
 
 Especially, the function id_conversion could convert  ENSEMBL gene id to gene Symbol in TCGA. For example:
 
-​```r
+```r
 result <- id_conversion(profile)
 ```
 
