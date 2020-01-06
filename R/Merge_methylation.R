@@ -6,7 +6,7 @@
 #' @export
 #'
 #' @examples
-#' mearge_result <- Merge_methy_tcga(system.file(file.path("extdata","methy"),package="GeoTcgaData"))
+#' merge_result <- Merge_methy_tcga(system.file(file.path("extdata","methy"),package="GeoTcgaData"))
 Merge_methy_tcga <- function(dirr) {
     options(warn = -1)
     file_num=1

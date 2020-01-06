@@ -62,7 +62,8 @@ The parameter ` kegg_liver` is a matrix or data.frame of gene expression data(co
 The function Merge_methy_tcga could Merge methylation data downloaded from TCGA. This makes it easier to extract differentially methylated genes in the downstream analysis. For example:
 
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
-mearge_result <- Merge_methy_tcga(dirr)
+dirr = system.file(file.path("extdata","methy"),package="GeoTcgaData")
+merge_result <- Merge_methy_tcga(dirr)
 ```
 
 ## Copy number variation data integration and differential gene extraction
