@@ -36,7 +36,7 @@ GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation,
 This is a basic example which shows you how to solve a common problem:
 
 ## RNA-seq data integration and differential gene extraction
-The function classify_sample and diff_gene could get the differentially expressioned genes using DESeq2 package. For examples:
+The function `classify_sample` and `diff_gene` could get the differentially expressioned genes using `DESeq2` package. For examples:
 ```r
 library(DESeq2)
 profile2 <- classify_sample(kegg_liver) 
@@ -99,7 +99,7 @@ bb <- c("2.969058399","4.722410064","8.165514853","8.24243893","8.60815086")
 cc <- c("3.969058399","5.722410064","7.165514853","6.24243893","7.60815086")
 input_fil <- data.frame(aa=aa,bb=bb,cc=cc)
 rep1_result <- rep1(input_fil," /// ")
-rep1_result <- rep2(input_fil," /// ")
+rep2_result <- rep2(input_fil," /// ")
 ```
 
 ## Other downstream analyses
