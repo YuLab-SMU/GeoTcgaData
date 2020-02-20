@@ -62,3 +62,13 @@
 #' @format A matrix with 176 rows and 3 column
 #'
 "module"
+
+
+
+
+#' a matrix for Converting gene symbol.
+#'
+#'
+#' @format A matrix with 43547 rows and 52 column
+#'
+"hgnc_file"
