@@ -107,7 +107,7 @@ rep2_result <- rep2(input_fil," /// ")
 1. The function `id_conversion_vector` could convert gene id from one of `symbol`, `RefSeq_ID`, `Ensembl_ID`, `NCBI_Gene_ID`, `UCSC_ID`, and `UniProt_ID` , etc. to another. Use `id_ava()` to get all the convertible ids. For example:
 
 ```r
-id_conversion_vector("symbol", "Ensembl_ID", c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS")) 
+id_conversion_vector("symbol", "ensembl_gene_id", c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS")) 
 
 ```
 

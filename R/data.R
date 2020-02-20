@@ -64,8 +64,6 @@
 "module"
 
 
-
-
 #' a matrix for Converting gene symbol.
 #'
 #'
