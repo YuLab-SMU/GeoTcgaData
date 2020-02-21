@@ -112,6 +112,8 @@ id_conversion_vector("symbol", "ensembl_gene_id", c("A2ML1", "A2ML1-AS1", "A4GAL
 ```
 
 
+When the user converts the Ensembl ID to other ids, the version number needs to be removed. For example, "ENSG00000186092.4" doesn't work, you need to change it to "ENSG00000186092".
+
 Especially, the function id_conversion could convert  ENSEMBL gene id to gene Symbol in TCGA. For example:
 
 ```r
