@@ -35,10 +35,10 @@ id_conversion_one <- function(from,to,ID) {
     }
   
     
-   
-    rownames(hgnc_file) = hgnc_file[,from]
-    if(ID != "" & ID %in% hgnc_file[,from]) {
-        con <- hgnc_file[ID,to]
+    hgnc_filee <- hgnc_file
+    rownames(hgnc_filee) = hgnc_filee[,from]
+    if(ID != "" & ID %in% hgnc_filee[,from]) {
+        con <- hgnc_filee[ID,to]
     } else { con <- "not available"}
     return(con)
 }
