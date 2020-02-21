@@ -1,3 +1,7 @@
+
+## quiets concerns of R CMD check re: the .'s that appear in pipelines
+if(getRversion() >= "2.15.1") utils::globalVariables("hgnc_file")
+
 #' Gene id conversion types
 #'
 #' @return a vector 
@@ -41,8 +45,8 @@ id_conversion_one <- function(from,to,ID) {
 
 #' Gene id conversion
 #'
-#' @param from one of "symbol","RefSeq_ID","Ensembl_ID","NCBI_Gene_ID","UCSC_ID","UniProt_ID"
-#' @param to one of "symbol","RefSeq_ID","Ensembl_ID","NCBI_Gene_ID","UCSC_ID","UniProt_ID"
+#' @param from one of "id_ava()"
+#' @param to one of "id_ava()"
 #' @param IDs the gene id which needed to convert
 #'
 #' @return a vector of genes

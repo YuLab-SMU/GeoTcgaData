@@ -7,9 +7,9 @@
 id_conversion_vector(from, to, IDs)
 }
 \arguments{
-\item{from}{one of "symbol","RefSeq_ID","Ensembl_ID","NCBI_Gene_ID","UCSC_ID","UniProt_ID"}
+\item{from}{one of "id_ava()"}
 
-\item{to}{one of "symbol","RefSeq_ID","Ensembl_ID","NCBI_Gene_ID","UCSC_ID","UniProt_ID"}
+\item{to}{one of "id_ava()"}
 
 \item{IDs}{the gene id which needed to convert}
 }
