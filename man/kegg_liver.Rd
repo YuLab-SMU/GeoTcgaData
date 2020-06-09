@@ -4,7 +4,9 @@
 \name{kegg_liver}
 \alias{kegg_liver}
 \title{a matrix of gene expression data in TCGA}
-\format{A matrix with 100 rows and 150 column}
+\format{
+A matrix with 100 rows and 150 column
+}
 \usage{
 kegg_liver
 }

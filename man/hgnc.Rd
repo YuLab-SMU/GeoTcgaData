@@ -4,7 +4,9 @@
 \name{hgnc}
 \alias{hgnc}
 \title{a matrix for Converting gene symbol to entrez_id or ensembl_gene_id}
-\format{A matrix with 37647 rows and 5 column}
+\format{
+A matrix with 37647 rows and 5 column
+}
 \usage{
 hgnc
 }

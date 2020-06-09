@@ -4,7 +4,9 @@
 \name{ventricle}
 \alias{ventricle}
 \title{a matrix of gene expression data in GEO}
-\format{A matrix with 32 rows and 20 column}
+\format{
+A matrix with 32 rows and 20 column
+}
 \usage{
 ventricle
 }

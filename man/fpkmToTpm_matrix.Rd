@@ -8,7 +8,7 @@ fpkmToTpm_matrix(fpkm_matrix)
 }
 \arguments{
 \item{fpkm_matrix}{a matrix, colnames of fpkm_matrix are sample name,
-rownames of fpkm_matrix are gene symbols}
+rownames of fpkm_matrix are genes}
 }
 \value{
 a matrix
@@ -20,5 +20,5 @@ Convert fpkm to Tpm
 lung_squ_count2 <- matrix(c(0.11,0.22,0.43,0.14,0.875,0.66,0.77,0.18,0.29),ncol=3)
 rownames(lung_squ_count2) <- c("DISC1","TCOF1","SPPL3")
 colnames(lung_squ_count2) <- c("sample1","sample2","sample3")
-jieguo <- countToTpm_matrix(lung_squ_count2)
+jieguo <- fpkmToTpm_matrix(lung_squ_count2)
 }

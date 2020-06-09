@@ -4,7 +4,9 @@
 \name{hgnc_file}
 \alias{hgnc_file}
 \title{a matrix for Converting gene symbol.}
-\format{A matrix with 43547 rows and 52 column}
+\format{
+A matrix with 43547 rows and 52 column
+}
 \usage{
 hgnc_file
 }

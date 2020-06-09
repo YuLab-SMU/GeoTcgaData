@@ -4,7 +4,9 @@
 \name{geneExpress}
 \alias{geneExpress}
 \title{a data.frame of gene expression data}
-\format{A data.frame with 10779 rows and 3 column}
+\format{
+A data.frame with 10779 rows and 3 column
+}
 \usage{
 geneExpress
 }

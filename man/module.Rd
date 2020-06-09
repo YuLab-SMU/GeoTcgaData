@@ -4,7 +4,9 @@
 \name{module}
 \alias{module}
 \title{a matrix of module name, gene symbols, and the number of gene symbols}
-\format{A matrix with 176 rows and 3 column}
+\format{
+A matrix with 176 rows and 3 column
+}
 \usage{
 module
 }

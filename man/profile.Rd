@@ -4,7 +4,9 @@
 \name{profile}
 \alias{profile}
 \title{a matrix of gene expression data in TCGA}
-\format{A matrix with 10 rows and 10 column}
+\format{
+A matrix with 10 rows and 10 column
+}
 \usage{
 profile
 }

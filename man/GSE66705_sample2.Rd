@@ -4,7 +4,9 @@
 \name{GSE66705_sample2}
 \alias{GSE66705_sample2}
 \title{a matrix of gene expression data in GEO}
-\format{A matrix with 999 rows and 3 column}
+\format{
+A matrix with 999 rows and 3 column
+}
 \usage{
 GSE66705_sample2
 }

@@ -87,7 +87,7 @@ countToTpm_matrix <- function(counts_matrix) {
 #' Convert fpkm to Tpm
 #'
 #' @param fpkm_matrix a matrix, colnames of fpkm_matrix are sample name,
-#' rownames of fpkm_matrix are gene symbols
+#' rownames of fpkm_matrix are genes
 #'
 #' @return a matrix
 #' @export
@@ -96,17 +96,9 @@ countToTpm_matrix <- function(counts_matrix) {
 #' lung_squ_count2 <- matrix(c(0.11,0.22,0.43,0.14,0.875,0.66,0.77,0.18,0.29),ncol=3)
 #' rownames(lung_squ_count2) <- c("DISC1","TCOF1","SPPL3")
 #' colnames(lung_squ_count2) <- c("sample1","sample2","sample3")
-#' jieguo <- countToTpm_matrix(lung_squ_count2)
+#' jieguo <- fpkmToTpm_matrix(lung_squ_count2)
 fpkmToTpm_matrix <- function(fpkm_matrix) {
-    genes_count <- intersect(rownames(fpkm_matrix),gene_loc_len[,1])
-    fpkm_matrix_new <- fpkm_matrix[genes_count,]
-    gene_loc_len_new <- gene_loc_len[genes_count,]
-    genes_length <- as.numeric(gene_loc_len_new[,4])
-    fpkm_matrix_new2 <- fpkm_matrix_new
-    for(i in seq_len(dim(fpkm_matrix_new2)[2])) {
-        fpkm_matrix_new2[,i] <- fpkmToTpm(as.numeric(fpkm_matrix_new2[,i]))
-    }
-    return(fpkm_matrix_new2)
+    fpkm_matrix_new <- apply(fpkm_matrix, 2, fpkmToTpm)  
 }
 
 
