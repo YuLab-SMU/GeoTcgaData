@@ -4,10 +4,10 @@
 \alias{id_conversion}
 \title{Convert  ENSEMBL gene id to gene Symbol in TCGA}
 \usage{
-id_conversion(profile)
+id_conversion(profiles)
 }
 \arguments{
-\item{profile}{a data.frame}
+\item{profiles}{a data.frame}
 }
 \value{
 a data.frame, gene symbols and their expression value

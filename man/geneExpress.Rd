@@ -5,15 +5,15 @@
 \alias{geneExpress}
 \title{a data.frame of gene expression data}
 \format{
-A data.frame with 10779 rows and 3 column
+A data.frame with 10779 rows and 2 column
 }
 \usage{
 geneExpress
 }
 \description{
-the first column is a vector of gene symbols
+the rowname is gene symbols
 }
 \details{
-the other columns are gene expression values
+the columns are gene expression values
 }
 \keyword{datasets}

@@ -6,7 +6,6 @@
 GeoTcgaDataStartupMessage <- function()
 {
 
-  
  msg <- "Hello, friend! welcome to use!"
   return(msg)
 }

@@ -4,10 +4,10 @@
 \alias{tcga_cli_deal}
 \title{Combine clinical information obtained from TCGA and extract survival data}
 \usage{
-tcga_cli_deal(Files_dir1)
+tcga_cli_deal(Files_dir = "your_clinical_directory")
 }
 \arguments{
-\item{Files_dir1}{a dir data}
+\item{Files_dir}{a dir data}
 }
 \value{
 a matrix, survival time and survival state in TCGA

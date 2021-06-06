@@ -7,47 +7,49 @@
 #'
 #' @examples
 #' merge_result <- Merge_methy_tcga(system.file(file.path("extdata","methy"),package="GeoTcgaData"))
-Merge_methy_tcga <- function(dirr) {
+Merge_methy_tcga <- function(dirr = "direc") {
     options(warn = -1)
     file_num=1
     if(dirr != "direc") {
         tcga_dir <- dir(dirr)
-        #dirr_l <- paste(dirr,tcga_dir[1],sep="\\")
 		dirr_l <- file.path(dirr, tcga_dir[1])
         aa <- dir(dirr_l)
         for(j in 1:length(aa)) {
             if(length(grep("jhu-usc",aa[j]))>0) {
-                #file_name <- paste(dirr_l,dir(dirr_l)[j],sep="\\")
 				file_name <- file.path(dirr_l, dir(dirr_l)[j])
                 sample_l <- unlist(strsplit(dir(dirr_l)[j],"\\."))[6]
             }
         }
 		
+        ## before
         file_l <- data.table::fread(file_name,header=FALSE)
 		file_ll <- file_l
-		
         cpg <- file_l[,1]
         sample_l <- unlist(strsplit(dir(dirr_l)[1],"\\."))[6]
         betaa <- file_l[,2]
         betaa[1] <- sample_l
         jieguo_old <- cbind(cpg, betaa)
         jieguo_old <- as.matrix(jieguo_old)
+        ## before end
+
+        ## new
+        # file_l <- data.table::fread(file_name, header=TRUE)
+        # jieguo_old <- file_l[, 1:2]
+        # colnames(jieguo_old)[2] <- unlist(strsplit(dir(dirr_l)[1],"\\."))[6]
+        ## new end
         for(i in 2:length(tcga_dir)) {
-		#for(i in 121:130) {
 		    message("file",file_num," is over")
-		    file_num <- file_num+1
-            #dirr_l <- paste(dirr,tcga_dir[i],sep="\\")
+		    file_num <- file_num + 1
 			dirr_l <- file.path(dirr,tcga_dir[i])
             aa <- dir(dirr_l)
             for(j in 1:length(aa)) {
                 if(length(grep("jhu-usc",aa[j]))>0) {
-                    #file_name <- paste(dirr_l,dir(dirr_l)[j],sep="\\")
 					file_name <- file.path(dirr_l,dir(dirr_l)[j])
                     sample_l <- unlist(strsplit(dir(dirr_l)[j],"\\."))[6]
                 }
             }
 
-            file_l <- data.table::fread(file_name,header=FALSE)
+            file_l <- data.table::fread(file_name, header=FALSE)
             cpg <- file_l[,1]
             betaa <- file_l[,2]
             betaa[1] <- sample_l
@@ -55,8 +57,7 @@ Merge_methy_tcga <- function(dirr) {
             jieguo <- cbind(jieguo_old, betaa)
 			jieguo_old <- jieguo
 			rm(dirr_l,aa,file_name,sample_l,cpg,file_l,betaa,jieguo)
-			gc()
-			
+			gc()			
         }
 		
 		
@@ -74,12 +75,7 @@ Merge_methy_tcga <- function(dirr) {
     colnames(file1) <- file1[1,]
 	file1 <- file1[-1,]
 	rep1_result <- rep1(file1,";")
-    #rep1(file1,"methy_gene.txt",";")
-
-
-    #ventricle <- data.table::fread("methy_gene.txt",sep="\t",header=FALSE)
-    #gene_ave(ventricle
-    ave_result <- gene_ave(rep1_result)
+    ave_result <- gene_ave(rep1_result, k = 1)
 	
     } else {message("please give your directory of methylation data!")}
 

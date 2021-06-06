@@ -12,7 +12,7 @@ cal_mean_module(geneExpress, module)
 \item{module}{a data.frame}
 }
 \value{
-a matrix, means the mean of gene expression value in
+a data.frame, means the mean of gene expression value in
 the same module
 }
 \description{

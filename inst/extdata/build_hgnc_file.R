@@ -1,0 +1,16 @@
+#setwd("E:\\GeoTcgaData_work")
+hgnc_file <- data.table::fread("E:\\GeoTcgaData_work\\hgnc_complete_set.txt", sep = "\t", header = T)
+hgnc_file <- dplyr::select(hgnc_file, -c("alias_symbol", "alias_name", "prev_symbol", "lsdb", "agr"))
+class(hgnc_file) <- "data.frame"
+#usethis::use_data(hgnc_file, compress = "xz")
+gene_loc_len <- GeoTcgaData:::gene_loc_len
+hgnc <- GeoTcgaData:::hgnc
+# genePos <- GeoTcgaData:::genePos
+# genePos <- as.data.frame(genePos)
+# genePos$start <- as.integer(genePos$start)
+# genePos$end <- as.integer(genePos$end)
+# genePos$gene_len <- as.integer(genePos$gene_len)
+genePos <- GeoTcgaData:::genePos
+usethis::use_data(hgnc_file, gene_loc_len, hgnc, genePos, internal = TRUE, compress = "xz", overwrite = TRUE)
+
+

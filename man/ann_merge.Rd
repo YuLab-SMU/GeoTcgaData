@@ -19,6 +19,6 @@ Merge the copy number variation data downloaded from TCGA using gdc
 }
 \examples{
 metadatafile_name <- "metadata.cart.2018-11-09.json"
-\dontrun{jieguo2 <- ann_merge(dirr = system.file(file.path("extdata","cnv"),
+\dontrun{result2 <- ann_merge(dirr = system.file(file.path("extdata","cnv"),
 package="GeoTcgaData"),metadatafile=metadatafile_name)}
 }

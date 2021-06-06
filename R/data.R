@@ -1,20 +1,20 @@
 
 #' a data.frame of gene expression data
 #'
-#' the first column is a vector of gene symbols
+#' the rowname is gene symbols
 #'
-#' the other columns are gene expression values
+#' the columns are gene expression values
 #'
-#' @format A data.frame with 10779 rows and 3 column
+#' @format A data.frame with 10779 rows and 2 column
 #'
 "geneExpress"
 
-#' a matrix for Converting gene symbol to entrez_id or ensembl_gene_id 
-#'
-#' the columns represent "symbol", "locus_group", "locus_type", "entrez_id" and "ensembl_gene_id"
-#'
-#' @format A matrix with 37647 rows and 5 column
-#'
+# ' a matrix for Converting gene symbol to entrez_id or ensembl_gene_id 
+# '
+# ' the columns represent "symbol", "locus_group", "locus_type", "entrez_id" and "ensembl_gene_id"
+# '
+# ' @format A matrix with 37647 rows and 5 column
+# '
 "hgnc"
 
 #' a matrix of gene expression data in TCGA
@@ -64,9 +64,9 @@
 "module"
 
 
-#' a matrix for Converting gene symbol.
-#'
-#'
-#' @format A matrix with 43547 rows and 52 column
-#'
+# ' a matrix for Converting gene symbol.
+# '
+# '
+# ' @format A matrix with 43547 rows and 52 column
+# '
 "hgnc_file"

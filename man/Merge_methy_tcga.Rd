@@ -4,7 +4,7 @@
 \alias{Merge_methy_tcga}
 \title{Merge methylation data downloaded from TCGA}
 \usage{
-Merge_methy_tcga(dirr)
+Merge_methy_tcga(dirr = "direc")
 }
 \arguments{
 \item{dirr}{a string for the directory of methylation data download from tcga

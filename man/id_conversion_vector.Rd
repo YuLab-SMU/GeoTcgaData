@@ -4,14 +4,16 @@
 \alias{id_conversion_vector}
 \title{Gene id conversion}
 \usage{
-id_conversion_vector(from, to, IDs)
+id_conversion_vector(from, to, IDs, na.rm = FALSE)
 }
 \arguments{
-\item{from}{one of "id_ava()"}
+\item{from}{one of `id_ava()`}
 
-\item{to}{one of "id_ava()"}
+\item{to}{one of `id_ava()`}
 
 \item{IDs}{the gene id which needed to convert}
+
+\item{na.rm}{Whether to remove lines containing NA}
 }
 \value{
 a vector of genes

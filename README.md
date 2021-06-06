@@ -52,6 +52,10 @@ The function Merge_methy_tcga could Merge methylation data downloaded from TCGA.
 dirr = system.file(file.path("extdata","methy"),package="GeoTcgaData")
 merge_result <- Merge_methy_tcga(dirr)
 ```
+The users can use `ChAMP` package to do difference analysis.
+
+
+
 
 ## Copy number variation data integration and differential gene extraction
 The function `ann_merge` could merge the copy number variation data downloaded from TCGA using gdc. For example:
@@ -66,15 +70,15 @@ The function `prepare_chi` and `differential_cnv` could do chi-square test to fi
 
 ```r
 jieguo3 <- matrix(c(-1.09150,-1.47120,-0.87050,-0.50880,
--0.50880,2.0,2.0,2.0,2.0,2.0,2.601962,2.621332,2.621332,
+                    -0.50880,2.0,2.0,2.0,2.0,2.0,2.601962,2.621332,2.621332,
                     2.621332,2.621332,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,
                     2.0,2.0,2.0,2.0,2.0,2.0,2.0),nrow=5)
-rownames(jieguo3) <- c("AJAP1", "FHAD1", "CLCNKB", "CROCCP2", "AL137798.3")
-colnames(jieguo3) <- c("TCGA-DD-A4NS-10A-01D-A30U-01", "TCGA-ED-A82E-01A-11D-A34Y-01", 
-"TCGA-WQ-A9G7-01A-11D-A36W-01", "TCGA-DD-AADN-01A-11D-A40Q-01", 
-"TCGA-ZS-A9CD-10A-01D-A36Z-01", "TCGA-DD-A1EB-11A-11D-A12Y-01")
- rt <- prepare_chi(jieguo3)
- chiResult <- differential_cnv(rt)
+rownames(jieguo3) <- c("AJAP1","FHAD1","CLCNKB","CROCCP2","AL137798.3")
+colnames(jieguo3) <- c("TCGA-DD-A4NS-10A-01D-A30U-01","TCGA-ED-A82E-01A-11D-A34Y-01",
+    "TCGA-WQ-A9G7-01A-11D-A36W-01","TCGA-DD-AADN-01A-11D-A40Q-01",
+    "TCGA-ZS-A9CD-10A-01D-A36Z-01","TCGA-DD-A1EB-11A-11D-A12Y-01")
+rt <- prepare_chi(jieguo3)
+chiResult <- differential_cnv(rt)
 ```
 
 The parameter of `prepare_chi` is the result of function `ann_merge` and the parameter of function `differential_cnv` is the result of prepare_chi.
@@ -83,23 +87,25 @@ The parameter of `prepare_chi` is the result of function `ann_merge` and the par
 The function `gene_ave` could average the expression data of different ids for the same gene in the GEO chip data. For example:
 
 ```r
-aa <- c("Gene Symbol", "MARCH1", "MARC1", "MARCH1", "MARCH1", "MARCH1")
-bb <- c("GSM1629982", "2.969058399", "4.722410064", "8.165514853", "8.24243893", "8.60815086")
-cc <- c("GSM1629982", "3.969058399", "5.722410064", "7.165514853", "6.24243893", "7.60815086")
-file1 <- data.frame(aa=aa,bb=bb,cc=cc)
-result <- gene_ave(file1)
+aa <- c("MARCH1","MARC1","MARCH1","MARCH1","MARCH1")
+bb <- c(2.969058399,4.722410064,8.165514853,8.24243893,8.60815086)
+cc <- c(3.969058399,5.722410064,7.165514853,6.24243893,7.60815086)
+file_gene_ave <- data.frame(aa=aa,bb=bb,cc=cc)
+colnames(file_gene_ave) <- c("Gene", "GSM1629982", "GSM1629983")
+
+result <- gene_ave(file_gene_ave, 1)
 ```
 
 Multiple genes symbols may correspond to a same chip id. The result of function `rep1` is to assign the expression of this id to each gene, and function `rep2` deletes the expression. For example:
 
 ```r
-aa <- c("MARCH1 /// MMA","MARC1","MARCH2 /// MARCH3",
-        "MARCH3 /// MARCH4","MARCH1")
+aa <- c("MARCH1 /// MMA","MARC1","MARCH2 /// MARCH3","MARCH3 /// MARCH4","MARCH1")
 bb <- c("2.969058399","4.722410064","8.165514853","8.24243893","8.60815086")
 cc <- c("3.969058399","5.722410064","7.165514853","6.24243893","7.60815086")
-input_fil <- data.frame(aa=aa,bb=bb,cc=cc)
-rep1_result <- rep1(input_fil," /// ")
-rep2_result <- rep2(input_fil," /// ")
+input_file <- data.frame(aa=aa,bb=bb,cc=cc)
+
+rep1_result <- rep1(input_file," /// ")
+rep2_result <- rep2(input_file," /// ")
 ```
 
 ## Other downstream analyses

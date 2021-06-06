@@ -4,10 +4,10 @@
 \alias{rep1}
 \title{Handle the case where one id corresponds to multiple genes}
 \usage{
-rep1(input_file1, string)
+rep1(input_file, string)
 }
 \arguments{
-\item{input_file1}{input file, a data.frame or a matrix}
+\item{input_file}{input file, a data.frame or a matrix}
 
 \item{string}{a string,sep of the gene}
 }
@@ -22,6 +22,6 @@ Handle the case where one id corresponds to multiple genes
 aa <- c("MARCH1 /// MMA","MARC1","MARCH2 /// MARCH3","MARCH3 /// MARCH4","MARCH1")
 bb <- c("2.969058399","4.722410064","8.165514853","8.24243893","8.60815086")
 cc <- c("3.969058399","5.722410064","7.165514853","6.24243893","7.60815086")
-input_fil <- data.frame(aa=aa,bb=bb,cc=cc)
-rep1_result <- rep1(input_fil," /// ")
+input_file <- data.frame(aa=aa,bb=bb,cc=cc)
+rep1_result <- rep1(input_file," /// ")
 }
