@@ -4,10 +4,12 @@
 \alias{id_conversion}
 \title{Convert  ENSEMBL gene id to gene Symbol in TCGA}
 \usage{
-id_conversion(profiles)
+id_conversion(profiles, toType = "SYMBOL")
 }
 \arguments{
 \item{profiles}{a data.frame}
+
+\item{toType}{one of 'keytypes(org.Hs.eg.db)'}
 }
 \value{
 a data.frame, gene symbols and their expression value

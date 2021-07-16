@@ -11,6 +11,6 @@ hgnc <- GeoTcgaData:::hgnc
 # genePos$end <- as.integer(genePos$end)
 # genePos$gene_len <- as.integer(genePos$gene_len)
 genePos <- GeoTcgaData:::genePos
-usethis::use_data(hgnc_file, gene_loc_len, hgnc, genePos, internal = TRUE, compress = "xz", overwrite = TRUE)
-
-
+hgnc_file <- GeoTcgaData:::hgnc_file
+# usethis::use_data(hgnc_file, gene_loc_len, hgnc, genePos, internal = TRUE, compress = "xz", overwrite = TRUE)
+usethis::use_data(hgnc_file, hgnc, gene_loc_len, internal = TRUE, compress = "xz", overwrite = TRUE)

@@ -2,8 +2,7 @@
 
 # GeoTcgaData
 
-The goal of GeoTcgaData is to deal with RNA-seq, DNA Methylation, and Copy 
-number variation data in GEO and TCGA.
+The goal of GeoTcgaData is to deal with RNA-seq, DNA Methylation, single nucleotide Variation and Copy number variation data in GEO and TCGA.
 
 ## :writing_hand: Authors
 Erqiang Hu
@@ -17,73 +16,162 @@ College of Bioinformatics Science and Technology, Harbin Medical University
 
 ## :arrow\_double\_down: Installation
 
-Get the development version from github:
+Get the released version from CRAN:
+
+``` r
+install.packages("GeoTcgaData")
+```
+
+Or  the development version from github:
 
 ```r
 if(!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
 devtools::install_github("huerqiang/GeoTcgaData")
 ```
-Or  the released version from CRAN:
 
-``` r
-install.packages("GeoTcgaData")
-```
-GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation,  and Copy number variation data. It's easy to download data from TCGA using the  gdc tool, but processing these data into a format suitable for bioinformatics  analysis requires more work. This R package was developed to handle these data.
+GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation,   single nucleotide Variation and Copy number variation data. It's easy to download data from TCGA using the  gdc tool or `TCGAbiolinks`, but processing these data into a format suitable for bioinformatics  analysis requires more work. This R package was developed to handle these data.
 
 ## Example
 
 This is a basic example which shows you how to solve a common problem:
 
-## RNA-seq data integration and differential gene extraction
-The function `classify_sample` and `diff_gene` could get the differentially expressioned genes using `DESeq2` package. For examples:
-```r
-library(DESeq2)
-profile2 <- classify_sample(kegg_liver) 
-jieguo <- diff_gene(profile2)
-```
+## RNA-seq data differential expression analysis
+Use [`TCGAbiolinks`](http://www.bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/analysis.html)  or [`GDCRNATools`](https://bioconductor.org/packages/GDCRNATools/) to download and analysis Gene expression data.  `TCGAbiolinks` use `edgeR` package to do differential expression analysis, while `GDCRNATools` can implement three most commonly used methods: limma, edgeR , and DESeq2 to identify differentially expressed  genes (DEGs).
 
-The parameter ` kegg_liver` is a matrix or data.frame of gene expression data(count) in TCGA.
+
 
 ## DNA Methylation data integration 
-The function Merge_methy_tcga could Merge methylation data downloaded from TCGA. This makes it easier to extract differentially methylated genes in the downstream analysis. For example:
+use `TCGAbiolinks` to download TCGA data
 
 ```r
-dirr = system.file(file.path("extdata","methy"),package="GeoTcgaData")
-merge_result <- Merge_methy_tcga(dirr)
+library(TCGAbiolinks)
+query <- GDCquery(project = "TCGA-ACC",
+                  data.category = "DNA Methylation",
+                  data.type = "Methylation Beta Value",
+                  platform = "Illumina Human Methylation 450")
+GDCdownload(query, method = "api", files.per.chunk = 5, directory = Your_Path)
 ```
-The users can use `ChAMP` package to do difference analysis.
 
+The function Merge_methy_tcga could Merge methylation data downloaded from TCGA official website or TCGAbiolinks. This makes it easier to extract differentially methylated genes in the downstream analysis. For example:
+
+```r
+merge_result <- Merge_methy_tcga(Your_Path_to_DNA_Methylation_data)
+```
+Then use `ChAMP` package to do difference analysis.
+
+```r
+library(ChAMP)
+diff_gene <- methyDiff(cpgData = merge_result, sampleGroup = sample(c("C","T"), 
+    ncol(merge_result[[1]]), replace = TRUE))
+```
+
+Use `clusterProfiler` to do enrichment analytics:
+
+```r
+diff_gene$p.adj <- p.adjust(diff_gene$pvalue)
+genes <- diff_gene[diff_gene$p.adj < 0.05, "gene"]
+library(clusterProfiler)
+library(enrichplot)
+library(org.Hs.eg.db)
+ego <- enrichGO(gene = genes, OrgDb = org.Hs.eg.db, keyType = "SYMBOL")
+dotplot(ego)
+```
 
 
 
 ## Copy number variation data integration and differential gene extraction
-The function `ann_merge` could merge the copy number variation data downloaded from TCGA using gdc. For example:
+
+use TCGAbiolinks to download TCGA data(Gene Level Copy Number Scores)
 
 ```r
-metadatafile_name <- "metadata.cart.2018-11-09.json"
-jieguo2 <- ann_merge(dirr = system.file(file.path("extdata","cnv"),package="GeoTcgaData"),metadatafile=metadatafile_name)
+library(TCGAbiolinks)
+query <- GDCquery(project = "TCGA-LGG",
+                  data.category = "Copy Number Variation",
+                  data.type = "Gene Level Copy Number Scores")
+
+GDCdownload(query, method = "api", files.per.chunk = 5, directory = Your_Path)
+
+data <- GDCprepare(query = query, 
+                   directory =  "Your_Path") 
 ```
 
-The parameter `dirr` is a string for the direction of copy number variation data downloaded from TCGA. The parameter `metadatafile` is the metadata file download from TCGA.
-The function `prepare_chi` and `differential_cnv` could do chi-square test to find copy number variation differential genes. For example:
+
+
+Do difference analysis of gene level copy number variation data using `diff_CNV`
 
 ```r
-jieguo3 <- matrix(c(-1.09150,-1.47120,-0.87050,-0.50880,
-                    -0.50880,2.0,2.0,2.0,2.0,2.0,2.601962,2.621332,2.621332,
-                    2.621332,2.621332,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,
-                    2.0,2.0,2.0,2.0,2.0,2.0,2.0),nrow=5)
-rownames(jieguo3) <- c("AJAP1","FHAD1","CLCNKB","CROCCP2","AL137798.3")
-colnames(jieguo3) <- c("TCGA-DD-A4NS-10A-01D-A30U-01","TCGA-ED-A82E-01A-11D-A34Y-01",
-    "TCGA-WQ-A9G7-01A-11D-A36W-01","TCGA-DD-AADN-01A-11D-A40Q-01",
-    "TCGA-ZS-A9CD-10A-01D-A36Z-01","TCGA-DD-A1EB-11A-11D-A12Y-01")
-rt <- prepare_chi(jieguo3)
-chiResult <- differential_cnv(rt)
+class(data) <- "data.frame"
+cnvData <- data[, -c(1,2,3)]
+rownames(cnvData) <- data[, 1]
+sampleGroup  = sample(c("A","B"), ncol(cnvData), replace = TRUE)
+diffCnv <- diff_CNV(cnvData, sampleGroup)
 ```
 
-The parameter of `prepare_chi` is the result of function `ann_merge` and the parameter of function `differential_cnv` is the result of prepare_chi.
+Use `clusterProfiler` to do enrichment analytics:
+
+```r
+pvalues <- diffCnv$pvalue * sign(diffCnv$odds)
+genes <- rownames(diffCnv)[diffCnv$pvalue < 0.05]
+library(clusterProfiler)
+library(enrichplot)
+library(org.Hs.eg.db)
+ego <- enrichGO(gene = genes, OrgDb = org.Hs.eg.db, keyType = "ENSEMBL")
+dotplot(ego)
+```
+
+
+
+## Difference analysis of single nucleotide Variation data 
+
+Use TCGAbiolinks to download TCGA data
+
+```r
+library(TCGAbiolinks)
+query <- GDCquery(project = "TCGA-ACC",
+                  data.category = "Simple Nucleotide Variation",
+                  data.type = "Masked Somatic Mutation",
+                  workflow.type = "MuSE Variant Aggregation and Masking")
+
+GDCdownload(query, method = "api", files.per.chunk = 5, directory = Your_Path)
+
+data_snp <- GDCprepare(query = query, 
+                   directory =  "Your_Path") 
+
+```
+
+
+
+Use `diff_SNP_tcga` to do difference analysis
+
+```r
+samples <- unique(data_snp$Tumor_Sample_Barcode)
+sampleType <- sample(c("A","B"), length(samples), replace = TRUE)
+names(sampleType) <- samples
+pvalue <- diff_SNP_tcga(snpData = data_snp, sampleType = sampleType)
+```
+
+
+
+Use `clusterProfiler` to do enrichment analysis
+
+```r
+pvalue2 <- sort(pvalue, decreasing = TRUE)
+library(clusterProfiler)
+library(enrichplot)
+library(org.Hs.eg.db)
+gsego <- gseGO(pvalue2, OrgDb = org.Hs.eg.db, keyType = "SYMBOL")
+dotplot(gsego)
+```
+
+
+
+
+
+
 
 ## GEO chip data processing
+
 The function `gene_ave` could average the expression data of different ids for the same gene in the GEO chip data. For example:
 
 ```r
@@ -92,7 +180,6 @@ bb <- c(2.969058399,4.722410064,8.165514853,8.24243893,8.60815086)
 cc <- c(3.969058399,5.722410064,7.165514853,6.24243893,7.60815086)
 file_gene_ave <- data.frame(aa=aa,bb=bb,cc=cc)
 colnames(file_gene_ave) <- c("Gene", "GSM1629982", "GSM1629983")
-
 result <- gene_ave(file_gene_ave, 1)
 ```
 
@@ -115,6 +202,13 @@ rep2_result <- rep2(input_file," /// ")
 ```r
 id_conversion_vector("symbol", "ensembl_gene_id", c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS")) 
 
+# 80% were successfully converted.
+#       from              to
+# 1     A2ML1 ENSG00000166535
+# 2 A2ML1-AS1 ENSG00000256661
+# 3    A4GALT ENSG00000128274
+# 4     A12M1            <NA>
+# 5      AAAS ENSG00000094914
 ```
 
 
@@ -127,6 +221,26 @@ result <- id_conversion(profile)
 ```
 
 The parameter profile is a data.frame or matrix of gene expression data in TCGA.
+
+**Note:** In previous versions(< 1.0.0) the `id_conversion` and `id_conversion_vector` used HGNC data to convert human gene id.  In future versions, we will use `clusterProfiler::bitr` for ID conversion. 
+
+```r
+library(clusterProfiler)
+bitr(c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS"), fromType = "SYMBOL", toType = "ENSEMBL", OrgDb = org.Hs.eg.db, drop = FALSE)
+# 'select()' returned 1:1 mapping between keys and columns
+#      SYMBOL         ENSEMBL
+# 1     A2ML1 ENSG00000166535
+# 2 A2ML1-AS1            <NA>
+# 3    A4GALT ENSG00000128274
+# 4     A12M1            <NA>
+# 5      AAAS ENSG00000094914
+# Warning message:
+# In bitr(c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS"), fromType = "SYMBOL",  :
+#   40% of input gene IDs are fail to map...
+
+```
+
+
 
 2. The function `countToFpkm_matrix` and `countToTpm_matrix` could convert count data to FPKM or TPM data.
 
@@ -148,3 +262,17 @@ jieguo <- countToTpm_matrix(lung_squ_count2)
 ```r
 tcga_cli <- tcga_cli_deal(system.file(file.path("extdata","tcga_cli"),package="GeoTcgaData"))
 ```
+
+**Note:** Now the combined clinical data can be downloaded directly from [TCGAbiolinks](http://www.bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/clinical.html).
+
+```r
+library(TCGAbiolinks)
+query <- GDCquery(project = "TCGA-ACC", 
+                  data.category = "Clinical",
+                  data.type = "Clinical Supplement", 
+                  data.format = "BCR Biotab")
+GDCdownload(query)
+clinical.BCRtab.all <- GDCprepare(query)
+names(clinical.BCRtab.all)
+```
+

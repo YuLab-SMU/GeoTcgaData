@@ -56,15 +56,11 @@ ann_merge <- function(dirr, metadatafile) {
             aalisti <- aalist[[i]]
             genePoslisti <- genePoslist[[i]]
             genes <- vector("list", length = nlength[i])
-            for(j in seq_len(nlength[i])) {
-                keep <- rep(0, nrow(genePoslisti))
-                for(k in seq_len(nrow(genePoslisti))) {
-                    if(!(genePoslisti[k,"start"]>aalisti[j,"End"] || genePoslisti[k,"end"]<aalisti[j,"Start"])){
-                        keep[k] <- 1
-                    }
-                }
-                genes[[j]] <- genePoslisti[keep == 1, "gene"]
-            } 
+            for(j in seq_len(nrow(aalisti))) {
+                rm1 <- genePoslisti$end < aalisti[j, "Start"]
+                rm2 <- genePoslisti$start > aalisti[j, "End"]
+                genes[[j]] <- genePoslisti[!(rm1 | rm2), "gene"]     
+            }
             genes <- unlist(lapply(genes, paste, collapse = ",")) 
             aalist2[[i]] <- cbind(aalisti, genes)         
         }
