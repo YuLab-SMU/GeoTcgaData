@@ -21,7 +21,8 @@ Suggests:
     ChAMP,
     impute,
     tidyr,
-    clusterProfiler
+    clusterProfiler,
+    org.Hs.eg.db
 VignetteBuilder: knitr
 Imports: 
     utils,

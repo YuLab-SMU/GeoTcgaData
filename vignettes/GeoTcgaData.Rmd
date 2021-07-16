@@ -207,6 +207,7 @@ When the user converts the Ensembl ID to other ids, the version number needs to 
 Especially, the function `id_conversion` could convert  ENSEMBL gene id to gene Symbol in TCGA. For example:
 
 ```{r}
+profile <- GeoTcgaData::profile
 result <- id_conversion(profile)
 ```
 
@@ -216,7 +217,9 @@ The parameter `profile` is a data.frame or matrix of gene expression data in TCG
 
 ```{r}
 library(clusterProfiler)
-bitr(c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS"), fromType = "SYMBOL", toType = "ENSEMBL", OrgDb = org.Hs.eg.db, drop = FALSE)
+library(org.Hs.eg.db)
+bitr(c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS"), fromType = "SYMBOL", 
+    toType = "ENSEMBL", OrgDb = org.Hs.eg.db, drop = FALSE)
 ```
 
 

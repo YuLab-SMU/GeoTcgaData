@@ -226,7 +226,8 @@ The parameter profile is a data.frame or matrix of gene expression data in TCGA.
 
 ```r
 library(clusterProfiler)
-bitr(c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS"), fromType = "SYMBOL", toType = "ENSEMBL", OrgDb = org.Hs.eg.db, drop = FALSE)
+bitr(c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS"), fromType = "SYMBOL", 
+     toType = "ENSEMBL", OrgDb = org.Hs.eg.db, drop = FALSE)
 # 'select()' returned 1:1 mapping between keys and columns
 #      SYMBOL         ENSEMBL
 # 1     A2ML1 ENSG00000166535
