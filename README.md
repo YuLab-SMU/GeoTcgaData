@@ -7,7 +7,7 @@ The goal of GeoTcgaData is to deal with RNA-seq, DNA Methylation, single nucleot
 ## :writing_hand: Authors
 Erqiang Hu
 
-College of Bioinformatics Science and Technology, Harbin Medical University
+ Department of Bioinformatics, School of Basic Medical Sciences, Southern Medical University.
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/GeoTcgaData?color=green)](https://cran.r-project.org/package=GeoTcgaData)
 ![](https://cranlogs.r-pkg.org/badges/grand-total/GeoTcgaData?color=green)
@@ -37,7 +37,63 @@ GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation,
 This is a basic example which shows you how to solve a common problem:
 
 ## RNA-seq data differential expression analysis
-Use [`TCGAbiolinks`](http://www.bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/analysis.html)  or [`GDCRNATools`](https://bioconductor.org/packages/GDCRNATools/) to download and analysis Gene expression data.  `TCGAbiolinks` use `edgeR` package to do differential expression analysis, while `GDCRNATools` can implement three most commonly used methods: limma, edgeR , and DESeq2 to identify differentially expressed  genes (DEGs).
+It is convenient to use [`TCGAbiolinks`](http://www.bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/analysis.html)  or [`GDCRNATools`](https://bioconductor.org/packages/GDCRNATools/) to download and analysis Gene expression data.  `TCGAbiolinks` use `edgeR` package to do differential expression analysis, while `GDCRNATools` can implement three most commonly used methods: limma, edgeR , and DESeq2 to identify differentially expressed  genes (DEGs).
+
+However, unlike the chip data, the RNA-seq data had one [bias](https://pubmed.ncbi.nlm.nih.gov/20132535/): the longer the gene, the more likely it was to be  identified as a differential gene, [while there was no such trend in the chip data](https://pubmed.ncbi.nlm.nih.gov/19371405/).  This is because in RNA-seq data a long gene has more reads mapping to it compared to a short gene of similar expression,  and most of the statistical methods used to detect differential expression  have stronger detection ability for genes with more reads. Therefore, we need to correct the gene length bias in downstream analysis  such as enrichment analysis.
+
+[GOseq]([ https://bioconductor.org/packages/goseq/](http://bioconductor.org/packages/goseq/)) based on [Wallenius' noncentral hypergeometric distribution](https://en.wikipedia.org/wiki/Wallenius%27_noncentral_hypergeometric_distribution) can effectively correct the gene length deviation in enrichment analysis. However, its algorithm can not directly correct the deviation of the expression profile, and its results can not be used for GSEA enrichment analysis. [CQN]([https://bioconductor.org/packages/cqn/](http://www.bioconductor.org/packages/cqn/)) present a [normalization algorithm](https://pubmed.ncbi.nlm.nih.gov/22285995/) to correct systematic biases(gene length bias and [GC-content bias](https://pubmed.ncbi.nlm.nih.gov/22177264/)), whose result can be seamlessly docked with downstream difference analysis  software such as  DESeq2 and edgeR. 
+
+Here we use `TCGAbiolinks` to download RNA-seq data, use `CQN` to correct gene  length bias and GC content bias, and then use `DESeq2` for difference  analysis.
+
+use `TCGAbiolinks` to download TCGA data
+
+```r
+# download RNA-seq data
+library(TCGAbiolinks)
+                
+query <- GDCquery(project = "TCGA-ACC",
+                  data.category = "Transcriptome Profiling",
+                  data.type = "Gene Expression Quantification", 
+                  workflow.type = "HTSeq - Counts")
+                  
+GDCdownload(query, method = "api", files.per.chunk = 3, 
+    directory = Your_Path)
+
+dataRNA <- GDCprepare(query = query, directory = Your_Path,
+                      save = TRUE, save.filename = "dataRNA.RData")
+## get raw count matrix                         
+dataPrep <- TCGAanalyze_Preprocessing(object = dataRNA,
+                                      cor.cut = 0.6,
+                                      datatype = "HTSeq - Counts")
+
+```
+
+Use `diff_RNA` to do difference analysis
+
+```r
+## Random value is used as gene length and GC content.
+geneLength <- sample(1000:2000, nrow(dataPrep), replace = TRUE)
+names(geneLength) <- colnames(dataPrep)
+gccontent <- runif(nrow(dataPrep))
+names(gccontent) <- colnames(dataPrep)
+## Random value is used as sample group.
+group <- sample(c("grp1", "grp2"), ncol(dataPrep), replace = TRUE)
+DEGAll <- diff_RNA(counts = dataPrep, group = group, 
+                   geneLength = geneLength, gccontent = gccontent)
+```
+
+Use `clusterProfiler` to do enrichment analytics:
+
+```r
+diffGenes <- DEGAll$logFC
+names(diffGenes) <- rownames(DEGAll)
+diffGenes <- sort(diffGenes, decreasing = TRUE)
+library(clusterProfiler)
+library(enrichplot)
+library(org.Hs.eg.db)
+gsego <- gseGO(gene = diffGenes, OrgDb = org.Hs.eg.db, keyType = "ENSEMBL")
+dotplot(gsego)
+```
 
 
 
@@ -61,10 +117,16 @@ merge_result <- Merge_methy_tcga(Your_Path_to_DNA_Methylation_data)
 Then use `ChAMP` package to do difference analysis.
 
 ```r
+if (!requireNamespace("ChAMP", quietly = TRUE))
+    BiocManager::install("ChAMP")
 library(ChAMP)
 diff_gene <- methyDiff(cpgData = merge_result, sampleGroup = sample(c("C","T"), 
     ncol(merge_result[[1]]), replace = TRUE))
 ```
+
+**Note:** `ChAMP`has a large number of dependent packages. If you cannot install it  successfully, you can download each dependent package separately(Source or Binary) and install it  locally.
+
+
 
 Use `clusterProfiler` to do enrichment analytics:
 
@@ -93,7 +155,7 @@ query <- GDCquery(project = "TCGA-LGG",
 GDCdownload(query, method = "api", files.per.chunk = 5, directory = Your_Path)
 
 data <- GDCprepare(query = query, 
-                   directory =  "Your_Path") 
+                   directory =  Your_Path) 
 ```
 
 
@@ -105,6 +167,7 @@ class(data) <- "data.frame"
 cnvData <- data[, -c(1,2,3)]
 rownames(cnvData) <- data[, 1]
 sampleGroup  = sample(c("A","B"), ncol(cnvData), replace = TRUE)
+library(cqn) # To avoid reporting errors: there is no function "rq"
 diffCnv <- diff_CNV(cnvData, sampleGroup)
 ```
 
@@ -136,7 +199,7 @@ query <- GDCquery(project = "TCGA-ACC",
 GDCdownload(query, method = "api", files.per.chunk = 5, directory = Your_Path)
 
 data_snp <- GDCprepare(query = query, 
-                   directory =  "Your_Path") 
+                   directory =  Your_Path) 
 
 ```
 

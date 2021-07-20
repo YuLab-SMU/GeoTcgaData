@@ -1,10 +1,10 @@
 Package: GeoTcgaData
 Type: Package
 Title: Processing various types of data on GEO and TCGA
-Version: 1.0.0
+Version: 1.0.0.1
 Authors@R: person(given = "Erqiang", family = "Hu", email = "13766876214@163.com", role  = c("aut", "cre"))
 Description: Gene Expression Omnibus(GEO) and The Cancer Genome Atlas (TCGA) 
-    provide us with a wealth of data, such as RNA-seq, DNA Methylation, 
+    provide us with a wealth of data, such as RNA-seq, DNA Methylation, SNP
     and Copy number variation data. It's easy to download data from TCGA using the 
     gdc tool, but processing these data into a format suitable for bioinformatics 
     analysis requires more work. This R package was developed to handle these data.
@@ -22,9 +22,15 @@ Suggests:
     impute,
     tidyr,
     clusterProfiler,
-    org.Hs.eg.db
+    org.Hs.eg.db,
+    edgeR,
+    limma,
+    cqn,
+    quantreg
 VignetteBuilder: knitr
 Imports: 
     utils,
-    data.table
+    data.table,
+    magrittr,
+    plyr
 Language: en-US
