@@ -46,10 +46,13 @@ diff_RNA <- function(counts, group, method='DESeq2', geneLength = NULL, gcconten
 
     ## use cqn to correct the bias
     correst <- TRUE
+    uCovar <- NULL
     if (is.null(geneLength) || is.null(gccontent)) {
         correst <- FALSE
     } else {
         cqn.subset <- cqn::cqn(counts, lengths = geneLength, x = gccontent)
+        uCovar <- data.frame(length = geneLength, gccontent = gccontent)
+        rownames(uCovar) <- rownames(counts)
     }
 
     if (method == 'DESeq2') {
@@ -65,9 +68,7 @@ diff_RNA <- function(counts, group, method='DESeq2', geneLength = NULL, gcconten
             rename(c("log2FoldChange" = "logFC")) %>% 
             rename(c("pvalue" = "P.Value")) %>% 
             rename(c("padj" = "adj.P.Val"))
-    } else {
-        uCovar <- data.frame(length = geneLength, gccontent = gccontent)
-        rownames(uCovar) <- rownames(counts)
+    } else {       
         d.mont <- edgeR::DGEList(counts = counts, group = group, genes = uCovar)
         if (method == "edgeR") {
             design <- stats::model.matrix(~ group)
