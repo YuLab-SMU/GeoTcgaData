@@ -4,12 +4,14 @@
 \alias{diff_SNP}
 \title{Do difference analysis of SNP data}
 \usage{
-diff_SNP(snpDf, sampleGroup)
+diff_SNP(snpDf, sampleGroup, method = min)
 }
 \arguments{
-\item{snpDf}{data.frame of SNP data}
+\item{snpDf}{data.frame of SNP data.}
 
-\item{sampleGroup}{vector of sample group}
+\item{sampleGroup}{vector of sample group.}
+
+\item{method}{Method of combining the pvalue of multiple snp in a gene.}
 }
 \description{
 Do difference analysis of SNP data

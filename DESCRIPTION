@@ -25,12 +25,12 @@ Suggests:
     org.Hs.eg.db,
     edgeR,
     limma,
-    cqn,
     quantreg
 VignetteBuilder: knitr
 Imports: 
     utils,
     data.table,
     magrittr,
-    plyr
+    plyr,
+    cqn
 Language: en-US

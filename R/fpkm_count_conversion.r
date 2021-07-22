@@ -24,9 +24,9 @@ countToEffCounts <- function(counts, len, effLen)
 # we can't get the real count value.
 fpkmToCount <- function(fpkm, effLen, N=1e9)
 {
-	#rate <- (fpkm * effLen)/10^9
-	rate <- exp(log(fpkm) + log(effLen) - log(1e9))
-	counts <- rate * N
+    #rate <- (fpkm * effLen)/10^9
+    rate <- exp(log(fpkm) + log(effLen) - log(1e9))
+    counts <- rate * N
 }
 
 
@@ -47,13 +47,13 @@ fpkmToCount <- function(fpkm, effLen, N=1e9)
 #' jieguo <- countToFpkm_matrix(lung_squ_count2)
 countToFpkm_matrix <- function(counts_matrix) {
     genes_count <- intersect(rownames(counts_matrix),gene_loc_len[,1])
-	counts_matrix_new <- counts_matrix[genes_count,]
-	gene_loc_len_new <- gene_loc_len[genes_count,]
-	genes_length <- as.numeric(gene_loc_len_new[,4])
-	counts_matrix_new2 <- counts_matrix_new
-	for(i in seq_len(dim(counts_matrix_new2)[2])) {
-	    counts_matrix_new2[,i] <- countToFpkm(as.numeric(counts_matrix_new2[,i]),genes_length)
-	}
+    counts_matrix_new <- counts_matrix[genes_count,]
+    gene_loc_len_new <- gene_loc_len[genes_count,]
+    genes_length <- as.numeric(gene_loc_len_new[,4])
+    counts_matrix_new2 <- counts_matrix_new
+    for(i in seq_len(dim(counts_matrix_new2)[2])) {
+        counts_matrix_new2[,i] <- countToFpkm(as.numeric(counts_matrix_new2[,i]),genes_length)
+    }
     return(counts_matrix_new2)
 }
 
@@ -73,13 +73,13 @@ countToFpkm_matrix <- function(counts_matrix) {
 #' jieguo <- countToTpm_matrix(lung_squ_count2)
 countToTpm_matrix <- function(counts_matrix) {
     genes_count <- intersect(rownames(counts_matrix),gene_loc_len[,1])
-	counts_matrix_new <- counts_matrix[genes_count,]
-	gene_loc_len_new <- gene_loc_len[genes_count,]
-	genes_length <- as.numeric(gene_loc_len_new[,4])
-	counts_matrix_new2 <- counts_matrix_new
-	for(i in seq_len(dim(counts_matrix_new2)[2])) {
-	    counts_matrix_new2[,i] <- countToTpm(as.numeric(counts_matrix_new2[,i]),genes_length)
-	}
+    counts_matrix_new <- counts_matrix[genes_count,]
+    gene_loc_len_new <- gene_loc_len[genes_count,]
+    genes_length <- as.numeric(gene_loc_len_new[,4])
+    counts_matrix_new2 <- counts_matrix_new
+    for(i in seq_len(dim(counts_matrix_new2)[2])) {
+        counts_matrix_new2[,i] <- countToTpm(as.numeric(counts_matrix_new2[,i]),genes_length)
+    }
     return(counts_matrix_new2)
 }
 

@@ -7,6 +7,7 @@
 #' @param gccontent a vector of gene GC content.
 #' @importFrom magrittr %>%
 #' @importFrom plyr rename
+#' @import cqn
 #' @export
 #'
 #' @examples
@@ -43,7 +44,6 @@
 #' }
 diff_RNA <- function(counts, group, method='DESeq2', geneLength = NULL, gccontent = NULL) {
     method <- match.arg(method, c("DESeq2", "edgeR", "limma"))
-
     ## use cqn to correct the bias
     correst <- TRUE
     uCovar <- NULL
@@ -62,7 +62,11 @@ diff_RNA <- function(counts, group, method='DESeq2', geneLength = NULL, gcconten
         if (correst) {
             cqnOffset <- cqn.subset$glm.offset
             cqnNormFactors <- exp(cqnOffset)
-            DESeq2::normalizationFactors(dds) <- cqnNormFactors
+            ## divide out the geometric mean
+            ## https://support.bioconductor.org/p/89239/
+            ## https://support.bioconductor.org/p/95683/
+            normFactors <- cqnNormFactors / exp(rowMeans(log(cqnNormFactors)))
+            DESeq2::normalizationFactors(dds) <- normFactors         
         }
         DEGAll <- DESeq2::DESeq(dds) %>% DESeq2::results() %>% as.data.frame() %>% 
             rename(c("log2FoldChange" = "logFC")) %>% 
@@ -70,15 +74,19 @@ diff_RNA <- function(counts, group, method='DESeq2', geneLength = NULL, gcconten
             rename(c("padj" = "adj.P.Val"))
     } else {       
         d.mont <- edgeR::DGEList(counts = counts, group = group, genes = uCovar)
+        ## TMM Normalization
+        d.mont <- edgeR::calcNormFactors(d.mont)
+        if (correst) {
+            d.mont$offset <- cqn.subset$glm.offset
+        }
         if (method == "edgeR") {
-            design <- stats::model.matrix(~ group)
-            if (correst) {
-                d.mont$offset <- cqn.subset$glm.offset
-            }
+            design <- stats::model.matrix(~ group) 
+            d.mont <- edgeR::estimateDisp(d.mont, design)         
             DEGAll <- edgeR::estimateGLMCommonDisp(d.mont, design = design) %>%
                 edgeR::glmFit(design = design) %>%
                 edgeR::glmLRT(coef = 2) %>%
-                edgeR::topTags(n = nrow(d.mont$counts)) %>%
+                # edgeR::topTags(n = nrow(d.mont$counts)) %>%
+                edgeR::topTags(n = Inf) %>%
                 as.data.frame() %>% 
                 rename(c("FDR" = "adj.P.Val")) %>% 
                 rename(c("PValue" = "P.Value"))
@@ -100,3 +108,6 @@ diff_RNA <- function(counts, group, method='DESeq2', geneLength = NULL, gcconten
     }
     return(DEGAll)
 }
+
+
+

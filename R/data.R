@@ -70,3 +70,14 @@
 # ' @format A matrix with 43547 rows and 52 column
 # '
 "hgnc_file"
+
+
+#' a data.frame of gene length and GC content
+#'
+#'
+#' @format A data.frame with 27341 rows and 2 column
+#'
+"gene_cov"
+
+
+

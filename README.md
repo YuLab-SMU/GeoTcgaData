@@ -68,16 +68,24 @@ dataPrep <- TCGAanalyze_Preprocessing(object = dataRNA,
 
 ```
 
-Use `diff_RNA` to do difference analysis
+Use `diff_RNA` to do difference analysis. We provide the data of human gene length and GC content in `gene_cov`.
 
 ```r
-## Random value is used as gene length and GC content.
-geneLength <- sample(1000:2000, nrow(dataPrep), replace = TRUE)
-names(geneLength) <- colnames(dataPrep)
-gccontent <- runif(nrow(dataPrep))
-names(gccontent) <- colnames(dataPrep)
-## Random value is used as sample group.
 group <- sample(c("grp1", "grp2"), ncol(dataPrep), replace = TRUE)
+library(cqn) # To avoid reporting errors: there is no function "rq"
+## get gene length and GC content
+library(org.Hs.eg.db)
+genes_bitr <- bitr(rownames(gene_cov), fromType = "ENTREZID", toType = "ENSEMBL", 
+         OrgDb = org.Hs.eg.db, drop = TRUE)
+genes_bitr <- genes_bitr[!duplicated(genes_bitr[,2]), ]
+gene_cov2 <- gene_cov[genes_bitr$ENTREZID, ]
+rownames(gene_cov2) <- genes_bitr$ENSEMBL
+genes <- intersect(rownames(dataPrep), rownames(gene_cov))
+dataPrep <- dataPrep[genes, ]
+geneLength <- gene_cov2(genes, "length")
+gccontent <- gene_cov2(genes, "GC")
+names(geneLength) <- names(gccontent) <- genes
+##  Difference analysis
 DEGAll <- diff_RNA(counts = dataPrep, group = group, 
                    geneLength = geneLength, gccontent = gccontent)
 ```
@@ -167,7 +175,6 @@ class(data) <- "data.frame"
 cnvData <- data[, -c(1,2,3)]
 rownames(cnvData) <- data[, 1]
 sampleGroup  = sample(c("A","B"), ncol(cnvData), replace = TRUE)
-library(cqn) # To avoid reporting errors: there is no function "rq"
 diffCnv <- diff_CNV(cnvData, sampleGroup)
 ```
 
@@ -212,6 +219,9 @@ samples <- unique(data_snp$Tumor_Sample_Barcode)
 sampleType <- sample(c("A","B"), length(samples), replace = TRUE)
 names(sampleType) <- samples
 pvalue <- diff_SNP_tcga(snpData = data_snp, sampleType = sampleType)
+# merge pvalue
+
+
 ```
 
 

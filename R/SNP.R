@@ -1,11 +1,12 @@
 #' Do difference analysis of SNP data
 #'
-#' @param snpDf data.frame of SNP data
-#' @param sampleGroup vector of sample group
+#' @param snpDf data.frame of SNP data.
+#' @param sampleGroup vector of sample group.
+#' @param method Method of combining the pvalue of multiple snp in a gene.
 #' @export
 #'
 #' @examples
-diff_SNP <- function(snpDf, sampleGroup) {
+diff_SNP <- function(snpDf, sampleGroup, method = min) {
     snpDf[!is.na(snpDf)] <- "mutation"
     snpDf[is.na(snpDf)] <- "wild"
     sampleGroup <- sampleGroup[!is.na(sampleGroup)]
@@ -20,6 +21,7 @@ diff_SNP <- function(snpDf, sampleGroup) {
         df[is.na(df)] <- 0
         pvalue[i] <- stats::fisher.test(df)$p.value
     }
+    pvalue <- stats::aggregate(pvalue, by = list(names(pvalue)), FUN = method)
     return(pvalue)
 }
 
