@@ -341,6 +341,7 @@ tcga_cli <- tcga_cli_deal(system.file(file.path("extdata","tcga_cli"),package="G
 
 ```r
 library(TCGAbiolinks)
+## get BCR Biotab data
 query <- GDCquery(project = "TCGA-ACC", 
                   data.category = "Clinical",
                   data.type = "Clinical Supplement", 
@@ -348,5 +349,8 @@ query <- GDCquery(project = "TCGA-ACC",
 GDCdownload(query)
 clinical.BCRtab.all <- GDCprepare(query)
 names(clinical.BCRtab.all)
+
+## get indexed data
+clinical <- GDCquery_clinic(project = "TCGA-ACC", type = "clinical")
 ```
 

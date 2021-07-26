@@ -42,7 +42,7 @@
 #' DEGAll <- diff_RNA(counts = dataPrep, group = group, 
 #'                    geneLength = geneLength, gccontent = gccontent)
 #' }
-diff_RNA <- function(counts, group, method='DESeq2', geneLength = NULL, gccontent = NULL) {
+diff_RNA <- function(counts, group, method='limma', geneLength = NULL, gccontent = NULL) {
     method <- match.arg(method, c("DESeq2", "edgeR", "limma"))
     ## use cqn to correct the bias
     correst <- TRUE
@@ -74,13 +74,18 @@ diff_RNA <- function(counts, group, method='DESeq2', geneLength = NULL, gcconten
             rename(c("padj" = "adj.P.Val"))
     } else {       
         d.mont <- edgeR::DGEList(counts = counts, group = group, genes = uCovar)
-        ## TMM Normalization
-        d.mont <- edgeR::calcNormFactors(d.mont)
+
         if (correst) {
+            ## with cqn, there is no need to normalize using the normalization tools
+            ## from edgeR, such as calcNormFactors. 
             d.mont$offset <- cqn.subset$glm.offset
+        } else {
+            ## TMM Normalization
+            d.mont <- edgeR::calcNormFactors(d.mont)
         }
         if (method == "edgeR") {
-            design <- stats::model.matrix(~ group) 
+            # design <- stats::model.matrix(~ group) 
+            design <- stats::model.matrix(~ d.mont$sample$group) 
             d.mont <- edgeR::estimateDisp(d.mont, design)         
             DEGAll <- edgeR::estimateGLMCommonDisp(d.mont, design = design) %>%
                 edgeR::glmFit(design = design) %>%
