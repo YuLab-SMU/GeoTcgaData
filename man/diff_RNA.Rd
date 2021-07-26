@@ -4,7 +4,7 @@
 \alias{diff_RNA}
 \title{Do difference analysis of RNA-seq data}
 \usage{
-diff_RNA(counts, group, method = "DESeq2", geneLength = NULL, gccontent = NULL)
+diff_RNA(counts, group, method = "limma", geneLength = NULL, gccontent = NULL)
 }
 \arguments{
 \item{counts}{a dataframe or numeric matrix of raw counts data}
