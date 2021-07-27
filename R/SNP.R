@@ -4,8 +4,6 @@
 #' @param sampleGroup vector of sample group.
 #' @param method Method of combining the pvalue of multiple snp in a gene.
 #' @export
-#'
-#' @examples
 diff_SNP <- function(snpDf, sampleGroup, method = min) {
     snpDf[!is.na(snpDf)] <- "mutation"
     snpDf[is.na(snpDf)] <- "wild"

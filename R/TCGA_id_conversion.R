@@ -7,9 +7,11 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library(org.Hs.eg.db)
 #' profile <- GeoTcgaData::profile
 #' result <- id_conversion(profile)
+#' }
 id_conversion<-function(profiles, toType = "SYMBOL"){  
     # rownames(profiles) <- unlist(lapply(rownames(profiles), function(x) unlist(strsplit(x,"\\."))[1]))
     # file3 <- hgnc

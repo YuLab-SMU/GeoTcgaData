@@ -6,7 +6,14 @@
 GeoTcgaDataStartupMessage <- function()
 {
 
- msg <- "Hello, friend! welcome to use!"
+  # msg <- "Hello, friend! welcome to use!"
+    msg <- paste0(
+        " =============================================================\n",
+        " Hello, friend! welcome to use GeoTcgaData!                   \n",
+        " -------------------------------------------------------------\n",
+        " Version:",utils::packageVersion("GeoTcgaData"),"\n",
+        " =============================================================\n"
+    )
   return(msg)
 }
 

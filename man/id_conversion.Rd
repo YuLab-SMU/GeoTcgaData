@@ -18,7 +18,9 @@ a data.frame, gene symbols and their expression value
 Convert  ENSEMBL gene id to gene Symbol in TCGA
 }
 \examples{
+\dontrun{
 library(org.Hs.eg.db)
 profile <- GeoTcgaData::profile
 result <- id_conversion(profile)
+}
 }

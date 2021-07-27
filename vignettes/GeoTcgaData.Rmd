@@ -56,7 +56,7 @@ It is convenient to use [`TCGAbiolinks`](http://www.bioconductor.org/packages/re
 
 However, unlike the chip data, the RNA-seq data had one [bias](https://pubmed.ncbi.nlm.nih.gov/20132535/): the longer the gene, the more likely it was to be  identified as a differential gene, [while there was no such trend in the chip data](https://pubmed.ncbi.nlm.nih.gov/19371405/).  This is because in RNA-seq data a long gene has more reads mapping to it compared to a short gene of similar expression,  and most of the statistical methods used to detect differential expression  have stronger detection ability for genes with more reads. Therefore, we need to correct the gene length bias in downstream analysis  such as enrichment analysis.
 
-[GOseq]([ https://bioconductor.org/packages/goseq/](http://bioconductor.org/packages/goseq/)) based on [Wallenius' noncentral hypergeometric distribution](https://en.wikipedia.org/wiki/Wallenius%27_noncentral_hypergeometric_distribution) can effectively correct the gene length deviation in enrichment analysis. However, its algorithm can not directly correct the deviation of the expression profile, and its results can not be used for GSEA enrichment analysis. [CQN]([https://bioconductor.org/packages/cqn/](http://www.bioconductor.org/packages/cqn/)) present a [normalization algorithm](https://pubmed.ncbi.nlm.nih.gov/22285995/) to correct systematic biases(gene length bias and [GC-content bias](https://pubmed.ncbi.nlm.nih.gov/22177264/)), whose result can be seamlessly docked with downstream difference analysis  software such as  DESeq2 and edgeR. 
+[GOseq](http://bioconductor.org/packages/goseq/) based on [Wallenius' noncentral hypergeometric distribution](https://en.wikipedia.org/wiki/Wallenius%27_noncentral_hypergeometric_distribution) can effectively correct the gene length deviation in enrichment analysis. However, its algorithm can not directly correct the deviation of the expression profile, and its results can not be used for GSEA enrichment analysis. [CQN](http://www.bioconductor.org/packages/cqn/) present a [normalization algorithm](https://pubmed.ncbi.nlm.nih.gov/22285995/) to correct systematic biases(gene length bias and [GC-content bias](https://pubmed.ncbi.nlm.nih.gov/22177264/)), whose result can be seamlessly docked with downstream difference analysis  software such as  DESeq2 and edgeR. 
 
 Here we use `TCGAbiolinks` to download RNA-seq data, use `CQN` to correct gene  length bias and GC content bias, and then use `DESeq2` for difference  analysis.
 
@@ -264,7 +264,7 @@ When the user converts the Ensembl ID to other ids, the version number needs to 
 
 Especially, the function `id_conversion` could convert  ENSEMBL gene id to gene Symbol in TCGA. For example:
 
-```{r}
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
 profile <- GeoTcgaData::profile
 result <- id_conversion(profile)
 ```
