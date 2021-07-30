@@ -30,7 +30,8 @@
 #'                                       cor.cut = 0.6,
 #'                                       datatype = "HTSeq - Counts")
 #' 
-#' # Use `diff_RNA` to do difference analysis. We provide the data of human gene length and GC content in `gene_cov`.
+#' # Use `diff_RNA` to do difference analysis. 
+#' # We provide the data of human gene length and GC content in `gene_cov`.
 #' group <- sample(c("grp1", "grp2"), ncol(dataPrep), replace = TRUE)
 #' library(cqn) # To avoid reporting errors: there is no function "rq"
 #' ## get gene length and GC content

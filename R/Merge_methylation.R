@@ -73,7 +73,7 @@ get_methy_df <- function(filePath) {
 #' @param combineMethod method to combine the cpg pvalues
 #' @export
 methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rhoScores) {
-    if (is.list(cpgData)) {
+    if (class(cpgData) == "list") {
         cpgData <- cpgData[[1]]
     }
     # Use KNN to fill in missing values
