@@ -30,7 +30,7 @@ if(!requireNamespace("devtools", quietly = TRUE))
 devtools::install_github("huerqiang/GeoTcgaData")
 ```
 
-GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation,   single nucleotide Variation and Copy number variation data. It's easy to download data from TCGA using the  gdc tool or `TCGAbiolinks`, but processing these data into a format suitable for bioinformatics  analysis requires more work. This R package was developed to handle these data.
+GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation,   single nucleotide Variation and Copy number variation data. It's easy to download data from TCGA using the  gdc tool or `TCGAbiolinks`,  and some software provides organized TCGA data, such as [UCSC Xena](http://xena.ucsc.edu/)，but processing these data into a format suitable for bioinformatics  analysis requires more work. This R package was developed to handle these data.
 
 ## Example
 
@@ -82,8 +82,8 @@ gene_cov2 <- gene_cov[genes_bitr$ENTREZID, ]
 rownames(gene_cov2) <- genes_bitr$ENSEMBL
 genes <- intersect(rownames(dataPrep), rownames(gene_cov))
 dataPrep <- dataPrep[genes, ]
-geneLength <- gene_cov2(genes, "length")
-gccontent <- gene_cov2(genes, "GC")
+geneLength <- gene_cov2[genes, "length"]
+gccontent <- gene_cov2[genes, "GC"]
 names(geneLength) <- names(gccontent) <- genes
 ##  Difference analysis
 DEGAll <- diff_RNA(counts = dataPrep, group = group, 

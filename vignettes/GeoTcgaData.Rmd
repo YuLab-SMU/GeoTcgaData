@@ -38,8 +38,7 @@ devtools::install_github("huerqiang/GeoTcgaData")
 
 
 ## Introduction
-GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation,  single nucleotide Variation and Copy number variation data. It's easy to download data from TCGA using the  gdc tool or `TCGAbiolinks`, but processing these data into a format suitable for bioinformatics  analysis requires more work. This R package was developed to handle these data.
-
+GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation, single nucleotide Variation and Copy number variation data. It's easy to download data from TCGA using the  gdc tool or `TCGAbiolinks`, and some software provides organized TCGA data, such as [UCSC Xena](http://xena.ucsc.edu/)，but processing these data into a format suitable for bioinformatics  analysis requires more work. This R package was developed to handle these data.
 
 ```{r}
 library(GeoTcgaData)
@@ -83,17 +82,24 @@ dataPrep <- TCGAanalyze_Preprocessing(object = dataRNA,
 
 ```
 
-Use `diff_RNA` to do difference analysis
+Use `diff_RNA` to do difference analysis. We provide the data of human gene length and GC content in `gene_cov`.
 
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
-## Random value is used as gene length and GC content.
-geneLength <- sample(1000:2000, nrow(dataPrep), replace = TRUE)
-names(geneLength) <- colnames(dataPrep)
-gccontent <- runif(nrow(dataPrep))
-names(gccontent) <- colnames(dataPrep)
-## Random value is used as sample group.
 group <- sample(c("grp1", "grp2"), ncol(dataPrep), replace = TRUE)
 library(cqn) # To avoid reporting errors: there is no function "rq"
+## get gene length and GC content
+library(org.Hs.eg.db)
+genes_bitr <- bitr(rownames(gene_cov), fromType = "ENTREZID", toType = "ENSEMBL", 
+         OrgDb = org.Hs.eg.db, drop = TRUE)
+genes_bitr <- genes_bitr[!duplicated(genes_bitr[,2]), ]
+gene_cov2 <- gene_cov[genes_bitr$ENTREZID, ]
+rownames(gene_cov2) <- genes_bitr$ENSEMBL
+genes <- intersect(rownames(dataPrep), rownames(gene_cov))
+dataPrep <- dataPrep[genes, ]
+geneLength <- gene_cov2[genes, "length"]
+gccontent <- gene_cov2[genes, "GC"]
+names(geneLength) <- names(gccontent) <- genes
+##  Difference analysis
 DEGAll <- diff_RNA(counts = dataPrep, group = group, 
                    geneLength = geneLength, gccontent = gccontent)
 ```
@@ -302,5 +308,19 @@ jieguo <- countToTpm_matrix(lung_squ_count2)
 tcga_cli <- tcga_cli_deal(system.file(file.path("extdata","tcga_cli"),package="GeoTcgaData"))
 ```
 
+**Note:** Now the combined clinical data can be downloaded directly from [TCGAbiolinks](http://www.bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/clinical.html).
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
+library(TCGAbiolinks)
+## get BCR Biotab data
+query <- GDCquery(project = "TCGA-ACC", 
+                  data.category = "Clinical",
+                  data.type = "Clinical Supplement", 
+                  data.format = "BCR Biotab")
+GDCdownload(query)
+clinical.BCRtab.all <- GDCprepare(query)
+names(clinical.BCRtab.all)
 
+## get indexed data
+clinical <- GDCquery_clinic(project = "TCGA-ACC", type = "clinical")
+```
 
