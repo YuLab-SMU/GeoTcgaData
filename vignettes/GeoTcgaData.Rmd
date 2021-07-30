@@ -94,7 +94,7 @@ genes_bitr <- bitr(rownames(gene_cov), fromType = "ENTREZID", toType = "ENSEMBL"
 genes_bitr <- genes_bitr[!duplicated(genes_bitr[,2]), ]
 gene_cov2 <- gene_cov[genes_bitr$ENTREZID, ]
 rownames(gene_cov2) <- genes_bitr$ENSEMBL
-genes <- intersect(rownames(dataPrep), rownames(gene_cov))
+genes <- intersect(rownames(dataPrep), rownames(gene_cov2))
 dataPrep <- dataPrep[genes, ]
 geneLength <- gene_cov2[genes, "length"]
 gccontent <- gene_cov2[genes, "GC"]
