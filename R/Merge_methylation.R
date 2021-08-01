@@ -76,6 +76,7 @@ methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rh
     if (class(cpgData) == "list") {
         cpgData <- cpgData[[1]]
     }
+    cpgData <- as.matrix(cpgData)
     # Use KNN to fill in missing values
     data.m <- quiet(impute::impute.knn(cpgData)$data)
     # normalize data
