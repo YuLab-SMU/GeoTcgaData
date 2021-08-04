@@ -127,7 +127,7 @@ Then use `ChAMP` package to do difference analysis.
 ```r
 if (!requireNamespace("ChAMP", quietly = TRUE))
     BiocManager::install("ChAMP")
-library(ChAMP)
+library(ChAMP) # To avoid reporting errors
 diff_gene <- methyDiff(cpgData = merge_result, sampleGroup = sample(c("C","T"), 
     ncol(merge_result[[1]]), replace = TRUE))
 ```

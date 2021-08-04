@@ -11,16 +11,21 @@ diff_SNP <- function(snpDf, sampleGroup, method = min) {
     type1 <- which(sampleGroup == names(table(sampleGroup))[1])
     type2 <- which(sampleGroup == names(table(sampleGroup))[2])
     pvalue <- rep(0, nrow(snpDf))
+    estimate <- rep(0, nrow(snpDf))
     for(i in seq_len(nrow(snpDf))) {
         type1_freq <- table(as.character(snpDf[i, type1]))
         type2_freq <- table(as.character(snpDf[i, type2]))
         df <- data.frame(type1 = as.numeric(type1_freq[c("wild", "mutation")]),
                          type2 = as.numeric(type2_freq[c("wild", "mutation")]))
         df[is.na(df)] <- 0
-        pvalue[i] <- stats::fisher.test(df)$p.value
+        fish <- stats::fisher.test(df)
+        pvalue[i] <- fish$p.value
+        estimate[i] <- fish$estimate
     }
+    names(pvalue) <- names(estimate) <- sub("_.*", "", rownames(snpDf))
     pvalue <- stats::aggregate(pvalue, by = list(names(pvalue)), FUN = method)
-    return(pvalue)
+    estimate <- stats::aggregate(estimate, by = list(names(estimate)), FUN = mean)
+    return(data.frame(gene = pvalue[,1],  pvalue = pvalue[, 2], estimate = estimate[, 2]))
 }
 
 #' Do difference analysis of SNP data downloaded from TCGAbiolinks
@@ -59,6 +64,5 @@ diff_SNP_tcga <- function(snpData, sampleType) {
     rownames(snpData) <- snpData$snp
     snpData <- snpData[, -1]
     pvalue <- diff_SNP(snpDf = snpData, sampleGroup = sampleType)
-    names(pvalue) <- gsub("_.*", "", rownames(snpData))
     return(pvalue)
 }

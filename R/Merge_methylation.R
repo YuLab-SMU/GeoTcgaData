@@ -89,7 +89,16 @@ methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rh
     pvalues <- pvalues[pvalues[, 1] != "", ]
     gene_pvalue <- stats::aggregate(pvalues[, 2], by = list(pvalues[, 1]),
         FUN = combineMethod)
-    colnames(gene_pvalue) <- c("gene", "pvalue")
+    # get logFC of genes
+    myNorm2 <- myNorm[rownames(myDMP), ]
+    myNorm2 <- stats::aggregate(myNorm2, by = list(myDMP[, 14]), FUN = mean)
+    myNorm2 <- myNorm2[myNorm2[, 1] != "", ]
+    rownames(myNorm2) <- myNorm2[, 1]
+    myNorm2 <- myNorm2[, -1]
+    groups <- sort(unique(sampleGroup))
+    logFC <- rowMeans(myNorm2[, sampleGroup == groups[1]]) - rowMeans(myNorm2[, sampleGroup == groups[2]])
+    gene_pvalue$logFC <- logFC[gene_pvalue[, 1]]
+    colnames(gene_pvalue) <- c("gene", "pvalue", "logFC")
     return(gene_pvalue)
 }
 
