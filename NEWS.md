@@ -1,3 +1,7 @@
+# GeoTcgaData 1.0.2
+
++ update hgnc_file data(2021-10-24, Sun)
+
 # GeoTcgaData 1.0.0.1
 
 + add function `diff_RNA` to do difference analysis of RNA-seq data(2021-7-20, Tue)

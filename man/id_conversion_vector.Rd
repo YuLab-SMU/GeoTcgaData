@@ -22,5 +22,6 @@ a vector of genes
 Gene id conversion
 }
 \examples{
-id_conversion_vector("symbol","Ensembl_ID",c("A2ML1","A2ML1-AS1","A4GALT","A12M1","AAAS"))
+id_conversion_vector("symbol", "Ensembl_ID", 
+    c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS"))
 }
