@@ -112,3 +112,123 @@ quiet <- function(x) {
   on.exit(sink())
   invisible(force(x))
 }
+
+
+#' Title
+#'
+#' @param methy data.frame of the methylation data, which can be downloaded from UCSC Xena.
+#' @param cpg_gene data.frame, the first coloumn is cpg id, the second coloumn is gene id.
+#' @param group a vector of "0" and "1" for group of samples. If null, the samples were divided into two groups: disease and normal.
+#' @param missing_value Method to  impute missing expression data, one of "zero" and "knn".
+#' @importFrom dplyr `%>%`
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' methy_file <- "TCGA.THCA.sampleMap_HumanMethylation450.gz"
+#' methy <- data.table::fread(methy_file, sep = "\t", header = T)
+#' library(ChAMP)
+#' myImport <- champ.import(directory=system.file("extdata",package="ChAMPdata"))
+#' myfilter <- champ.filter(beta=myImport$beta,pd=myImport$pd,
+#'     detP=myImport$detP,beadcount=myImport$beadcount)
+#' cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
+#' methyDiff_ucsc <- methyDiff_df(methy, cpg_gene)
+#' }
+methyDiff_ucsc <- function(methy, cpg_gene, group = NULL, missing_value = "knn") {
+    class(methy) <- "data.frame"
+    rownames(methy) <- methy[, 1]
+    cpgs <- rownames(methy)
+    methy <- methy[, -1]
+    # dada <- substr(colnames(methy), 1, 12)
+    # gaga <- table(dada)
+    # co_group <- names(gaga[gaga > 1])
+    # methy <- methy[, which(dada %in% co_group)]
+ 
+    if (is.null(group)) {
+        group <- lapply(colnames(methy), function(x) {
+            strsplit(x, "-")[[1]][4]}) %>% unlist()
+    
+        group <- substring(group, 1,1)
+    } 
+    if (missing_value == "zero") {
+        methy[is.na(methy)] <- 0
+    } else {
+        methy <- quiet(impute::impute.knn(as.matrix(methy))$data)
+    }
+    # rownames(methy) <- cpgs
+    # methy_normal <- methy[, group == "1"]
+    # methy_disease <- methy[, group == "0"]
+    # # colnames(methy_disease) <- sapply(colnames(methy_disease), function(x) {
+    # #     y <- strsplit(x, "-")[[1]][1:3]
+    # #     paste(y, collapse = "-")
+    # # })
+    # # colnames(methy_disease) <- gsub("TCGA-", "", colnames(methy_disease))
+
+    
+    #  # To avoid reporting errors
+    # merge_result <- cbind(methy_disease, methy_normal)
+    merge_result <- as.data.frame(methy)
+    merge_result$gene <- cpg_gene[rownames(merge_result), 2]
+    merge_result <- merge_result[, c(ncol(merge_result), 1:(ncol(merge_result)-1))]
+
+    merge_result <- merge_result[!is.na(merge_result$gene), ]
+
+
+    merge_result$gene <- as.character(merge_result$gene)
+    merge_result2 <- rep1(merge_result, ";")
+
+    merge_result3 <- gene_ave(merge_result2)
+
+    ## id conversion
+    # haha <- id_conversion_vector("symbol", "entrez_id", rownames(merge_result3))
+    # haha2 <- as.matrix(haha)
+    # rownames(haha2) <- haha2[, 1]
+    # merge_result3 <- merge_result3[haha2[, 1], ]
+    # merge_result3 <- as.matrix(merge_result3)
+    # rownames(merge_result3) <- gsub(" ", "", haha2[, 2])
+    # merge_result3 <- merge_result3[!duplicated(rownames(merge_result3)), ]
+    # merge_result3 <- merge_result3[!is.na(rownames(merge_result3)), ]
+    ## use limma to do differential expression analysis
+    methyDiff_limma(merge_result3, group = group)
+    # group <- factor(group)
+    # design <- model.matrix(~0 + group)
+    # colnames(design) <- levels(group)
+    # contrast.matrix <- makeContrasts(normal - cancer,
+    #                                  levels=design)
+
+    # fit <- lmFit(merge_result3, design)
+    # fit2 <- contrasts.fit(fit, contrast.matrix)
+    # fit2 <- eBayes(fit2)
+    # topTable(fit2,adjust='fdr',coef=1,number=Inf)
+}
+#' methyDiff_limma
+#'
+#' @param df data.frame of the methylation data, which can be downloaded from UCSC Xena.
+#' @param group a vector, group of samples.
+#' @export
+methyDiff_limma <- function(df, group) {
+    groups <- unique(group)
+    # if group is a numberic vector(even for c("0", "1")), will get errors.
+    group <- gsub(groups[1], "nromal", group)
+    group <- gsub(groups[2], "disease", group)
+    design <- stats::model.matrix(~0 + factor(group))
+    colnames(design) <- levels(factor(group))
+    contrast.matrix <- limma::makeContrasts(contrasts = paste(colnames(design)[2:1], 
+            collapse = "-"), levels = colnames(design))
+
+    fit <- limma::lmFit(df, design)
+    fit <- limma::contrasts.fit(fit, contrast.matrix)
+    fit <- limma::eBayes(fit)
+    limma::topTable(fit, adjust='BH', number=Inf)  
+
+    ## contrasts.fit is not necessory
+    # groups <- unique(group)
+    # group <- gsub(groups[1], "nromal", group)
+    # group <- gsub(groups[2], "disease", group)
+    # design <- stats::model.matrix(~factor(group))
+ 
+    # fit2 <- lmFit(df, design)
+    # fit2 <- eBayes(fit2)
+    # topTable(fit2,coef=2, adjust='BH') 
+}
+    

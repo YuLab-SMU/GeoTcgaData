@@ -1,3 +1,8 @@
+# GeoTcgaData 1.0.3
+
++ add function `methyDiff_ucsc` and `methyDiff_limma`(2021-10-24, Sun)
+
+
 # GeoTcgaData 1.0.2
 
 + update hgnc_file data(2021-10-24, Sun)
