@@ -132,7 +132,7 @@ quiet <- function(x) {
 #' myfilter <- champ.filter(beta=myImport$beta,pd=myImport$pd,
 #'     detP=myImport$detP,beadcount=myImport$beadcount)
 #' cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
-#' methyDiff_ucsc <- methyDiff_df(methy, cpg_gene)
+#' result <- methyDiff_ucsc(methy, cpg_gene)
 #' }
 methyDiff_ucsc <- function(methy, cpg_gene, group = NULL, missing_value = "knn") {
     class(methy) <- "data.frame"
@@ -220,7 +220,7 @@ methyDiff_limma <- function(df, group) {
     fit <- limma::contrasts.fit(fit, contrast.matrix)
     fit <- limma::eBayes(fit)
     limma::topTable(fit, adjust='BH', number=Inf)  
-
+    ## or limma::topTable(fit, coef = 1, adjust='BH', number=Inf) 
     ## contrasts.fit is not necessory
     # groups <- unique(group)
     # group <- gsub(groups[1], "nromal", group)
@@ -229,6 +229,9 @@ methyDiff_limma <- function(df, group) {
  
     # fit2 <- lmFit(df, design)
     # fit2 <- eBayes(fit2)
-    # topTable(fit2,coef=2, adjust='BH') 
+    # topTable(fit2,coef=2, adjust='BH', number=Inf) 
+
+    ## coef parameter is not necessory：
+    # opTable(fit2, adjust='BH', number=Inf) 
 }
     

@@ -139,13 +139,19 @@ diff_gene <- methyDiff(cpgData = merge_result, sampleGroup = sample(c("C","T"),
 If your methylation data was downloaded from [UCSC Xena](http://xena.ucsc.edu/), you can use `methyDiff_ucsc` to get differential genes.
 
 ```r
-#' methy_file <- "TCGA.THCA.sampleMap_HumanMethylation450.gz"
-#' methy <- fread(methy_file, sep = "\t", header = T)
-#' library(ChAMP)
-#' myImport <- champ.import(directory=system.file("extdata",package="ChAMPdata"))
-#' myfilter <- champ.filter(beta=myImport$beta,pd=myImport$pd,detP=myImport$detP,beadcount=myImport$beadcount)
-#' cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
-#' methy_df <- methyDiff_ucsc(methy, cpg_gene)
+methy_file <- "TCGA.THCA.sampleMap_HumanMethylation450.gz"
+methy <- fread(methy_file, sep = "\t", header = T)
+library(ChAMP)
+myImport <- champ.import(directory=system.file("extdata",package="ChAMPdata"))
+myfilter <- champ.filter(beta=myImport$beta,pd=myImport$pd,detP=myImport$detP,beadcount=myImport$beadcount)
+cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
+## or use IlluminaHumanMethylation450kanno.ilmn12.hg19 to get annotation data
+# library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+# ann <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+# class(ann) <- "data.frame"
+# cpg_gene <- ann[,c("Name", "UCSC_RefGene_Name", "UCSC_RefGene_Group")]
+
+methy_df <- methyDiff_ucsc(methy, cpg_gene)
 ```
 
 

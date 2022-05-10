@@ -35,8 +35,8 @@ diff_CNV <- function(cnvData, sampleGroup) {
                          type2 = as.numeric(type2_freq[c("-1", "0", "1")]))
         df[is.na(df)] <- 0
         # rownames(df) <- c("-1", "0", "1")
-        df[2, ] <- df[3, ] + df[2, ]
-        df <- df[-3, ]
+        # df[2, ] <- df[3, ] + df[2, ]
+        # df <- df[-3, ]
         fish <- stats::fisher.test(df)
         pvalue[i] <- fish$p.value
         estimate[i] <- fish$estimate

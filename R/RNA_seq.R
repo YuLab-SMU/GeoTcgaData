@@ -125,7 +125,7 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL, gccontent
                 limma::lmFit(design) %>%
                 limma::contrasts.fit(contrast.matrix) %>%
                 limma::eBayes() %>%
-                limma::topTable(coef=1, n = Inf)
+                limma::topTable(n = Inf)
         }
     }
     return(DEGAll)
