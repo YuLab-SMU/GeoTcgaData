@@ -37,7 +37,7 @@ diff_CNV <- function(cnvData, sampleGroup) {
         # rownames(df) <- c("-1", "0", "1")
         # df[2, ] <- df[3, ] + df[2, ]
         # df <- df[-3, ]
-        fish <- stats::fisher.test(df)
+        fish <- stats::fisher.test(df, simulate.p.value = TRUE)
         pvalue[i] <- fish$p.value
         estimate[i] <- fish$estimate
     }
