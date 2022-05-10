@@ -2,6 +2,7 @@
 #'
 #' @param cnvData data.frame of CNV data
 #' @param sampleGroup vector of sample group
+#' @param ... parameters for fisher.test
 #' @export
 #'
 #' @examples
@@ -23,7 +24,7 @@
 #' sampleGroup  = sample(c("A","B"), ncol(cnvData), replace = TRUE)
 #' diffCnv <- diff_CNV(cnvData, sampleGroup)
 #' }
-diff_CNV <- function(cnvData, sampleGroup) {
+diff_CNV <- function(cnvData, sampleGroup, ...) {
     type1 <- which(sampleGroup == names(table(sampleGroup))[1])
     type2 <- which(sampleGroup == names(table(sampleGroup))[2])
     pvalue <- rep(0, nrow(cnvData))
@@ -37,7 +38,7 @@ diff_CNV <- function(cnvData, sampleGroup) {
         # rownames(df) <- c("-1", "0", "1")
         # df[2, ] <- df[3, ] + df[2, ]
         # df <- df[-3, ]
-        fish <- stats::fisher.test(df, simulate.p.value = TRUE)
+        fish <- stats::fisher.test(df, ...)
         pvalue[i] <- fish$p.value
         estimate[i] <- fish$estimate
     }

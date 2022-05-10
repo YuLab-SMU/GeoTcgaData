@@ -4,12 +4,14 @@
 \alias{diff_CNV}
 \title{Do difference analysis of gene level copy number variation data}
 \usage{
-diff_CNV(cnvData, sampleGroup)
+diff_CNV(cnvData, sampleGroup, ...)
 }
 \arguments{
 \item{cnvData}{data.frame of CNV data}
 
 \item{sampleGroup}{vector of sample group}
+
+\item{...}{parameters for fisher.test}
 }
 \description{
 Do difference analysis of gene level copy number variation data
