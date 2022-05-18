@@ -5,6 +5,7 @@
 #' @param method one of "DESeq2", "edgeR" and "limma".
 #' @param geneLength a vector of gene length.
 #' @param gccontent a vector of gene GC content.
+#' @param filter if TRUE, use filterByExpr to filter genes.
 #' @importFrom magrittr %>%
 #' @importFrom plyr rename
 #' @import cqn
@@ -18,7 +19,7 @@
 #' query <- GDCquery(project = "TCGA-ACC",
 #'                   data.category = "Transcriptome Profiling",
 #'                   data.type = "Gene Expression Quantification", 
-#'                   workflow.type = "HTSeq - Counts")
+#'                   workflow.type = "STAR - Counts")
 #'                   
 #' GDCdownload(query, method = "api", files.per.chunk = 3, 
 #'     directory = Your_Path)
@@ -28,7 +29,7 @@
 #' ## get raw count matrix                         
 #' dataPrep <- TCGAanalyze_Preprocessing(object = dataRNA,
 #'                                       cor.cut = 0.6,
-#'                                       datatype = "HTSeq - Counts")
+#'                                       datatype = "STAR - Counts")
 #' 
 #' # Use `diff_RNA` to do difference analysis. 
 #' # We provide the data of human gene length and GC content in `gene_cov`.
@@ -41,7 +42,7 @@
 #' genes_bitr <- genes_bitr[!duplicated(genes_bitr[,2]), ]
 #' gene_cov2 <- gene_cov[genes_bitr$ENTREZID, ]
 #' rownames(gene_cov2) <- genes_bitr$ENSEMBL
-#' genes <- intersect(rownames(dataPrep), rownames(gene_cov))
+#' genes <- intersect(rownames(dataPrep), rownames(gene_cov2))
 #' dataPrep <- dataPrep[genes, ]
 #' geneLength <- gene_cov2(genes, "length")
 #' gccontent <- gene_cov2(genes, "GC")
@@ -59,19 +60,31 @@
 #' gsego <- gseGO(gene = diffGenes, OrgDb = org.Hs.eg.db, keyType = "ENSEMBL")
 #' dotplot(gsego)                   
 #' }
-diff_RNA <- function(counts, group, method='limma', geneLength = NULL, gccontent = NULL) {
+diff_RNA <- function(counts, group, method='limma', geneLength = NULL, gccontent = NULL, filter = TRUE) {
+
     method <- match.arg(method, c("DESeq2", "edgeR", "limma"))
     ## use cqn to correct the bias
     correst <- TRUE
     uCovar <- NULL
     if (is.null(geneLength) || is.null(gccontent)) {
         correst <- FALSE
-    } else {
-        cqn.subset <- cqn::cqn(counts, lengths = geneLength, x = gccontent)
-        uCovar <- data.frame(length = geneLength, gccontent = gccontent)
-        rownames(uCovar) <- rownames(counts)
+    } else {     
+        genes_gc <- intersect(names(geneLength), names(gccontent))
+        uCovar <- data.frame(length = geneLength[genes_gc], gccontent = gccontent[genes_gc])      
+        rownames(uCovar) <- genes_gc
+        counts <- counts[genes_gc, ]
     }
-
+    d.mont <- edgeR::DGEList(counts = counts, group = group, genes = uCovar)
+    if (filter) {      
+        keep <- edgeR::filterByExpr(d.mont)
+        d.mont <- d.mont[keep, keep.lib.sizes=FALSE]
+        counts <- counts[keep, ]   
+    }
+    geneLength <- geneLength[rownames(counts)]   
+    gccontent <- gccontent[rownames(counts)]
+    if(correst) {
+        cqn.subset <- cqn::cqn(counts, lengths = geneLength, x = gccontent)
+    }
     if (method == 'DESeq2') {
         coldata <- data.frame(group)
         dds <- DESeq2::DESeqDataSetFromMatrix(countData = counts,
@@ -89,8 +102,10 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL, gccontent
             rename(c("log2FoldChange" = "logFC")) %>% 
             rename(c("pvalue" = "P.Value")) %>% 
             rename(c("padj" = "adj.P.Val"))
+        DEGAll$length <- geneLength[rownames(DEGAll)]
+        DEGAll$gccontent <- gccontent[rownames(DEGAll)]
+        DEGAll <- DEGAll[, c(ncol(DEGAll)-1, ncol(DEGAll), 1:(ncol(DEGAll)- 2))]
     } else {       
-        d.mont <- edgeR::DGEList(counts = counts, group = group, genes = uCovar)
 
         if (correst) {
             ## with cqn, there is no need to normalize using the normalization tools
@@ -128,8 +143,28 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL, gccontent
                 limma::topTable(n = Inf)
         }
     }
+    DEGAll <- DEGAll[!is.na(DEGAll[, "P.Value"]), ]
     return(DEGAll)
 }
 
+#' Do difference analysis of RNA-seq data downloaded from ucsc
+#'
+#' @param ucscfile a dataframe or numeric matrix of ucsc RNA-seq data
+#' @param ... additional parameters
+#' @export
+#'
+#' @examples
 
-
+#' \dontrun{
+#' ucscfile <- data.table::fread("TCGA-BRCA.htseq_counts.tsv.gz")
+#' group <- sample(c("grp1", "grp2"), ncol(ucscfile) - 1, replace = TRUE)
+#' result <- diff_RNA_ucsc(ucscfile, group = group)
+#' }
+diff_RNA_ucsc <- function(ucscfile, ...) {
+    class(ucsc) <- "data.frame"
+    ucsc[, 1] <- gsub("\\..*", "", ucsc[, 1])
+    rownames(ucsc) <- ucsc[, 1]
+    ucsc <- ucsc[, -1]
+    ucsc <- round(2^ucsc) - 1
+    diff_RNA(ucsc, ...)
+}
