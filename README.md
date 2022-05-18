@@ -54,7 +54,7 @@ library(TCGAbiolinks)
 query <- GDCquery(project = "TCGA-ACC",
                   data.category = "Transcriptome Profiling",
                   data.type = "Gene Expression Quantification", 
-                  workflow.type = "HTSeq - Counts")
+                  workflow.type = "STAR - Counts")
                   
 GDCdownload(query, method = "api", files.per.chunk = 3, 
     directory = Your_Path)
@@ -64,7 +64,7 @@ dataRNA <- GDCprepare(query = query, directory = Your_Path,
 ## get raw count matrix                         
 dataPrep <- TCGAanalyze_Preprocessing(object = dataRNA,
                                       cor.cut = 0.6,
-                                      datatype = "HTSeq - Counts")
+                                      datatype = "STAR - Counts")
 
 ```
 
