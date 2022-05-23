@@ -4,7 +4,14 @@
 \alias{methyDiff}
 \title{Get methylation difference gene}
 \usage{
-methyDiff(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rhoScores)
+methyDiff(
+  cpgData,
+  sampleGroup,
+  combineMethod = RobustRankAggreg::rhoScores,
+  missing_value = "knn",
+  region = "Body",
+  model = c("cpg", "gene")
+)
 }
 \arguments{
 \item{cpgData}{data.frame of cpg beta value}
@@ -12,6 +19,13 @@ methyDiff(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rhoScores)
 \item{sampleGroup}{vector of sample group}
 
 \item{combineMethod}{method to combine the cpg pvalues}
+
+\item{missing_value}{Method to  impute missing expression data, one of "zero" and "knn".}
+
+\item{region}{region of genes, one of "Body", "TSS1500", "TSS200", "3'UTR", "1stExon", "5'UTR", and "IGR".}
+
+\item{model}{if "cpg", step1: calculate difference cpgs; step2: calculate difference genes.
+if "gene", step1: calculate the methylation level of genes; step2: calculate difference genes.}
 }
 \description{
 Get methylation difference gene

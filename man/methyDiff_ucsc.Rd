@@ -4,16 +4,29 @@
 \alias{methyDiff_ucsc}
 \title{Title}
 \usage{
-methyDiff_ucsc(methy, cpg_gene, group = NULL, missing_value = "knn")
+methyDiff_ucsc(
+  methy,
+  sampleGroup = NULL,
+  missing_value = "knn",
+  model = c("cpg", "gene"),
+  combineMethod = RobustRankAggreg::rhoScores,
+  region = "Body"
+)
 }
 \arguments{
 \item{methy}{data.frame of the methylation data, which can be downloaded from UCSC Xena.}
 
-\item{cpg_gene}{data.frame, the first coloumn is cpg id, the second coloumn is gene id.}
-
-\item{group}{a vector of "0" and "1" for group of samples. If null, the samples were divided into two groups: disease and normal.}
+\item{sampleGroup}{a vector of "0" and "1" for group of samples. 
+If null, the samples were divided into two groups: disease and normal.}
 
 \item{missing_value}{Method to  impute missing expression data, one of "zero" and "knn".}
+
+\item{model}{if "cpg", step1: calculate difference cpgs; step2: calculate difference genes.
+if "gene", step1: calculate the methylation level of genes; step2: calculate difference genes.}
+
+\item{combineMethod}{method to combine the cpg pvalues.}
+
+\item{region}{region of genes, one of "Body", "TSS1500", "TSS200", "3'UTR", "1stExon", "5'UTR", and "IGR".}
 }
 \description{
 Title
