@@ -148,9 +148,15 @@ cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
 ## or use IlluminaHumanMethylation450kanno.ilmn12.hg19 to get annotation data
 # library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
 # ann <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
-# class(ann) <- "data.frame"
+# ann <- as.data.frame(ann)
 # cpg_gene <- ann[,c("Name", "UCSC_RefGene_Name", "UCSC_RefGene_Group")]
-
+# regision <- unique(cpg_gene$UCSC_RefGene_Group)
+# regision <- regision[regision != ""]
+# regision <- unique(unlist(strsplit(regision, ";")))
+# # > regision
+# # [1] "Body"    "TSS1500" "TSS200"  "1stExon" "5'UTR"   "3'UTR" 
+# # choose one of the regisions
+# cpg_gene <- cpg_gene[grep("Body", cpg_gene2$UCSC_RefGene_Group), ]
 methy_df <- methyDiff_ucsc(methy, cpg_gene)
 ```
 

@@ -25,7 +25,9 @@ Suggests:
     org.Hs.eg.db,
     edgeR,
     limma,
-    quantreg
+    quantreg,
+    minfi,
+    IlluminaHumanMethylation450kanno.ilmn12.hg19
 VignetteBuilder: knitr
 Imports: 
     utils,
