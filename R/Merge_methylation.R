@@ -100,7 +100,7 @@ methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rh
         myNorm3 <- gene_ave(myNorm2)
     
         ## use limma to do differential expression analysis
-        gene_pvalue <- methyDiff_limma(myNorm3, group = sampleGroup)
+        gene_pvalue <- Diff_limma(myNorm3, group = sampleGroup)
     } else {
         # Identify Differential Methylation Positions (DMP)
         myDMP <- ChAMP::champ.DMP(beta = myNorm, pheno = sampleGroup, adjPVal = 1)
@@ -182,12 +182,12 @@ methyDiff_ucsc <- function(methy, sampleGroup = NULL, missing_value = "knn", mod
                       missing_value = missing_value, region = region, model = model)
 }
 
-#' methyDiff_limma
+#' Diff_limma
 #'
-#' @param df data.frame of the methylation data, which can be downloaded from UCSC Xena.
+#' @param df data.frame of the omic data
 #' @param group a vector, group of samples.
 #' @export
-methyDiff_limma <- function(df, group) {
+Diff_limma <- function(df, group) {
     groups <- unique(group)
     # if group is a numberic vector(even for c("0", "1")), will get errors.
     group <- gsub(groups[1], "nromal", group)
