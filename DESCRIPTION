@@ -28,7 +28,8 @@ Suggests:
     quantreg,
     minfi,
     IlluminaHumanMethylation450kanno.ilmn12.hg19,
-    dearseq
+    dearseq,
+    NOISeq
 VignetteBuilder: knitr
 Imports: 
     utils,

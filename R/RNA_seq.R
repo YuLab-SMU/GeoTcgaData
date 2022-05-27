@@ -65,6 +65,9 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
                      gccontent = NULL, filter = TRUE, edgeRNorm = TRUE) {
 
     method <- match.arg(method, c("DESeq2", "edgeR", "limma", "dearseq", "Wilcoxon"))
+    cols <- !duplicated(colnames(counts))
+    counts <- counts[, cols]
+    group <- group[cols]
     ## use cqn to correct the bias
     correst <- TRUE
     uCovar <- NULL
@@ -172,6 +175,15 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
             }
             fdr <- stats::p.adjust(pvalues, method = "fdr")
             DEGAll <- data.frame(P.Value = pvalues, adj.P.Val = fdr)
+        }
+
+        if (method == "NOISeq") {
+            conditions <- factor(group)
+            data <- NOISeq::readData(data=counts, factors=as.data.frame(conditions))
+            res <- NOISeq::noiseqbio(data, k=0.5, norm="tmm", factor="conditions",
+                random.seed = 12345, filter = 1, cv.cutoff = 100, cpm = 1)
+            DEGAll <- NOISeq::degenes(res, q=0, M=NULL) %>% 
+                rename(c("prob" = "P.Value"))
         }
     }
     DEGAll <- DEGAll[!is.na(DEGAll[, "P.Value"]), ]
