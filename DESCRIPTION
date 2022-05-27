@@ -27,7 +27,9 @@ Suggests:
     limma,
     quantreg,
     minfi,
-    IlluminaHumanMethylation450kanno.ilmn12.hg19
+    IlluminaHumanMethylation450kanno.ilmn12.hg19,
+    dearseq,
+    NOISeq
 VignetteBuilder: knitr
 Imports: 
     utils,
