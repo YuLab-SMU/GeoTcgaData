@@ -2,10 +2,11 @@
 #'
 #' @param counts a dataframe or numeric matrix of raw counts data
 #' @param group sample groups
-#' @param method one of "DESeq2", "edgeR" and "limma".
+#' @param method one of "DESeq2", "edgeR" , "limma", "dearseq" and "Wilcoxon".
 #' @param geneLength a vector of gene length.
 #' @param gccontent a vector of gene GC content.
 #' @param filter if TRUE, use filterByExpr to filter genes.
+#' @param edgeRNorm if TRUE, use edgeR to do normalization for dearseq method.
 #' @importFrom magrittr %>%
 #' @importFrom plyr rename
 #' @import cqn
@@ -60,9 +61,10 @@
 #' gsego <- gseGO(gene = diffGenes, OrgDb = org.Hs.eg.db, keyType = "ENSEMBL")
 #' dotplot(gsego)                   
 #' }
-diff_RNA <- function(counts, group, method='limma', geneLength = NULL, gccontent = NULL, filter = TRUE) {
+diff_RNA <- function(counts, group, method='limma', geneLength = NULL, 
+                     gccontent = NULL, filter = TRUE, edgeRNorm = TRUE) {
 
-    method <- match.arg(method, c("DESeq2", "edgeR", "limma"))
+    method <- match.arg(method, c("DESeq2", "edgeR", "limma", "dearseq", "Wilcoxon"))
     ## use cqn to correct the bias
     correst <- TRUE
     uCovar <- NULL
@@ -141,6 +143,35 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL, gccontent
                 limma::contrasts.fit(contrast.matrix) %>%
                 limma::eBayes() %>%
                 limma::topTable(n = Inf)
+        }
+
+        if (method == "dearseq") {
+            conditions <- matrix(as.numeric(group), ncol=1)
+            dearseqTest <- "asymptotic"
+            if(edgeRNorm){
+                count_norm <- edgeR::cpm(d.mont, log=TRUE)              
+                DEGAll <- dearseq::dear_seq(exprmat=count_norm, variables2test=conditions,
+                    which_test=dearseqTest, parallel_comp=F, preprocessed=TRUE)
+            }else{
+                DEGAll <- dearseq::dear_seq(exprmat=as.matrix(counts), variables2test=conditions, 
+                    which_test=dearseqTest, parallel_comp=F, preprocessed=FALSE)
+            }
+            DEGAll <- DEGAll$pvals %>% 
+                rename(c("adjPval" = "adj.P.Val")) %>% 
+                rename(c("rawPval" = "P.Value"))
+        }
+
+        if (method == "Wilcoxon") {
+            count_norm <- edgeR::cpm(d.mont, log=TRUE) %>% as.data.frame()
+            pvalues <- rep(0, nrow(count_norm))
+            
+            count_disease <- as.matrix(count_norm[, group == unique(group)[1]])
+            count_normal <- as.matrix(count_norm[, group == unique(group)[2]])
+            for (i in 1:length(pvalues)) {
+               pvalues[i] <- stats::wilcox.test(count_disease[i, ], count_normal[i, ])$p.value
+            }
+            fdr <- stats::p.adjust(pvalues, method = "fdr")
+            DEGAll <- data.frame(P.Value = pvalues, adj.P.Val = fdr)
         }
     }
     DEGAll <- DEGAll[!is.na(DEGAll[, "P.Value"]), ]

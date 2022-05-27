@@ -10,7 +10,8 @@ diff_RNA(
   method = "limma",
   geneLength = NULL,
   gccontent = NULL,
-  filter = TRUE
+  filter = TRUE,
+  edgeRNorm = TRUE
 )
 }
 \arguments{
@@ -18,13 +19,15 @@ diff_RNA(
 
 \item{group}{sample groups}
 
-\item{method}{one of "DESeq2", "edgeR" and "limma".}
+\item{method}{one of "DESeq2", "edgeR" , "limma", "dearseq" and "Wilcoxon".}
 
 \item{geneLength}{a vector of gene length.}
 
 \item{gccontent}{a vector of gene GC content.}
 
 \item{filter}{if TRUE, use filterByExpr to filter genes.}
+
+\item{edgeRNorm}{if TRUE, use edgeR to do normalization for dearseq method.}
 }
 \description{
 Do difference analysis of RNA-seq data
