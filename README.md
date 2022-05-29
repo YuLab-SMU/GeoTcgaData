@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 
 # GeoTcgaData
@@ -377,7 +376,6 @@ names(clinical.BCRtab.all)
 clinical <- GDCquery_clinic(project = "TCGA-ACC", type = "clinical")
 ```
 
-=======
 
 
 # GeoTcgaData
@@ -762,4 +760,3 @@ names(clinical.BCRtab.all)
 clinical <- GDCquery_clinic(project = "TCGA-ACC", type = "clinical")
 ```
 
->>>>>>> e6073d49ab97ffadfd428ab70bbbd18cf0e096c7
