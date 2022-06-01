@@ -7,6 +7,8 @@
 #' @param gccontent a vector of gene GC content.
 #' @param filter if TRUE, use filterByExpr to filter genes.
 #' @param edgeRNorm if TRUE, use edgeR to do normalization for dearseq method.
+#' @param adjust.method character string specifying the method used to adjust p-values for multiple testing. 
+#' See \link{p.adjust} for possible values.
 #' @importFrom magrittr %>%
 #' @importFrom plyr rename
 #' @import cqn
@@ -62,7 +64,8 @@
 #' dotplot(gsego)                   
 #' }
 diff_RNA <- function(counts, group, method='limma', geneLength = NULL, 
-                     gccontent = NULL, filter = TRUE, edgeRNorm = TRUE) {
+                     gccontent = NULL, filter = TRUE, edgeRNorm = TRUE,
+                     adjust.method = "BH") {
 
     method <- match.arg(method, c("DESeq2", "edgeR", "limma", "dearseq", "Wilcoxon"))
     cols <- !duplicated(colnames(counts))
@@ -103,7 +106,8 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
             normFactors <- cqnNormFactors / exp(rowMeans(log(cqnNormFactors)))
             DESeq2::normalizationFactors(dds) <- normFactors         
         }
-        DEGAll <- DESeq2::DESeq(dds) %>% DESeq2::results() %>% as.data.frame() %>% 
+        DEGAll <- DESeq2::DESeq(dds) %>% DESeq2::results(pAdjustMethod = adjust.method) %>% 
+            as.data.frame() %>% 
             rename(c("log2FoldChange" = "logFC")) %>% 
             rename(c("pvalue" = "P.Value")) %>% 
             rename(c("padj" = "adj.P.Val"))
@@ -128,7 +132,7 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
                 edgeR::glmFit(design = design) %>%
                 edgeR::glmLRT(coef = 2) %>%
                 # edgeR::topTags(n = nrow(d.mont$counts)) %>%
-                edgeR::topTags(n = Inf) %>%
+                edgeR::topTags(n = Inf, adjust.method = adjust.method) %>%
                 as.data.frame() %>% 
                 rename(c("FDR" = "adj.P.Val")) %>% 
                 rename(c("PValue" = "P.Value"))
@@ -145,7 +149,7 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
                 limma::lmFit(design) %>%
                 limma::contrasts.fit(contrast.matrix) %>%
                 limma::eBayes() %>%
-                limma::topTable(n = Inf)
+                limma::topTable(n = Inf, adjust.method = adjust.method)
         }
 
         if (method == "dearseq") {
@@ -157,7 +161,8 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
                     which_test=dearseqTest, parallel_comp=F, preprocessed=TRUE)
             }else{
                 DEGAll <- dearseq::dear_seq(exprmat=as.matrix(counts), variables2test=conditions, 
-                    which_test=dearseqTest, parallel_comp=F, preprocessed=FALSE)
+                    which_test=dearseqTest, parallel_comp=F, preprocessed=FALSE,
+                    padjust_methods = adjust.method)
             }
             DEGAll <- DEGAll$pvals %>% 
                 rename(c("adjPval" = "adj.P.Val")) %>% 
@@ -173,7 +178,7 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
             for (i in 1:length(pvalues)) {
                pvalues[i] <- stats::wilcox.test(count_disease[i, ], count_normal[i, ])$p.value
             }
-            fdr <- stats::p.adjust(pvalues, method = "fdr")
+            fdr <- stats::p.adjust(pvalues, method = adjust.method)
             DEGAll <- data.frame(P.Value = pvalues, adj.P.Val = fdr)
         }
 
@@ -184,6 +189,7 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
                 random.seed = 12345, filter = 1, cv.cutoff = 100, cpm = 1)
             DEGAll <- NOISeq::degenes(res, q=0, M=NULL) %>% 
                 rename(c("prob" = "P.Value"))
+            DEGAll$adj.P.Val <- DEGAll$P.Value
         }
     }
     DEGAll <- DEGAll[!is.na(DEGAll[, "P.Value"]), ]

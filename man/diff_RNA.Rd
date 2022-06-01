@@ -11,7 +11,8 @@ diff_RNA(
   geneLength = NULL,
   gccontent = NULL,
   filter = TRUE,
-  edgeRNorm = TRUE
+  edgeRNorm = TRUE,
+  adjust.method = "BH"
 )
 }
 \arguments{
@@ -28,6 +29,9 @@ diff_RNA(
 \item{filter}{if TRUE, use filterByExpr to filter genes.}
 
 \item{edgeRNorm}{if TRUE, use edgeR to do normalization for dearseq method.}
+
+\item{adjust.method}{character string specifying the method used to adjust p-values for multiple testing. 
+See \link{p.adjust} for possible values.}
 }
 \description{
 Do difference analysis of RNA-seq data
