@@ -67,7 +67,7 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
                      gccontent = NULL, filter = TRUE, edgeRNorm = TRUE,
                      adjust.method = "BH") {
 
-    method <- match.arg(method, c("DESeq2", "edgeR", "limma", "dearseq", "Wilcoxon"))
+    method <- match.arg(method, c("DESeq2", "edgeR", "limma", "dearseq", "Wilcoxon", "NOISeq"))
     cols <- !duplicated(colnames(counts))
     counts <- counts[, cols]
     group <- group[cols]
@@ -153,6 +153,8 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
         }
 
         if (method == "dearseq") {
+            group[group == unique(group)[1]] <- 1
+            group[group == unique(group)[2]] <- 2
             conditions <- matrix(as.numeric(group), ncol=1)
             dearseqTest <- "asymptotic"
             if(edgeRNorm){
@@ -180,6 +182,7 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
             }
             fdr <- stats::p.adjust(pvalues, method = adjust.method)
             DEGAll <- data.frame(P.Value = pvalues, adj.P.Val = fdr)
+            rownames(DEGAll) <- rownames(count_norm)
         }
 
         if (method == "NOISeq") {
