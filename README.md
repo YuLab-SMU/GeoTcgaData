@@ -603,16 +603,16 @@ dotplot(ego)
 Use TCGAbiolinks to download TCGA data
 
 ```r
-library(TCGAbiolinks)
-query <- GDCquery(project = "TCGA-ACC",
-                  data.category = "Simple Nucleotide Variation",
-                  data.type = "Masked Somatic Mutation",
-                  workflow.type = "MuSE Variant Aggregation and Masking")
-
-GDCdownload(query, method = "api", files.per.chunk = 5, directory = Your_Path)
-
-data_snp <- GDCprepare(query = query, 
-                   directory =  Your_Path) 
+query <- GDCquery(
+    project = "TCGA-CHOL", 
+    data.category = "Simple Nucleotide Variation", 
+    access = "open", 
+    legacy = FALSE, 
+    data.type = "Masked Somatic Mutation", 
+    workflow.type = "Aliquot Ensemble Somatic Variant Merging and Masking"
+)
+GDCdownload(query)
+data_snp <- GDCprepare(query)
 
 ```
 
