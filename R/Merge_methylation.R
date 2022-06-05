@@ -62,9 +62,10 @@ get_methy_df <- function(filePath) {
 #' if "gene", step1: calculate the methylation level of genes; step2: calculate difference genes.
 #' @export
 methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rhoScores,
-                      missing_value = "knn", region = "Body", model = c("cpg", "gene")) {
+                      missing_value = "knn", region = "Body", model = "cpg") {
 
-    region <- match.arg(region, c("Body", "TSS1500", "TSS200", "3'UTR", "1stExon", "5'UTR", "IGR"))                      
+    region <- match.arg(region, c("Body", "TSS1500", "TSS200", "3'UTR", "1stExon", "5'UTR", "IGR"))      
+    model <-  match.arg(model,  c("cpg", "gene"))               
     if (class(cpgData) == "list") {
         cpgData <- cpgData[[1]]
     }
@@ -104,12 +105,14 @@ methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rh
     
         ## use limma to do differential expression analysis
         gene_pvalue <- Diff_limma(myNorm3, group = sampleGroup)
+        gene_pvalue$gene <- rownames(gene_pvalue)
     } else {
         # Identify Differential Methylation Positions (DMP)
         myDMP <- ChAMP::champ.DMP(beta = myNorm, pheno = sampleGroup, adjPVal = 1)
         myDMP <- as.data.frame(myDMP)
         # gene level difference analysis
-        pvalues <- myDMP[grep(region, myDMP$disease_to_normal.feature), c(14, 4)]
+        # pvalues <- myDMP[grep(region, myDMP$disease_to_normal.feature), c(14, 4)]
+        pvalues <- myDMP[grep(region, myDMP[, grep("feature", colnames(myDMP))]), c(14, 4)]
         # pvalues <- myDMP[, c(14, 4)]
         pvalues <- pvalues[pvalues[, 1] != "", ]
         gene_pvalue <- stats::aggregate(pvalues[, 2], by = list(pvalues[, 1]),
@@ -124,7 +127,7 @@ methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rh
         logFC <- rowMeans(myNorm2[, sampleGroup == groups[1]], na.rm = TRUE) -
             rowMeans(myNorm2[, sampleGroup == groups[2]], na.rm = TRUE)
         gene_pvalue$logFC <- logFC[gene_pvalue[, 1]]
-        colnames(gene_pvalue) <- c("gene", "pvalue", "logFC")
+        colnames(gene_pvalue) <- c("gene", "P.Value", "logFC")
     }
     return(gene_pvalue)
 }
