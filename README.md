@@ -535,7 +535,12 @@ cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
 # # [1] "Body"    "TSS1500" "TSS200"  "1stExon" "5'UTR"   "3'UTR" 
 # # choose one of the regisions
 # cpg_gene <- cpg_gene[grep("Body", cpg_gene2$UCSC_RefGene_Group), ]
+# step1: calculate difference cpgs; step2: calculate difference genes.
 methy_df <- methyDiff_ucsc(methy, cpg_gene)
+
+# step1: calculate the methylation level of genes; step2: calculate difference genes.
+library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+methy_df <- methyDiff_ucsc(methy, cpg_gene, model = "gene")
 ```
 
 

@@ -17,16 +17,16 @@ Do difference analysis of SNP data downloaded from TCGAbiolinks
 \examples{
 \dontrun{
 library(TCGAbiolinks)
-query <- GDCquery(project = "TCGA-ACC",
-                  data.category = "Simple Nucleotide Variation",
-                  data.type = "Masked Somatic Mutation",
-                  workflow.type = "MuSE Variant Aggregation and Masking")
-
-GDCdownload(query, method = "api", files.per.chunk = 5, directory = Your_Path)
-
-data_snp <- GDCprepare(query = query, 
-                   save = TRUE, 
-                   directory =  "Your_Path") 
+query <- GDCquery(
+    project = "TCGA-CHOL", 
+    data.category = "Simple Nucleotide Variation", 
+    access = "open", 
+    legacy = FALSE, 
+    data.type = "Masked Somatic Mutation", 
+    workflow.type = "Aliquot Ensemble Somatic Variant Merging and Masking"
+)
+GDCdownload(query)
+data_snp <- GDCprepare(query)
 samples <- unique(data_snp$Tumor_Sample_Barcode)
 sampleType <- sample(c("A","B"), length(samples), replace = TRUE)
 names(sampleType) <- samples

@@ -81,6 +81,8 @@ methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rh
     myNorm <- ChAMP::champ.norm(beta=data.m, rgSet = NULL, mset = NULL)
 
     if (model == "gene") {
+        ## library to avoid errors.
+        library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
         ann <- minfi::getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19::IlluminaHumanMethylation450kanno.ilmn12.hg19)
         ann <- as.data.frame(ann)
         cpg_gene <- ann[,c("Name", "UCSC_RefGene_Name", "UCSC_RefGene_Group")]
@@ -88,6 +90,7 @@ methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rh
         regision <- regision[regision != ""]
         regision <- unique(unlist(strsplit(regision, ";")))
         cpg_gene <- cpg_gene[grep(region, cpg_gene$UCSC_RefGene_Group), ]
+        myNorm <- as.data.frame(myNorm)
         myNorm$gene <- cpg_gene[rownames(myNorm), 2]
         myNorm <- myNorm[, c(ncol(myNorm), 1:(ncol(myNorm)-1))]
     
