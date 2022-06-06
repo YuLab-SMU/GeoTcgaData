@@ -60,9 +60,11 @@ get_methy_df <- function(filePath) {
 #' @param region region of genes, one of "Body", "TSS1500", "TSS200", "3'UTR", "1stExon", "5'UTR", and "IGR".
 #' @param model if "cpg", step1: calculate difference cpgs; step2: calculate difference genes.
 #' if "gene", step1: calculate the methylation level of genes; step2: calculate difference genes.
+#' @param adjust.method character string specifying the method used to adjust p-values for multiple testing. 
+#' See \link{p.adjust} for possible values.
 #' @export
 methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rhoScores,
-                      missing_value = "knn", region = "Body", model = "cpg") {
+                      missing_value = "knn", region = "Body", model = "cpg", adjust.method = "BH") {
 
     region <- match.arg(region, c("Body", "TSS1500", "TSS200", "3'UTR", "1stExon", "5'UTR", "IGR"))      
     model <-  match.arg(model,  c("cpg", "gene"))               
@@ -104,7 +106,7 @@ methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rh
         myNorm3 <- gene_ave(myNorm2)
     
         ## use limma to do differential expression analysis
-        gene_pvalue <- Diff_limma(myNorm3, group = sampleGroup)
+        gene_pvalue <- Diff_limma(myNorm3, group = sampleGroup, adjust.method = adjust.method)
         gene_pvalue$gene <- rownames(gene_pvalue)
     } else {
         # Identify Differential Methylation Positions (DMP)
@@ -128,6 +130,9 @@ methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rh
             rowMeans(myNorm2[, sampleGroup == groups[2]], na.rm = TRUE)
         gene_pvalue$logFC <- logFC[gene_pvalue[, 1]]
         colnames(gene_pvalue) <- c("gene", "P.Value", "logFC")
+        gene_pvalue$gene <- as.charachter(gene_pvalue$gene)
+        gene_pvalue$adj.P.Val <- p.adjust(gene_pvalue$P.Value, method = adjust.method)
+        rownames(gene_pvalue) <- gene_pvalue$gene
     }
     return(gene_pvalue)
 }
@@ -194,7 +199,7 @@ methyDiff_ucsc <- function(methy, sampleGroup = NULL, missing_value = "knn", mod
 #' @param df data.frame of the omic data
 #' @param group a vector, group of samples.
 #' @export
-Diff_limma <- function(df, group) {
+Diff_limma <- function(df, group, adjust.method = "BH") {
     groups <- unique(group)
     # if group is a numberic vector(even for c("0", "1")), will get errors.
     group <- gsub(groups[1], "nromal", group)
@@ -207,7 +212,7 @@ Diff_limma <- function(df, group) {
     fit <- limma::lmFit(df, design)
     fit <- limma::contrasts.fit(fit, contrast.matrix)
     fit <- limma::eBayes(fit)
-    limma::topTable(fit, adjust='BH', number=Inf)  
+    limma::topTable(fit, adjust.method = adjust.method, number=Inf)  
     ## or limma::topTable(fit, coef = 1, adjust='BH', number=Inf) 
     ## contrasts.fit is not necessory
     # groups <- unique(group)

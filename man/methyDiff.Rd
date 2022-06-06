@@ -10,7 +10,7 @@ methyDiff(
   combineMethod = RobustRankAggreg::rhoScores,
   missing_value = "knn",
   region = "Body",
-  model = c("cpg", "gene")
+  model = "cpg"
 )
 }
 \arguments{

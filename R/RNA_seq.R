@@ -149,7 +149,7 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
                 limma::lmFit(design) %>%
                 limma::contrasts.fit(contrast.matrix) %>%
                 limma::eBayes() %>%
-                limma::topTable(n = Inf, adjust.method = adjust.method)
+                limma::topTable(number = Inf, adjust.method = adjust.method)
         }
 
         if (method == "dearseq") {
