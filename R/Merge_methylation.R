@@ -60,14 +60,14 @@ get_methy_df <- function(filePath) {
 #' @param region region of genes, one of "Body", "TSS1500", "TSS200", "3'UTR", "1stExon", "5'UTR", and "IGR".
 #' @param model if "cpg", step1: calculate difference cpgs; step2: calculate difference genes.
 #' if "gene", step1: calculate the methylation level of genes; step2: calculate difference genes.
-#' @param adjust.method character string specifying the method used to adjust p-values for multiple testing. 
+#' @param adjust.method character string specifying the method used to adjust p-values for multiple testing.
 #' See \link{p.adjust} for possible values.
 #' @export
 methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rhoScores,
                       missing_value = "knn", region = "Body", model = "cpg", adjust.method = "BH") {
 
-    region <- match.arg(region, c("Body", "TSS1500", "TSS200", "3'UTR", "1stExon", "5'UTR", "IGR"))      
-    model <-  match.arg(model,  c("cpg", "gene"))               
+    region <- match.arg(region, c("Body", "TSS1500", "TSS200", "3'UTR", "1stExon", "5'UTR", "IGR"))
+    model <-  match.arg(model,  c("cpg", "gene"))
     if (class(cpgData) == "list") {
         cpgData <- cpgData[[1]]
     }
@@ -79,7 +79,7 @@ methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rh
     } else {
         data.m <- quiet(impute::impute.knn(cpgData)$data)
     }
-    
+
     # normalize data
     myNorm <- ChAMP::champ.norm(beta=data.m, rgSet = NULL, mset = NULL)
 
@@ -96,15 +96,15 @@ methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rh
         myNorm <- as.data.frame(myNorm)
         myNorm$gene <- cpg_gene[rownames(myNorm), 2]
         myNorm <- myNorm[, c(ncol(myNorm), 1:(ncol(myNorm)-1))]
-    
+
         myNorm <- myNorm[!is.na(myNorm$gene), ]
-    
-    
+
+
         myNorm$gene <- as.character(myNorm$gene)
         myNorm2 <- rep1(myNorm, ";")
-    
+
         myNorm3 <- gene_ave(myNorm2)
-    
+
         ## use limma to do differential expression analysis
         gene_pvalue <- Diff_limma(myNorm3, group = sampleGroup, adjust.method = adjust.method)
         gene_pvalue$gene <- rownames(gene_pvalue)
@@ -130,7 +130,7 @@ methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rh
             rowMeans(myNorm2[, sampleGroup == groups[2]], na.rm = TRUE)
         gene_pvalue$logFC <- logFC[gene_pvalue[, 1]]
         colnames(gene_pvalue) <- c("gene", "P.Value", "logFC")
-        gene_pvalue$gene <- as.charachter(gene_pvalue$gene)
+        gene_pvalue$gene <- as.character(gene_pvalue$gene)
         gene_pvalue$adj.P.Val <- p.adjust(gene_pvalue$P.Value, method = adjust.method)
         rownames(gene_pvalue) <- gene_pvalue$gene
     }
@@ -152,7 +152,7 @@ quiet <- function(x) {
 #' Title
 #'
 #' @param methy data.frame of the methylation data, which can be downloaded from UCSC Xena.
-#' @param sampleGroup a vector of "0" and "1" for group of samples. 
+#' @param sampleGroup a vector of "0" and "1" for group of samples.
 #' If null, the samples were divided into two groups: disease and normal.
 #' @param missing_value Method to  impute missing expression data, one of "zero" and "knn".
 #' @param model if "cpg", step1: calculate difference cpgs; step2: calculate difference genes.
@@ -187,9 +187,9 @@ methyDiff_ucsc <- function(methy, sampleGroup = NULL, missing_value = "knn", mod
     if (is.null(group)) {
         group <- lapply(colnames(methy), function(x) {
             strsplit(x, "-")[[1]][4]}) %>% unlist()
-    
+
         group <- substring(group, 1,1)
-    } 
+    }
     methyDiff(methy, sampleGroup = group, combineMethod = combineMethod,
                       missing_value = missing_value, region = region, model = model)
 }
@@ -206,25 +206,25 @@ Diff_limma <- function(df, group, adjust.method = "BH") {
     group <- gsub(groups[2], "disease", group)
     design <- stats::model.matrix(~0 + factor(group))
     colnames(design) <- levels(factor(group))
-    contrast.matrix <- limma::makeContrasts(contrasts = paste(colnames(design)[2:1], 
+    contrast.matrix <- limma::makeContrasts(contrasts = paste(colnames(design)[2:1],
             collapse = "-"), levels = colnames(design))
 
     fit <- limma::lmFit(df, design)
     fit <- limma::contrasts.fit(fit, contrast.matrix)
     fit <- limma::eBayes(fit)
-    limma::topTable(fit, adjust.method = adjust.method, number=Inf)  
-    ## or limma::topTable(fit, coef = 1, adjust='BH', number=Inf) 
+    limma::topTable(fit, adjust.method = adjust.method, number=Inf)
+    ## or limma::topTable(fit, coef = 1, adjust='BH', number=Inf)
     ## contrasts.fit is not necessory
     # groups <- unique(group)
     # group <- gsub(groups[1], "nromal", group)
     # group <- gsub(groups[2], "disease", group)
     # design <- stats::model.matrix(~factor(group))
- 
+
     # fit2 <- lmFit(df, design)
     # fit2 <- eBayes(fit2)
-    # topTable(fit2,coef=2, adjust='BH', number=Inf) 
+    # topTable(fit2,coef=2, adjust='BH', number=Inf)
 
     ## coef parameter is not necessory：
-    # opTable(fit2, adjust='BH', number=Inf) 
+    # opTable(fit2, adjust='BH', number=Inf)
 }
-    
+
