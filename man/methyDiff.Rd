@@ -10,7 +10,8 @@ methyDiff(
   combineMethod = RobustRankAggreg::rhoScores,
   missing_value = "knn",
   region = "Body",
-  model = "cpg"
+  model = "cpg",
+  adjust.method = "BH"
 )
 }
 \arguments{
@@ -26,6 +27,9 @@ methyDiff(
 
 \item{model}{if "cpg", step1: calculate difference cpgs; step2: calculate difference genes.
 if "gene", step1: calculate the methylation level of genes; step2: calculate difference genes.}
+
+\item{adjust.method}{character string specifying the method used to adjust p-values for multiple testing.
+See \link{p.adjust} for possible values.}
 }
 \description{
 Get methylation difference gene
