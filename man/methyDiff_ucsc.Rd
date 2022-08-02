@@ -16,7 +16,7 @@ methyDiff_ucsc(
 \arguments{
 \item{methy}{data.frame of the methylation data, which can be downloaded from UCSC Xena.}
 
-\item{sampleGroup}{a vector of "0" and "1" for group of samples. 
+\item{sampleGroup}{a vector of "0" and "1" for group of samples.
 If null, the samples were divided into two groups: disease and normal.}
 
 \item{missing_value}{Method to  impute missing expression data, one of "zero" and "knn".}

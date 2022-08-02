@@ -27,7 +27,7 @@ Or  the development version from github:
 ```r
 if(!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
-devtools::install_github("huerqiang/GeoTcgaData")
+devtools::install_github("YuLab-SMU/GeoTcgaData")
 ```
 
 GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation,   single nucleotide Variation and Copy number variation data. It's easy to download data from TCGA using the  gdc tool or `TCGAbiolinks`,  and some software provides organized TCGA data, such as [UCSC Xena](http://xena.ucsc.edu/) , [UCSCXenaTools]([ttps://CRAN.R-project.org/package=UCSCXenaTools](https://cran.r-project.org/package=UCSCXenaTools))，and [sangerbox](http://vip.sangerbox.com/), but processing these data into a format suitable for bioinformatics  analysis requires more work. This R package was developed to handle these data.
@@ -39,11 +39,19 @@ This is a basic example which shows you how to solve a common problem:
 ## RNA-seq data differential expression analysis
 It is convenient to use [`TCGAbiolinks`](http://www.bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/analysis.html)  or [`GDCRNATools`](https://bioconductor.org/packages/GDCRNATools/) to download and analysis Gene expression data.  `TCGAbiolinks` use `edgeR` package to do differential expression analysis, while `GDCRNATools` can implement three most commonly used methods: limma, edgeR , and DESeq2 to identify differentially expressed  genes (DEGs).
 
-However, unlike the chip data, the RNA-seq data had one [bias](https://pubmed.ncbi.nlm.nih.gov/20132535/): the longer the gene, the more likely it was to be  identified as a differential gene, [while there was no such trend in the chip data](https://pubmed.ncbi.nlm.nih.gov/19371405/).  This is because in RNA-seq data a long gene has more reads mapping to it compared to a short gene of similar expression,  and most of the statistical methods used to detect differential expression  have stronger detection ability for genes with more reads. Therefore, we need to correct the gene length bias in downstream analysis  such as enrichment analysis.
+However, unlike the chip data, the RNA-seq data had one [bias](https://pubmed.ncbi.nlm.nih.gov/20132535/): the larger the transcript length / mean read count (NOT the gene length), the more likely it was to be  identified as a differential gene, [while there was no such trend in the chip data](https://pubmed.ncbi.nlm.nih.gov/19371405/). It is worse noting that [only technical replicate data, which has small gene dispersions, shows this bias](https://pubmed.ncbi.nlm.nih.gov/28545404/). This is because in technical replicate RNA-seq data a long gene has more reads mapping to it compared to a short gene of similar expression,  and most of the statistical methods used to detect differential expression  have stronger detection ability for genes with more reads. However, we have not deduced why there is such a bias in the current difference analysis algorithms. 
 
-[GOseq](http://bioconductor.org/packages/goseq/) based on [Wallenius' noncentral hypergeometric distribution](https://en.wikipedia.org/wiki/Wallenius%27_noncentral_hypergeometric_distribution) can effectively correct the gene length deviation in enrichment analysis. However, its algorithm can not directly correct the deviation of the expression profile, and its results can not be used for GSEA enrichment analysis. [CQN](http://www.bioconductor.org/packages/cqn/) present a [normalization algorithm](https://pubmed.ncbi.nlm.nih.gov/22285995/) to correct systematic biases(gene length bias and [GC-content bias](https://pubmed.ncbi.nlm.nih.gov/22177264/), whose result can be seamlessly docked with downstream difference analysis  software such as  DESeq2 and edgeR. 
+Some software, such as [CQN](http://www.bioconductor.org/packages/cqn/) , present a [normalization algorithm](https://pubmed.ncbi.nlm.nih.gov/22285995/) to correct systematic biases(gene length bias and [GC-content bias](https://pubmed.ncbi.nlm.nih.gov/22177264/). But they did not provide sufficient evidence to prove that the correction is effective. We use the [Marioni dataset](https://pubmed.ncbi.nlm.nih.gov/19371405/) to verify the correction effect of CQN and find that there is still a deviation after correction:
 
-Here we use `TCGAbiolinks` to download RNA-seq data, use `CQN` to correct gene  length bias and GC content bias, and then use `DESeq2` for difference  analysis.
+<img src="marioni_bin_de.jpg" width="890"/>
+
+
+
+
+
+[GOseq](http://bioconductor.org/packages/goseq/) based on [Wallenius' noncentral hypergeometric distribution](https://en.wikipedia.org/wiki/Wallenius%27_noncentral_hypergeometric_distribution) can effectively correct the gene length deviation in enrichment analysis. However, its algorithm can not directly correct the deviation of the expression profile, and its results can not be used for GSEA enrichment analysis.
+
+Therefore, read count bias correction is still a challenge for us.
 
 use `TCGAbiolinks` to download TCGA data
 
@@ -106,7 +114,9 @@ dotplot(gsego)
 
 
 ## DNA Methylation data integration 
-use `TCGAbiolinks` to download TCGA data
+use `TCGAbiolinks` to download TCGA data. 
+
+The codes may need to be modified if `TCGAbiolinks` updates. So please read its [documents](https://www.bioconductor.org/packages/release/bioc/html/TCGAbiolinks.html).
 
 ```r
 library(TCGAbiolinks)
@@ -117,7 +127,7 @@ query <- GDCquery(project = "TCGA-ACC",
 GDCdownload(query, method = "api", files.per.chunk = 5, directory = Your_Path)
 ```
 
-The function Merge_methy_tcga could Merge methylation data downloaded from TCGA official website or TCGAbiolinks. This makes it easier to extract differentially methylated genes in the downstream analysis. For example:
+The function `Merge_methy_tcga` could Merge methylation data downloaded from TCGA official website or TCGAbiolinks. This makes it easier to extract differentially methylated genes in the downstream analysis. For example:
 
 ```r
 merge_result <- Merge_methy_tcga(Your_Path_to_DNA_Methylation_data)
@@ -154,9 +164,15 @@ cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
 methy_df <- methyDiff_ucsc(methy, cpg_gene)
 ```
 
+We provide three models to get methylation difference genes:  
 
+if model = "cpg", step1: calculate difference cpgs; step2: calculate difference genes; 
 
+if model = "gene", step1: calculate the methylation level of genes; step2: calculate difference genes.
 
+We find that only model = "gene" has no deviation of CpG number. 
+
+<img src="logpvalue_cpgnumber.jpg" width="890"/>
 
 Use `clusterProfiler` to do enrichment analytics:
 

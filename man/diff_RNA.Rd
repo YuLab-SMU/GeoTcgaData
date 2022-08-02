@@ -12,7 +12,8 @@ diff_RNA(
   gccontent = NULL,
   filter = TRUE,
   edgeRNorm = TRUE,
-  adjust.method = "BH"
+  adjust.method = "BH",
+  useTopconfects = TRUE
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ diff_RNA(
 
 \item{adjust.method}{character string specifying the method used to adjust p-values for multiple testing. 
 See \link{p.adjust} for possible values.}
+
+\item{useTopconfects}{if TRUE, use topconfects to provide a more biologically useful ranked gene list.}
 }
 \description{
 Do difference analysis of RNA-seq data

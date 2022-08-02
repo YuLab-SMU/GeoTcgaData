@@ -62,6 +62,7 @@ get_methy_df <- function(filePath) {
 #' if "gene", step1: calculate the methylation level of genes; step2: calculate difference genes.
 #' @param adjust.method character string specifying the method used to adjust p-values for multiple testing.
 #' See \link{p.adjust} for possible values.
+#' @importFrom stats p.adjust
 #' @export
 methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rhoScores,
                       missing_value = "knn", region = "Body", model = "cpg", adjust.method = "BH") {
@@ -198,6 +199,7 @@ methyDiff_ucsc <- function(methy, sampleGroup = NULL, missing_value = "knn", mod
 #'
 #' @param df data.frame of the omic data
 #' @param group a vector, group of samples.
+#' @param adjust.method adjust.method.
 #' @export
 Diff_limma <- function(df, group, adjust.method = "BH") {
     groups <- unique(group)

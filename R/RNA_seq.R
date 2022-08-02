@@ -9,6 +9,7 @@
 #' @param edgeRNorm if TRUE, use edgeR to do normalization for dearseq method.
 #' @param adjust.method character string specifying the method used to adjust p-values for multiple testing. 
 #' See \link{p.adjust} for possible values.
+#' @param useTopconfects if TRUE, use topconfects to provide a more biologically useful ranked gene list.
 #' @importFrom magrittr %>%
 #' @importFrom plyr rename
 #' @import cqn
@@ -65,8 +66,8 @@
 #' }
 diff_RNA <- function(counts, group, method='limma', geneLength = NULL, 
                      gccontent = NULL, filter = TRUE, edgeRNorm = TRUE,
-                     adjust.method = "BH") {
-
+                     adjust.method = "BH", useTopconfects = TRUE) {
+    
     method <- match.arg(method, c("DESeq2", "edgeR", "limma", "dearseq", "Wilcoxon", "NOISeq"))
     cols <- !duplicated(colnames(counts))
     counts <- counts[, cols]
@@ -88,11 +89,13 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
         d.mont <- d.mont[keep, keep.lib.sizes=FALSE]
         counts <- counts[keep, ]   
     }
-    geneLength <- geneLength[rownames(counts)]   
-    gccontent <- gccontent[rownames(counts)]
-    if(correst) {
+    if (correst) {
+        geneLength <- geneLength[rownames(counts)]   
+        gccontent <- gccontent[rownames(counts)]
         cqn.subset <- cqn::cqn(counts, lengths = geneLength, x = gccontent)
     }
+
+
     if (method == 'DESeq2') {
         coldata <- data.frame(group)
         dds <- DESeq2::DESeqDataSetFromMatrix(countData = counts,
@@ -106,7 +109,13 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
             normFactors <- cqnNormFactors / exp(rowMeans(log(cqnNormFactors)))
             DESeq2::normalizationFactors(dds) <- normFactors         
         }
-        DEGAll <- DESeq2::DESeq(dds) %>% DESeq2::results(pAdjustMethod = adjust.method) %>% 
+        DEGAll <- DESeq2::DESeq(dds) 
+        DEGAll_table <- NULL
+        if (useTopconfects) {
+            DEGAll_table <- topconfects::deseq2_confects(DEGAll, step=0.05)$table
+            rownames(DEGAll_table) <- DEGAll_table$name
+        } 
+        DEGAll <- DEGAll %>% DESeq2::results(pAdjustMethod = adjust.method) %>% 
             as.data.frame() %>% 
             rename(c("log2FoldChange" = "logFC")) %>% 
             rename(c("pvalue" = "P.Value")) %>% 
@@ -114,6 +123,12 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
         DEGAll$length <- geneLength[rownames(DEGAll)]
         DEGAll$gccontent <- gccontent[rownames(DEGAll)]
         DEGAll <- DEGAll[, c(ncol(DEGAll)-1, ncol(DEGAll), 1:(ncol(DEGAll)- 2))]
+        if (!is.null(DEGAll_table)) {
+            genes <- intersect(rownames(DEGAll), rownames(DEGAll_table))
+            DEGAll <- cbind(DEGAll[genes, ], DEGAll_table[genes, ])
+            DEGAll <- DEGAll[order(DEGAll$P.Value), ]
+        }
+        
     } else {       
 
         if (correst) {
@@ -122,20 +137,42 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
             d.mont$offset <- cqn.subset$glm.offset
         } else {
             ## TMM Normalization
-            d.mont <- edgeR::calcNormFactors(d.mont)
+            d.mont <- edgeR::calcNormFactors(d.mont, method = "TMM")
         }
         if (method == "edgeR") {
             # design <- stats::model.matrix(~ group) 
             design <- stats::model.matrix(~ d.mont$sample$group) 
-            d.mont <- edgeR::estimateDisp(d.mont, design)         
-            DEGAll <- edgeR::estimateGLMCommonDisp(d.mont, design = design) %>%
-                edgeR::glmFit(design = design) %>%
-                edgeR::glmLRT(coef = 2) %>%
+            if (min(table(d.mont$sample$group)) > 1) {
+                d.mont <- edgeR::estimateDisp(d.mont, design) %>%
+                    edgeR::estimateGLMCommonDisp(design = design)     
+                DEGAll <- edgeR::glmQLFit(d.mont, design = design) 
+                DEGAll_table <- NULL
+                if (useTopconfects) {
+                    DEGAll_table <- topconfects::edger_confects(DEGAll, fdr=0.05, 
+                                                          coef = ncol(DEGAll$design), 
+                                                          step=0.05)$table
+                } 
                 # edgeR::topTags(n = nrow(d.mont$counts)) %>%
-                edgeR::topTags(n = Inf, adjust.method = adjust.method) %>%
-                as.data.frame() %>% 
-                rename(c("FDR" = "adj.P.Val")) %>% 
-                rename(c("PValue" = "P.Value"))
+                DEGAll <- DEGAll %>% edgeR::glmQLFTest(coef = ncol(DEGAll$design)) %>% 
+                    edgeR::topTags(n = Inf, adjust.method = adjust.method) %>%
+                    as.data.frame() %>% 
+                    rename(c("FDR" = "adj.P.Val")) %>% 
+                    rename(c("PValue" = "P.Value"))
+                if (!is.null(DEGAll_table)) {
+                    genes <- intersect(rownames(DEGAll), rownames(DEGAll_table))
+                    DEGAll <- cbind(DEGAll[genes, ], DEGAll_table[genes, ])
+                    DEGAll <- DEGAll[order(DEGAll$P.Value), ]
+                }
+                 
+            } else {
+                DEGAll <- edgeR::glmFit(d.mont, dispersion=0)
+                DEGAll <- DEGAll %>% edgeR::glmLRT(coef = ncol(DEGAll$design)) %>% 
+                        edgeR::topTags(n = Inf, adjust.method = adjust.method) %>%
+                        as.data.frame() %>% 
+                        rename(c("FDR" = "adj.P.Val")) %>% 
+                        rename(c("PValue" = "P.Value"))
+            }
+
         }
 
         if(method == "limma") {
@@ -146,10 +183,22 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
             contrast.matrix <- limma::makeContrasts(contrasts=comparison,
                 levels=design)
             DEGAll <- limma::voom(d.mont, design=design, plot = FALSE) %>%
-                limma::lmFit(design) %>%
-                limma::contrasts.fit(contrast.matrix) %>%
+                limma::lmFit(design) 
+            DEGAll_table <- NULL
+            if (useTopconfects) {
+                DEGAll_table <- topconfects::limma_confects(DEGAll, 
+                    coef = 1, 
+                    fdr=0.05)$table
+            } 
+            DEGAll <- DEGAll %>% limma::contrasts.fit(contrast.matrix) %>%
                 limma::eBayes() %>%
                 limma::topTable(number = Inf, adjust.method = adjust.method)
+            if (!is.null(DEGAll_table)) {
+                genes <- intersect(rownames(DEGAll), rownames(DEGAll_table))
+                DEGAll <- cbind(DEGAll[genes, ], DEGAll_table[genes, ])
+                DEGAll <- DEGAll[order(DEGAll$P.Value), ]
+            }
+
         }
 
         if (method == "dearseq") {
@@ -195,7 +244,10 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
             DEGAll$adj.P.Val <- DEGAll$P.Value
         }
     }
-    DEGAll <- DEGAll[!is.na(DEGAll[, "P.Value"]), ]
+    if ("P.Value" %in% colnames(DEGAll)) {
+        DEGAll <- DEGAll[!is.na(DEGAll[, "P.Value"]), ]
+    }
+    
     return(DEGAll)
 }
 
