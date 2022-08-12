@@ -1,3 +1,7 @@
+# GeoTcgaData 1.1.1
+
++ fix a bug in `diff_RNA(useTopconfects = TRUE)` (2022-8-12, Fir)
+
 # GeoTcgaData 1.0.3
 
 + add function `methyDiff_ucsc` and `methyDiff_limma`(2021-10-24, Sun)
