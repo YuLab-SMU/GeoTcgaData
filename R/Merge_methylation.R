@@ -69,7 +69,8 @@ methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rh
 
     region <- match.arg(region, c("Body", "TSS1500", "TSS200", "3'UTR", "1stExon", "5'UTR", "IGR"))
     model <-  match.arg(model,  c("cpg", "gene"))
-    if (class(cpgData) == "list") {
+    # if (class(cpgData) == "list") {
+    if (inherits(cpgData, "list")) {
         cpgData <- cpgData[[1]]
     }
     cpgData <- as.matrix(cpgData)
@@ -86,7 +87,7 @@ methyDiff <- function(cpgData, sampleGroup, combineMethod = RobustRankAggreg::rh
 
     if (model == "gene") {
         ## library to avoid errors.
-        library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+        # library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
         ann <- minfi::getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19::IlluminaHumanMethylation450kanno.ilmn12.hg19)
         ann <- as.data.frame(ann)
         cpg_gene <- ann[,c("Name", "UCSC_RefGene_Name", "UCSC_RefGene_Group")]

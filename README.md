@@ -30,7 +30,7 @@ if(!requireNamespace("devtools", quietly = TRUE))
 devtools::install_github("YuLab-SMU/GeoTcgaData")
 ```
 
-GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation,   single nucleotide Variation and Copy number variation data. It's easy to download data from TCGA using the  gdc tool or `TCGAbiolinks`,  and some software provides organized TCGA data, such as [UCSC Xena](http://xena.ucsc.edu/) , [UCSCXenaTools]([ttps://CRAN.R-project.org/package=UCSCXenaTools](https://cran.r-project.org/package=UCSCXenaTools))，and [sangerbox](http://vip.sangerbox.com/), but processing these data into a format suitable for bioinformatics  analysis requires more work. This R package was developed to handle these data.
+GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation,   single nucleotide Variation and Copy number variation data. It's easy to download data from TCGA using the  gdc tool or `TCGAbiolinks`,  and some software provides organized TCGA data, such as [UCSC Xena](http://xena.ucsc.edu/) , [UCSCXenaTools](https://cran.r-project.org/package=UCSCXenaTools)，and [sangerbox](http://vip.sangerbox.com/), but processing these data into a format suitable for bioinformatics  analysis requires more work. This R package was developed to handle these data.
 
 ## Example
 

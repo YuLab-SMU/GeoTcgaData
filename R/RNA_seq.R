@@ -151,6 +151,7 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
                     DEGAll_table <- topconfects::edger_confects(DEGAll, fdr=0.05, 
                                                           coef = ncol(DEGAll$design), 
                                                           step=0.05)$table
+                    rownames(DEGAll_table) <- DEGAll_table$name
                 } 
                 # edgeR::topTags(n = nrow(d.mont$counts)) %>%
                 DEGAll <- DEGAll %>% edgeR::glmQLFTest(coef = ncol(DEGAll$design)) %>% 
@@ -189,6 +190,7 @@ diff_RNA <- function(counts, group, method='limma', geneLength = NULL,
                 DEGAll_table <- topconfects::limma_confects(DEGAll, 
                     coef = 1, 
                     fdr=0.05)$table
+                rownames(DEGAll_table) <- DEGAll_table$name
             } 
             DEGAll <- DEGAll %>% limma::contrasts.fit(contrast.matrix) %>%
                 limma::eBayes() %>%
