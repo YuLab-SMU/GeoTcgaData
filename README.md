@@ -185,7 +185,7 @@ if model = "gene", step1: calculate the methylation level of genes; step2: calcu
 
 We find that only model = "gene" has no deviation of CpG number. 
 
-<img src="logpvalue_cpgnumber.jpg" width="890"/>
+<img src="methy.jpg" width="890"/>
 
 Use `clusterProfiler` to do enrichment analytics:
 
