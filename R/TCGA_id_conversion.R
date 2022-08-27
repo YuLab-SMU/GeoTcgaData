@@ -25,9 +25,12 @@ id_conversion <- function(profiles, toType = "SYMBOL"){
     # rownames(profiles) <- unlist(lapply(rownames(profiles), function(x) unlist(strsplit(x,"\\."))[1]))
     rownames(profiles) <- gsub("\\..*", "", rownames(profiles))
     genes <- clusterProfiler::bitr(rownames(profiles), fromType = "ENSEMBL", 
-        toType = toType, OrgDb = org.Hs.eg.db::org.Hs.eg.db, drop = FALSE)[, 2]
-    profiles_new <- as.matrix(profiles[!is.na(genes), ])
-    rownames(profiles_new) <- genes[!is.na(genes)]
-    profiles_new
+        toType = toType, OrgDb = org.Hs.eg.db::org.Hs.eg.db, drop = FALSE)
+    	
+    genes <- genes[!duplicated(genes[, 1]), ]
+    rownames(genes) <- genes[, 1]
+    profiles2 <- as.matrix(profiles)
+    rownames(profiles2) <- genes[rownames(profiles), 2]
+    return(profiles2)
 }
 
