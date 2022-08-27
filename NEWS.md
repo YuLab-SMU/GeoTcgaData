@@ -1,3 +1,7 @@
+# GeoTcgaData 1.1.1.991
+
++ fix a bug in `id_conversion` (2022-8-27, Sat)
+
 # GeoTcgaData 1.1.1
 
 + fix a bug in `diff_RNA(useTopconfects = TRUE)` (2022-8-12, Fir)
