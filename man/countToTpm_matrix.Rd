@@ -4,11 +4,13 @@
 \alias{countToTpm_matrix}
 \title{Convert count to Tpm}
 \usage{
-countToTpm_matrix(counts_matrix)
+countToTpm_matrix(counts_matrix, keyType = "SYMBOL")
 }
 \arguments{
 \item{counts_matrix}{a matrix, colnames of counts_matrix are sample name,
 rownames of counts_matrix are gene symbols}
+
+\item{keyType}{keyType}
 }
 \value{
 a matrix

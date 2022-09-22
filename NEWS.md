@@ -1,5 +1,6 @@
-# GeoTcgaData 1.1.1.991
+# GeoTcgaData 1.1.1.992
 
++ fix gene length bug in `countToTpm_matrix()` (2022_9_22, Tue)
 + fix a bug in `id_conversion` (2022-8-27, Sat)
 
 # GeoTcgaData 1.1.1
