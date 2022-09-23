@@ -4,13 +4,15 @@
 \alias{countToTpm_matrix}
 \title{Convert count to Tpm}
 \usage{
-countToTpm_matrix(counts_matrix, keyType = "SYMBOL")
+countToTpm_matrix(counts_matrix, keyType = "SYMBOL", gene_cov)
 }
 \arguments{
 \item{counts_matrix}{a matrix, colnames of counts_matrix are sample name,
 rownames of counts_matrix are gene symbols}
 
 \item{keyType}{keyType}
+
+\item{gene_cov}{gene_cov}
 }
 \value{
 a matrix
@@ -22,5 +24,6 @@ Convert count to Tpm
 lung_squ_count2 <- matrix(c(1,2,3,4,5,6,7,8,9),ncol=3)
 rownames(lung_squ_count2) <- c("DISC1","TCOF1","SPPL3")
 colnames(lung_squ_count2) <- c("sample1","sample2","sample3")
-jieguo <- countToTpm_matrix(lung_squ_count2)
+result <- countToTpm_matrix(lung_squ_count2, keyType = "SYMBOL", 
+    gene_cov = gene_cov)
 }
