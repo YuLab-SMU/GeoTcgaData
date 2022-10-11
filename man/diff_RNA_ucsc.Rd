@@ -4,10 +4,10 @@
 \alias{diff_RNA_ucsc}
 \title{Do difference analysis of RNA-seq data downloaded from ucsc}
 \usage{
-diff_RNA_ucsc(ucscfile, ...)
+diff_RNA_ucsc(ucsc, ...)
 }
 \arguments{
-\item{ucscfile}{a dataframe or numeric matrix of ucsc RNA-seq data}
+\item{ucsc}{a dataframe or numeric matrix of ucsc RNA-seq data}
 
 \item{...}{additional parameters}
 }

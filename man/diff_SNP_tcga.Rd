@@ -11,6 +11,9 @@ diff_SNP_tcga(snpData, sampleType)
 
 \item{sampleType}{vector of sample group}
 }
+\value{
+data.frame
+}
 \description{
 Do difference analysis of SNP data downloaded from TCGAbiolinks
 }
@@ -18,17 +21,17 @@ Do difference analysis of SNP data downloaded from TCGAbiolinks
 \dontrun{
 library(TCGAbiolinks)
 query <- GDCquery(
-    project = "TCGA-CHOL", 
-    data.category = "Simple Nucleotide Variation", 
-    access = "open", 
-    legacy = FALSE, 
-    data.type = "Masked Somatic Mutation", 
-    workflow.type = "Aliquot Ensemble Somatic Variant Merging and Masking"
+  project = "TCGA-CHOL",
+  data.category = "Simple Nucleotide Variation",
+  access = "open",
+  legacy = FALSE,
+  data.type = "Masked Somatic Mutation",
+  workflow.type = "Aliquot Ensemble Somatic Variant Merging and Masking"
 )
 GDCdownload(query)
 data_snp <- GDCprepare(query)
 samples <- unique(data_snp$Tumor_Sample_Barcode)
-sampleType <- sample(c("A","B"), length(samples), replace = TRUE)
+sampleType <- sample(c("A", "B"), length(samples), replace = TRUE)
 names(sampleType) <- samples
 pvalue <- diff_SNP_tcga(snpData = data_snp, sampleType = sampleType)
 }

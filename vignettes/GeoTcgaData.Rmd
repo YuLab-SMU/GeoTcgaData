@@ -38,7 +38,7 @@ devtools::install_github("YuLab-SMU/GeoTcgaData")
 
 
 ## Introduction
-GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation,   single nucleotide Variation and Copy number variation data. It's easy to download data from TCGA using the  gdc tool or `TCGAbiolinks`,  and some software provides organized TCGA data, such as [UCSC Xena](http://xena.ucsc.edu/) , UCSCXenaTools, and [sangerbox](http://vip.sangerbox.com/), but processing these data into a format suitable for bioinformatics  analysis requires more work. This R package was developed to handle these data.
+GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation,   single nucleotide Variation and Copy number variation data. It's easy to download data from TCGA using the  gdc tool or `TCGAbiolinks`,  and some software provides organized TCGA data, such as [UCSC Xena](http://xena.ucsc.edu/) , UCSCXenaTools, and [sangerbox](http://vip.sangerbox.com/), but processing these data into a format suitable for bioinformatics  analysis requires more work. This R package was developed to handle these data.
 
 ```{r}
 library(GeoTcgaData)
@@ -50,27 +50,25 @@ This is a basic example which shows you how to solve a common problem:
 
 ## RNA-seq data differential expression analysis
 
-It is convenient to use [`TCGAbiolinks`](http://www.bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/analysis.html)  or [`GDCRNATools`](https://bioconductor.org/packages/GDCRNATools/) to download and analysis Gene expression data.  `TCGAbiolinks` use `edgeR` package to do differential expression analysis, while `GDCRNATools` can implement three most commonly used methods: limma, edgeR , and DESeq2 to identify differentially expressed  genes (DEGs).
+It is convenient to use [`TCGAbiolinks`](http://www.bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/analysis.html)  or [`GDCRNATools`](https://bioconductor.org/packages/GDCRNATools/) to download and analysis Gene expression data.  `TCGAbiolinks` use `edgeR` package to do differential expression analysis, while `GDCRNATools` can implement three most commonly used methods: limma, edgeR , and DESeq2 to identify differentially expressed  genes (DEGs).
 
-Alicia Oshlack  et al. claimed that unlike the chip data, the RNA-seq data had one [bias](https://pubmed.ncbi.nlm.nih.gov/20132535/): the larger the transcript length / mean read count , the more likely it was to be  identified as a differential gene, [while there was no such trend in the chip data](https://pubmed.ncbi.nlm.nih.gov/19371405/).
+Alicia Oshlack  et al. claimed that unlike the chip data, the RNA-seq data had one [bias](https://pubmed.ncbi.nlm.nih.gov/20132535/)[1]: the larger the transcript length / mean read count , the more likely it was to be  identified as a differential gene, [while there was no such trend in the chip data](https://pubmed.ncbi.nlm.nih.gov/19371405/)[2].
 
 
+ However, when we use their chip data for difference analysis( using the limma package), we find that chip data has the same trend as RNA-seq data. And we also found this trend in the difference analysis results given by the data [authors](https://genome.cshlp.org/content/18/9/1509.long)[3].
 
- However, when we use their chip data for difference analysis( using the limma  package), we find that chip data has the same trend as RNA-seq data. And we also found this trend in the difference analysis results given by the data [authors](https://genome.cshlp.org/content/18/9/1509.long).
+ 
 
- 
+ It is worse noting that [only technical replicate data, which has small gene dispersions, shows this bias](https://pubmed.ncbi.nlm.nih.gov/28545404/)[4]. This is because in technical replicate RNA-seq data a long gene has more reads mapping to it compared to a short gene of similar expression,  and most of the statistical methods used to detect differential expression  have stronger detection ability for genes with more reads. However, we have not deduced why there is such a bias in the current difference analysis algorithms. 
 
- It is worse noting that [only technical replicate data, which has small gene dispersions, shows this bias](https://pubmed.ncbi.nlm.nih.gov/28545404/). This is because in technical replicate RNA-seq data a long gene has more reads mapping to it compared to a short gene of similar expression,  and most of the statistical methods used to detect differential expression  have stronger detection ability for genes with more reads. However, we have not deduced why there is such a bias in the current difference analysis algorithms. 
-
-Some software, such as [CQN](http://www.bioconductor.org/packages/cqn/) , present a [normalization algorithm](https://pubmed.ncbi.nlm.nih.gov/22285995/) to correct systematic biases(gene length bias and [GC-content bias](https://pubmed.ncbi.nlm.nih.gov/22177264/). But they did not provide sufficient evidence to prove that the correction is effective. We use the [Marioni dataset](https://pubmed.ncbi.nlm.nih.gov/19371405/) to verify the correction effect of CQN and find that there is still a deviation after correction:
-
+Some software, such as [CQN](http://www.bioconductor.org/packages/cqn/) , present a [normalization algorithm](https://pubmed.ncbi.nlm.nih.gov/22285995/) [5]to correct systematic biases(gene length bias and [GC-content bias](https://pubmed.ncbi.nlm.nih.gov/22177264/)[6]. But they did not provide sufficient evidence to prove that the correction is effective. We use the [Marioni dataset](https://pubmed.ncbi.nlm.nih.gov/19371405/)[2] to verify the correction effect of CQN and find that there is still a deviation after correction:
 
 
 
-[GOseq](http://bioconductor.org/packages/goseq/) based on [Wallenius' noncentral hypergeometric distribution](https://en.wikipedia.org/wiki/Wallenius%27_noncentral_hypergeometric_distribution) can effectively correct the gene length deviation in enrichment analysis. However, the current RNA-seq data often have no gene length bias, but only the expression amount(read count) bias, GOseq may overcorrect these data, correcting originally unbiased data into reverse bias.
-
+[GOseq](http://bioconductor.org/packages/goseq/) [1]based on [Wallenius' noncentral hypergeometric distribution](https://en.wikipedia.org/wiki/Wallenius%27_noncentral_hypergeometric_distribution) can effectively correct the gene length deviation in enrichment analysis. However, the current RNA-seq data often have no gene length bias, but only the expression amount(read count) bias, GOseq may overcorrect these data, correcting originally unbiased data into reverse bias.
 
 GOseq also fails to correct for expression bias, therefore, read count bias correction is still a challenge for us.
+
 
 
 use `TCGAbiolinks` to download TCGA data
@@ -104,8 +102,9 @@ group <- sample(c("grp1", "grp2"), ncol(dataPrep), replace = TRUE)
 library(cqn) # To avoid reporting errors: there is no function "rq"
 ## get gene length and GC content
 library(org.Hs.eg.db)
-genes_bitr <- bitr(rownames(gene_cov), fromType = "ENTREZID", toType = "ENSEMBL", 
-         OrgDb = org.Hs.eg.db, drop = TRUE)
+genes_bitr <- bitr(rownames(gene_cov), fromType = "ENTREZID", 
+    toType = "ENSEMBL", 
+    OrgDb = org.Hs.eg.db, drop = TRUE)
 genes_bitr <- genes_bitr[!duplicated(genes_bitr[,2]), ]
 gene_cov2 <- gene_cov[genes_bitr$ENTREZID, ]
 rownames(gene_cov2) <- genes_bitr$ENSEMBL
@@ -171,7 +170,8 @@ methy_file <- "TCGA.THCA.sampleMap_HumanMethylation450.gz"
 methy <- fread(methy_file, sep = "\t", header = T)
 library(ChAMP)
 myImport <- champ.import(directory=system.file("extdata",package="ChAMPdata"))
-myfilter <- champ.filter(beta=myImport$beta,pd=myImport$pd,detP=myImport$detP,beadcount=myImport$beadcount)
+myfilter <- champ.filter(beta=myImport$beta,pd=myImport$pd,
+  detP=myImport$detP,beadcount=myImport$beadcount)
 cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
 ## or use IlluminaHumanMethylation450kanno.ilmn12.hg19 to get annotation data
 library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
@@ -224,7 +224,7 @@ Do difference analysis of gene level copy number variation data using `diff_CNV`
 class(data) <- "data.frame"
 cnvData <- data[, -c(1,2,3)]
 rownames(cnvData) <- data[, 1]
-sampleGroup  = sample(c("A","B"), ncol(cnvData), replace = TRUE)
+sampleGroup  <- sample(c("A","B"), ncol(cnvData), replace = TRUE)
 diffCnv <- diff_CNV(cnvData, sampleGroup)
 ```
 
@@ -306,7 +306,8 @@ rep2_result <- rep2(input_file," /// ")
 1. The function `id_conversion_vector` could convert gene id from one of `symbol`, `RefSeq_ID`, `Ensembl_ID`, `NCBI_Gene_ID`, `UCSC_ID`, and `UniProt_ID` , etc. to another. Use `id_ava()` to get all the convertible ids. For example:
 
 ```{r}
-id_conversion_vector("symbol", "ensembl_gene_id", c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS")) 
+id_conversion_vector("symbol", "ensembl_gene_id", c("A2ML1", "A2ML1-AS1", 
+  "A4GALT", "A12M1", "AAAS")) 
 ```
 
 When the user converts the Ensembl ID to other ids, the version number needs to be removed. For example, "ENSG00000186092.4" doesn't work, you need to change it to "ENSG00000186092".
@@ -336,21 +337,23 @@ bitr(c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS"), fromType = "SYMBOL",
 lung_squ_count2 <- matrix(c(1,2,3,4,5,6,7,8,9),ncol=3)
 rownames(lung_squ_count2) <- c("DISC1","TCOF1","SPPL3")
 colnames(lung_squ_count2) <- c("sample1","sample2","sample3")
-jieguo <- countToFpkm_matrix(lung_squ_count2, keyType = "SYMBOL", 
+result <- countToFpkm_matrix(lung_squ_count2, keyType = "SYMBOL", 
                              gene_cov = gene_cov)
 ```
 
 ```{r, message=FALSE, warning=FALSE}
-lung_squ_count2 <- matrix(c(0.11,0.22,0.43,0.14,0.875,0.66,0.77,0.18,0.29),ncol=3)
+lung_squ_count2 <- matrix(c(0.11,0.22,0.43,0.14,0.875,
+  0.66,0.77,0.18,0.29),ncol=3)
 rownames(lung_squ_count2) <- c("DISC1","TCOF1","SPPL3")
 colnames(lung_squ_count2) <- c("sample1","sample2","sample3")
-jieguo <- countToTpm_matrix(lung_squ_count2, keyType = "SYMBOL", 
+result <- countToTpm_matrix(lung_squ_count2, keyType = "SYMBOL", 
                             gene_cov = gene_cov)
 ```
 3. The function `tcga_cli_deal` could combine clinical information obtained from TCGA and extract survival data. For example:
 
 ```{r, message=FALSE, warning=FALSE}
-tcga_cli <- tcga_cli_deal(system.file(file.path("extdata","tcga_cli"),package="GeoTcgaData"))
+tcga_cli <- tcga_cli_deal(system.file(file.path("extdata","tcga_cli"),
+  package="GeoTcgaData"))
 ```
 
 **Note:** Now the combined clinical data can be downloaded directly from [TCGAbiolinks](http://www.bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/clinical.html).
@@ -368,4 +371,12 @@ names(clinical.BCRtab.all)
 ## get indexed data
 clinical <- GDCquery_clinic(project = "TCGA-ACC", type = "clinical")
 ```
+
+## References
+1. Young MD, Wakefield MJ, Smyth GK, Oshlack A (2010) Gene ontology analysis for RNA-seq: accounting for selection bias. Genome Biol 11: R14.
+2. Oshlack A, Wakefield MJ (2009) Transcript length bias in RNA-seq data confounds systems biology. Biol Direct 4: 14.
+3. Marioni JC, Mason CE, Mane SM, Stephens M, Gilad Y (2008) RNA-seq: an assessment of technical reproducibility and comparison with gene expression arrays. Genome Res 18: 1509-1517.
+4. Yoon S, Nam D (2017) Gene dispersion is the key determinant of the read count bias in differential expression analysis of RNA-seq data. BMC Genomics 18: 408.
+5. Hansen KD, Irizarry RA, Wu Z (2012) Removing technical variability in RNA-seq data using conditional quantile normalization. Biostatistics 13: 204-216.
+6. Risso D, Schwartz K, Sherlock G, Dudoit S (2011) GC-content normalization for RNA-Seq data. BMC Bioinformatics 12: 480.
 
