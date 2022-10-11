@@ -1,8 +1,8 @@
 Package: GeoTcgaData
 Type: Package
 Title: Processing various types of data on GEO and TCGA
-Version: 1.1.1.992
-Authors@R: person(given = "Erqiang", family = "Hu", email = "13766876214@163.com", role  = c("aut", "cre"))
+Version: 1.1.1.993
+Authors@R: person(given = "Erqiang", family = "Hu", email = "13766876214@163.com", role  = c("aut", "cre"), comment = c(ORCID = "0000-0002-1798-7513"))
 Description: Gene Expression Omnibus(GEO) and The Cancer Genome Atlas (TCGA) 
     provide us with a wealth of data, such as RNA-seq, DNA Methylation, SNP
     and Copy number variation data. It's easy to download data from TCGA using the 
@@ -29,7 +29,8 @@ Suggests:
     minfi,
     IlluminaHumanMethylation450kanno.ilmn12.hg19,
     dearseq,
-    NOISeq
+    NOISeq,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Imports: 
     utils,
@@ -40,3 +41,4 @@ Imports:
     dplyr,
     topconfects
 Language: en-US
+Config/testthat/edition: 3

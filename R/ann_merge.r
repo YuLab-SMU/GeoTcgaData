@@ -32,15 +32,15 @@
 # 	for(filek in seq_len(length(tcga_dir))) {
 #         dirr_l <- file.path(dirr, tcga_dir[filek])
 #         files <- dir(dirr_l)
-    
-    
+
+
 #         for(j in seq_len(length(files))) {
 #             if(length(grep(".txt",files[j]))>0) {
-    
+
 #                 file_name <- file.path(dirr_l, dir(dirr_l)[j])
 #             }
 #         }
-    
+
 #         # Each chromosome is compared separately to speed up
 #         aa <- data.table::fread(file_name,header=TRUE)
 #         class(aa) <- "data.frame"
@@ -52,27 +52,28 @@
 #         nlength <- unlist(lapply(aalist, nrow))
 #         geneslist <- vector("list", length = length(chrs))
 #         aalist2 <- vector("list", length = length(chrs))
-#         for(i in seq_len(length(chrs))) {          
+#         for(i in seq_len(length(chrs))) {
 #             aalisti <- aalist[[i]]
 #             genePoslisti <- genePoslist[[i]]
 #             genes <- vector("list", length = nlength[i])
 #             for(j in seq_len(nrow(aalisti))) {
 #                 rm1 <- genePoslisti$end < aalisti[j, "Start"]
 #                 rm2 <- genePoslisti$start > aalisti[j, "End"]
-#                 genes[[j]] <- genePoslisti[!(rm1 | rm2), "gene"]     
+#                 genes[[j]] <- genePoslisti[!(rm1 | rm2), "gene"]
 #             }
-#             genes <- unlist(lapply(genes, paste, collapse = ",")) 
-#             aalist2[[i]] <- cbind(aalisti, genes)         
+#             genes <- unlist(lapply(genes, paste, collapse = ","))
+#             aalist2[[i]] <- cbind(aalisti, genes)
 #         }
-        
+
 #         # bb<-cbind(aa,genes)
 #         bb <- do.call(rbind, aalist2)
 #         bb <- bb[which(bb[,"genes"]!=""), ]
 #         bb <- bb[, c("genes", "Segment_Mean")]
-    
+
 #         dd <- strsplit(bb$genes, ",")
 #         ddLength <- unlist(lapply(dd, length))
-#         output[[filek]] <- data.frame(genes = unlist(dd), Segment_Mean = rep(bb[, "Segment_Mean"], times = ddLength))
+#         output[[filek]] <- data.frame(genes = unlist(dd), 
+#           Segment_Mean = rep(bb[, "Segment_Mean"], times = ddLength))
 #         names(output)[filek] <- aa$GDC_Aliquot[1]
 #     }
 
@@ -81,20 +82,18 @@
 #     result <- matrix(0,length(genes_union),length(output))
 #     rownames(result) <- genes_union
 #     colnames(result) <- names(output)
-    
+
 #     for(file in names(output))
 #     {
 #         result[output[[file]]$genes, file] <- output[[file]]$Segment_Mean
 #     }
-    
+
 #     metadata<-deal_meta(metadatafile)
 #     rownames(metadata)<-metadata[,1]
 #     colnames(result)<-metadata[colnames(result), 2]
 #     resultdf <- as.data.frame(matrix(as.numeric(result), nrow(result)))
 #     colnames(resultdf) <- colnames(result)
 #     rownames(resultdf) <- rownames(result)
-#     resultdf <- 2^(1+resultdf)  
-#     return(resultdf)    
+#     resultdf <- 2^(1+resultdf)
+#     return(resultdf)
 # }
-
-

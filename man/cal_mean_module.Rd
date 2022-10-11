@@ -19,5 +19,5 @@ the same module
 Find the mean value of the gene in each module
 }
 \examples{
-result <- cal_mean_module(geneExpress,module)
+result <- cal_mean_module(geneExpress, module)
 }

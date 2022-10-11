@@ -9,9 +9,10 @@
 #'
 "geneExpress"
 
-# ' a matrix for Converting gene symbol to entrez_id or ensembl_gene_id 
+# ' a matrix for Converting gene symbol to entrez_id or ensembl_gene_id
 # '
-# ' the columns represent "symbol", "locus_group", "locus_type", "entrez_id" and "ensembl_gene_id"
+# ' the columns represent "symbol", "locus_group", "locus_type", 
+# ' "entrez_id" and "ensembl_gene_id"
 # '
 # ' @format A matrix with 37647 rows and 5 column
 # '
@@ -21,7 +22,7 @@
 #'
 #' the first column represents the gene symbol
 #'
-#' the other columns represent the expression(FPKM) of genes 
+#' the other columns represent the expression(FPKM) of genes
 #'
 #' @format A matrix with 10 rows and 10 column
 #'
@@ -31,7 +32,7 @@
 #'
 #' the first column represents the gene symbol
 #'
-#' the other columns represent the expression of genes 
+#' the other columns represent the expression of genes
 #'
 #' @format A matrix with 32 rows and 20 column
 #'
@@ -41,7 +42,7 @@
 #'
 #' the first column represents the gene symbol
 #'
-#' the other columns represent the expression(count) of genes 
+#' the other columns represent the expression(count) of genes
 #'
 #' @format A matrix with 100 rows and 150 column
 #'
@@ -51,7 +52,7 @@
 #'
 #' the first column represents the gene symbol
 #'
-#' the other columns represent the expression of genes 
+#' the other columns represent the expression of genes
 #'
 #' @format A matrix with 999 rows and 3 column
 #'
@@ -78,6 +79,3 @@
 #' @format A data.frame with 27341 rows and 2 column
 #'
 "gene_cov"
-
-
-

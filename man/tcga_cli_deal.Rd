@@ -16,5 +16,6 @@ a matrix, survival time and survival state in TCGA
 Combine clinical information obtained from TCGA and extract survival data
 }
 \examples{
-tcga_cli_deal(system.file(file.path("extdata","tcga_cli"),package="GeoTcgaData"))
+tcga_cli_deal(system.file(file.path("extdata", "tcga_cli"), 
+  package = "GeoTcgaData"))
 }

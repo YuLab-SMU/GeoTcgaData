@@ -13,6 +13,28 @@ diff_SNP(snpDf, sampleGroup, method = min)
 
 \item{method}{Method of combining the pvalue of multiple snp in a gene.}
 }
+\value{
+data.frame
+}
 \description{
 Do difference analysis of SNP data
+}
+\examples{
+\dontrun{
+library(TCGAbiolinks)
+query <- GDCquery(
+  project = "TCGA-CHOL",
+  data.category = "Simple Nucleotide Variation",
+  access = "open",
+  legacy = FALSE,
+  data.type = "Masked Somatic Mutation",
+  workflow.type = "Aliquot Ensemble Somatic Variant Merging and Masking"
+)
+GDCdownload(query)
+data_snp <- GDCprepare(query)
+samples <- unique(data_snp$Tumor_Sample_Barcode)
+sampleType <- sample(c("A", "B"), length(samples), replace = TRUE)
+names(sampleType) <- samples
+pvalue <- diff_SNP_tcga(snpData = data_snp, sampleType = sampleType)
+}
 }

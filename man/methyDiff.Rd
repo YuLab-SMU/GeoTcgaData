@@ -21,16 +21,39 @@ methyDiff(
 
 \item{combineMethod}{method to combine the cpg pvalues}
 
-\item{missing_value}{Method to  impute missing expression data, one of "zero" and "knn".}
+\item{missing_value}{Method to  impute missing expression data, 
+one of "zero" and "knn".}
 
-\item{region}{region of genes, one of "Body", "TSS1500", "TSS200", "3'UTR", "1stExon", "5'UTR", and "IGR".}
+\item{region}{region of genes, one of "Body", "TSS1500", "TSS200", 
+"3'UTR", "1stExon", "5'UTR", and "IGR".}
 
-\item{model}{if "cpg", step1: calculate difference cpgs; step2: calculate difference genes.
-if "gene", step1: calculate the methylation level of genes; step2: calculate difference genes.}
+\item{model}{if "cpg", step1: calculate difference cpgs; 
+step2: calculate difference genes.
+if "gene", step1: calculate the methylation level of genes; 
+step2: calculate difference genes.}
 
-\item{adjust.method}{character string specifying the method used to adjust p-values for multiple testing.
+\item{adjust.method}{character string specifying the method
+used to adjust p-values for multiple testing.
 See \link{p.adjust} for possible values.}
 }
 \description{
 Get methylation difference gene
+}
+\examples{
+\dontrun{
+library(TCGAbiolinks)
+query <- GDCquery(project = "TCGA-ACC",
+                  data.category = "DNA Methylation",
+                  data.type = "Methylation Beta Value",
+                  platform = "Illumina Human Methylation 450")
+GDCdownload(query, method = "api", files.per.chunk = 5, 
+  directory = Your_Path)
+merge_result <- Merge_methy_tcga(Your_Path_to_DNA_Methylation_data)
+if (!requireNamespace("ChAMP", quietly = TRUE))
+    BiocManager::install("ChAMP")
+library(ChAMP) # To avoid reporting errors
+diff_gene <- methyDiff(cpgData = merge_result, 
+  sampleGroup = sample(c("C","T"), 
+  ncol(merge_result[[1]]), replace = TRUE))
+}
 }
