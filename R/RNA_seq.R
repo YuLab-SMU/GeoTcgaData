@@ -287,6 +287,7 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
 #'
 #' @param ucsc a dataframe or numeric matrix of ucsc RNA-seq data
 #' @param ... additional parameters
+#' @return data.frame
 #' @export
 #'
 #' @examples

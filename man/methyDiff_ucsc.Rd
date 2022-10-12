@@ -33,6 +33,9 @@ step2: calculate difference genes.}
 \item{region}{region of genes, one of "Body", "TSS1500", 
 "TSS200", "3'UTR", "1stExon", "5'UTR", and "IGR".}
 }
+\value{
+data.frame
+}
 \description{
 Title
 }

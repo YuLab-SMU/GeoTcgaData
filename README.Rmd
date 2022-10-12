@@ -29,6 +29,10 @@ Erqiang Hu
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+<!-- badges: start -->
+[![Codecov test coverage](https://codecov.io/gh/YuLab-SMU/GeoTcgaData/branch/master/graph/badge.svg)](https://app.codecov.io/ghYuLab-SMU/GeoTcgaData?branch=master)
+<!-- badges: end -->
+
 
 
 
@@ -418,3 +422,7 @@ names(clinical.BCRtab.all)
 clinical <- GDCquery_clinic(project = "TCGA-ACC", type = "clinical")
 ```
 
+## :sparkling_heart: Contributing
+
+We welcome any contributions! By participating in this project you agree to
+abide by the terms outlined in the [Contributor Code of Conduct](CONDUCT.md).

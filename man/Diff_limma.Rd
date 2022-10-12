@@ -13,6 +13,9 @@ Diff_limma(df, group, adjust.method = "BH")
 
 \item{adjust.method}{adjust.method.}
 }
+\value{
+data.frame
+}
 \description{
 Diff_limma
 }

@@ -4,10 +4,8 @@
   "identifier": "GeoTcgaData",
   "description": "Gene Expression Omnibus(GEO) and The Cancer Genome Atlas (TCGA) provide us with a wealth of data, such as RNA-seq, DNA Methylation, SNP and Copy number variation data. It's easy to download data from TCGA using the gdc tool, but processing these data into a format suitable for bioinformatics analysis requires more work. This R package was developed to handle these data.",
   "name": "GeoTcgaData: Processing various types of data on GEO and TCGA",
-  "codeRepository": "https://github.com/YuLab-SMU/GeoTcgaData",
-  "issueTracker": "https://github.com/YuLab-SMU/GeoTcgaData/issues",
-  "license": "https://spdx.org/licenses/Artistic-2.0",
-  "version": "1.1.1.992",
+  "license": "https://spdx.org/licenses/GPL-3.0",
+  "version": "1.1.1.993",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -25,7 +23,8 @@
       "@type": "Person",
       "givenName": "Erqiang",
       "familyName": "Hu",
-      "email": "13766876214@163.com"
+      "email": "13766876214@163.com",
+      "@id": "https://orcid.org/0000-0002-1798-7513"
     }
   ],
   "maintainer": [
@@ -33,7 +32,8 @@
       "@type": "Person",
       "givenName": "Erqiang",
       "familyName": "Hu",
-      "email": "13766876214@163.com"
+      "email": "13766876214@163.com",
+      "@id": "https://orcid.org/0000-0002-1798-7513"
     }
   ],
   "softwareSuggestions": [
@@ -214,6 +214,19 @@
         "url": "https://www.bioconductor.org"
       },
       "sameAs": "https://bioconductor.org/packages/release/bioc/html/NOISeq.html"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "testthat",
+      "name": "testthat",
+      "version": ">= 3.0.0",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=testthat"
     }
   ],
   "softwareRequirements": {
@@ -302,8 +315,11 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "3704.799KB",
+  "fileSize": "3711.968KB",
+  "codeRepository": "https://github.com/YuLab-SMU/GeoTcgaData",
   "releaseNotes": "https://github.com/YuLab-SMU/GeoTcgaData/blob/master/NEWS.md",
   "readme": "https://github.com/YuLab-SMU/GeoTcgaData/blob/master/README.md",
+  "contIntegration": "https://app.codecov.io/ghYuLab-SMU/GeoTcgaData?branch=master",
+  "developmentStatus": "https://www.repostatus.org/#active",
   "relatedLink": "https://CRAN.R-project.org/package=GeoTcgaData"
 }

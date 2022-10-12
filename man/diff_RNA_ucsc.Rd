@@ -11,6 +11,9 @@ diff_RNA_ucsc(ucsc, ...)
 
 \item{...}{additional parameters}
 }
+\value{
+data.frame
+}
 \description{
 Do difference analysis of RNA-seq data downloaded from ucsc
 }

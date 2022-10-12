@@ -36,6 +36,9 @@ step2: calculate difference genes.}
 used to adjust p-values for multiple testing.
 See \link{p.adjust} for possible values.}
 }
+\value{
+data.frame
+}
 \description{
 Get methylation difference gene
 }

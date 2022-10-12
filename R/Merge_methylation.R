@@ -70,6 +70,7 @@ get_methy_df <- function(filePath) {
 #' used to adjust p-values for multiple testing.
 #' See \link{p.adjust} for possible values.
 #' @importFrom stats p.adjust
+#' @return data.frame
 #' @export
 #'
 #' @examples
@@ -171,7 +172,9 @@ methyDiff <- function(cpgData, sampleGroup,
   return(gene_pvalue)
 }
 
-# from hadley wickham in "https://r.789695.n4.nabble.com/Suppressing-output-e-g-from-cat-td859876.html"
+# from hadley wickham in 
+# "https://r.789695.n4.nabble.com/
+# Suppressing-output-e-g-from-cat-td859876.html"
 #' Suppressing output
 #'
 #' @param x some code
@@ -199,6 +202,7 @@ quiet <- function(x) {
 #' @param region region of genes, one of "Body", "TSS1500", 
 #' "TSS200", "3'UTR", "1stExon", "5'UTR", and "IGR".
 #' @importFrom dplyr `%>%`
+#' @return data.frame
 #' @export
 #'
 #' @examples
@@ -242,6 +246,7 @@ methyDiff_ucsc <- function(methy, sampleGroup = NULL, missing_value = "knn",
 #' @param df data.frame of the omic data
 #' @param group a vector, group of samples.
 #' @param adjust.method adjust.method.
+#' @return data.frame
 #' @export
 #' @examples
 #' df <- matrix(runif(200), 25, 8)
@@ -257,7 +262,8 @@ Diff_limma <- function(df, group, adjust.method = "BH") {
   group <- gsub(groups[2], "disease", group)
   design <- stats::model.matrix(~ 0 + factor(group))
   colnames(design) <- levels(factor(group))
-  contrast.matrix <- limma::makeContrasts(contrasts = paste(colnames(design)[2:1],
+  contrast.matrix <- limma::makeContrasts(
+    contrasts = paste(colnames(design)[2:1],
     collapse = "-"
   ), levels = colnames(design))
 
