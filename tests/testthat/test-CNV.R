@@ -1,5 +1,5 @@
 test_that("can parse example diff_CNV", {
-  skip_on_cran()
+  # skip_on_cran()
   aa <- matrix(sample(c(0, 1, -1), 200, replace = TRUE), 25, 8)
   rownames(aa) <- paste0("gene", 1:25)
   colnames(aa) <- paste0("sample", 1:8)

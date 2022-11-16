@@ -1,5 +1,5 @@
 test_that("can parse example differential_cnv", {
-  skip_on_cran()
+  # skip_on_cran()
   cnv <- matrix(c(
     -1.09150, -1.47120, -0.87050, -0.50880,
     -0.50880, 2.0, 2.0, 2.0, 2.0, 2.0, 2.601962, 2.621332, 2.621332,

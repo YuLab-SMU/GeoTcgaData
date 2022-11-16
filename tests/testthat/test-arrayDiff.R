@@ -1,5 +1,5 @@
 test_that("can parse example arrayDiff", {
-  skip_on_cran()
+  # skip_on_cran()
   arrayData <- matrix(runif(200), 25, 8)
   rownames(arrayData) <- paste0("gene", 1:25)
   colnames(arrayData) <- paste0("sample", 1:8)

@@ -20,7 +20,7 @@ Medical University.
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-
+[![pkgcheck](https://github.com/YuLab-SMU/GeoTcgaData/workflows/pkgcheck/badge.svg)](https://github.com/<org>/<repo>/actions?query=workflow%3Apkgcheck)
 ## :arrow_double_down: Installation
 
 Get the released version from CRAN:
