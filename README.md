@@ -13,14 +13,6 @@ Erqiang Hu
 Department of Bioinformatics, School of Basic Medical Sciences, Southern
 Medical University.
 
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/GeoTcgaData?color=green)](https://cran.r-project.org/package=GeoTcgaData)
-![](https://cranlogs.r-pkg.org/badges/grand-total/GeoTcgaData?color=green)
-![](https://cranlogs.r-pkg.org/badges/GeoTcgaData?color=green)
-![](https://cranlogs.r-pkg.org/badges/last-week/GeoTcgaData?color=green)
-[![Project Status: Active – The project has reached a stable, usable
-state and is being actively
-developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-
 ## :arrow_double_down: Installation
 
 Get the released version from CRAN:
@@ -39,11 +31,6 @@ devtools::install_github("YuLab-SMU/GeoTcgaData")
 
 ``` r
 library(GeoTcgaData)
-#>  =============================================================
-#>  Hello, friend! welcome to use GeoTcgaData!                   
-#>  -------------------------------------------------------------
-#>  Version:1.1.1.993
-#>  =============================================================
 ```
 
 GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA
@@ -208,8 +195,8 @@ merge_result <- Merge_methy_tcga(Your_Path_to_DNA_Methylation_data)
 Then use `ChAMP` package to do difference analysis.
 
 ``` r
-if (!requireNamespace("ChAMP", quietly = TRUE))
-    BiocManager::install("ChAMP")
+# if (!requireNamespace("ChAMP", quietly = TRUE))
+#     BiocManager::install("ChAMP")
 library(ChAMP) # To avoid reporting errors
 diff_gene <- methyDiff(cpgData = merge_result, sampleGroup = sample(c("C","T"), 
     ncol(merge_result[[1]]), replace = TRUE))
@@ -393,6 +380,7 @@ Especially, the function id_conversion could convert ENSEMBL gene id to
 gene Symbol in TCGA. For example:
 
 ``` r
+data(profile)
 result <- id_conversion(profile)
 #> 
 #> 
@@ -410,7 +398,7 @@ future versions, we will use `clusterProfiler::bitr` for ID conversion.
 
 ``` r
 library(clusterProfiler)
-#> clusterProfiler v4.5.2.001  For help: https://yulab-smu.top/biomedical-knowledge-mining-book/
+#> clusterProfiler v4.6.0  For help: https://yulab-smu.top/biomedical-knowledge-mining-book/
 #> 
 #> If you use clusterProfiler in published research, please cite:
 #> T Wu, E Hu, S Xu, M Chen, P Guo, Z Dai, T Feng, L Zhou, W Tang, L Zhan, X Fu, S Liu, X Bo, and G Yu. clusterProfiler 4.0: A universal enrichment tool for interpreting omics data. The Innovation. 2021, 2(3):100141
@@ -430,12 +418,12 @@ library(org.Hs.eg.db)
 #>     IQR, mad, sd, var, xtabs
 #> The following objects are masked from 'package:base':
 #> 
-#>     anyDuplicated, append, as.data.frame, basename, cbind, colnames,
-#>     dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,
-#>     grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,
-#>     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
-#>     rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,
-#>     union, unique, unsplit, which.max, which.min
+#>     anyDuplicated, aperm, append, as.data.frame, basename, cbind,
+#>     colnames, dirname, do.call, duplicated, eval, evalq, Filter, Find,
+#>     get, grep, grepl, intersect, is.unsorted, lapply, Map, mapply,
+#>     match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,
+#>     Position, rank, rbind, Reduce, rownames, sapply, setdiff, sort,
+#>     table, tapply, union, unique, unsplit, which.max, which.min
 #> 载入需要的程辑包：Biobase
 #> Welcome to Bioconductor
 #> 
@@ -482,6 +470,7 @@ bitr(c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS"), fromType = "SYMBOL",
     convert count data to FPKM or TPM data.
 
 ``` r
+data(gene_cov)
 lung_squ_count2 <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), ncol = 3)
 rownames(lung_squ_count2) <- c("DISC1", "TCOF1", "SPPL3")
 colnames(lung_squ_count2) <- c("sample1", "sample2", "sample3")
@@ -491,7 +480,7 @@ result <- countToFpkm_matrix(lung_squ_count2,
 )
 #> 'select()' returned 1:1 mapping between keys and columns
 #> Warning in clusterProfiler::bitr(rownames(gene_cov), fromType = "ENTREZID", :
-#> 0.05% of input gene IDs are fail to map...
+#> 0.06% of input gene IDs are fail to map...
 result
 #>        sample1  sample2  sample3
 #> DISC1 11449.25 18318.79 20036.18
@@ -509,7 +498,7 @@ result <- countToTpm_matrix(lung_squ_count2,
 )
 #> 'select()' returned 1:1 mapping between keys and columns
 #> Warning in clusterProfiler::bitr(rownames(gene_cov), fromType = "ENTREZID", :
-#> 0.05% of input gene IDs are fail to map...
+#> 0.06% of input gene IDs are fail to map...
 result
 #>        sample1  sample2  sample3
 #> DISC1 104024.7 177787.5 197827.0

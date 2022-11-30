@@ -50,7 +50,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">arrayDiff</span><span class="op">(</span><span class="va">df</span>, <span class="va">group</span>, method <span class="op">=</span> <span class="st">"limma"</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">arrayDiff</span><span class="op">(</span><span class="va">df</span>, <span class="va">group</span>, method <span class="op">=</span> <span class="st">"limma"</span>, adjust.method <span class="op">=</span> <span class="st">"BH"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -64,10 +64,68 @@
 
 
 <dt>method</dt>
-<dd><p>one of "limma", "ttest", "wilcox",</p></dd>
+<dd><p>one of "limma", "ttest", "wilcox"</p></dd>
+
+
+<dt>adjust.method</dt>
+<dd><p>adjust.method.</p></dd>
 
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    
 
+<p>data.frame</p>
+    </div>
+
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">GeoTcgaData</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Use real GEO data as example</span></span></span>
+<span class="r-in"><span><span class="va">arrayData</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="st">"GSE54807_series_matrix.txt.gz"</span>, </span></span>
+<span class="r-in"><span>  sep <span class="op">=</span> <span class="st">"\t"</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, </span></span>
+<span class="r-in"><span>    fill<span class="op">=</span><span class="cn">TRUE</span>, comment.char <span class="op">=</span> <span class="st">"!"</span>, check.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">gpl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"GPL6244-17930.txt"</span>, sep <span class="op">=</span> <span class="st">"\t"</span>, header <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">gpl</span> <span class="op">&lt;-</span> <span class="va">gpl</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ID"</span>, <span class="st">"gene_assignment"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">gpl</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"data.frame"</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">gpl</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">aa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">gpl</span><span class="op">[</span><span class="va">i</span>, <span class="fl">2</span><span class="op">]</span>, <span class="st">" // "</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="va">gpl</span><span class="op">[</span><span class="va">i</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">aa</span>, <span class="st">" /// "</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">gpl</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">gpl</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span> </span></span>
+<span class="r-in"><span><span class="va">arrayData</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">arrayData</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">gpl</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">gpl</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">arrayData</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">gpl</span><span class="op">[</span><span class="va">arrayData</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>, <span class="fl">2</span><span class="op">]</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">arrayData</span> <span class="op">&lt;-</span> <span class="fu"><a href="rep2.html">rep2</a></span><span class="op">(</span><span class="va">arrayData</span>,<span class="st">" /// "</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Remove rows that do not correspond to genes</span></span></span>
+<span class="r-in"><span><span class="va">arrayData</span> <span class="op">&lt;-</span> <span class="va">arrayData</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">arrayData</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">arrayData</span> <span class="op">&lt;-</span> <span class="va">arrayData</span><span class="op">[</span><span class="op">!</span><span class="va">arrayData</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">==</span> <span class="st">""</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">arrayData</span> <span class="op">&lt;-</span> <span class="va">arrayData</span><span class="op">[</span><span class="op">!</span><span class="va">arrayData</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">==</span> <span class="st">"---"</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">arrayData</span> <span class="op">&lt;-</span> <span class="va">arrayData</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">arrayData</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">arrayData</span> <span class="op">&lt;-</span> <span class="fu"><a href="gene_ave.html">gene_ave</a></span><span class="op">(</span><span class="va">arrayData</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">arrayData</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">&lt;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">arrayData</span> <span class="op">&lt;-</span> <span class="va">arrayData</span><span class="op">[</span><span class="va">keep</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"group1"</span>, <span class="fl">12</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"group2"</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">arrayDiff</span><span class="op">(</span>df <span class="op">=</span> <span class="va">arrayData</span>, group <span class="op">=</span> <span class="va">group</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Use random data as example</span></span></span>
+<span class="r-in"><span><span class="va">arrayData</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">200</span><span class="op">)</span>, <span class="fl">25</span>, <span class="fl">8</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">arrayData</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"gene"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">25</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">arrayData</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"group1"</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"group2"</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">arrayDiff</span><span class="op">(</span>df <span class="op">=</span> <span class="va">arrayData</span>, group <span class="op">=</span> <span class="va">group</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>

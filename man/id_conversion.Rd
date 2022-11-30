@@ -2,7 +2,7 @@
 % Please edit documentation in R/TCGA_id_conversion.R
 \name{id_conversion}
 \alias{id_conversion}
-\title{Convert  ENSEMBL gene id to gene Symbol in TCGA}
+\title{Convert    ENSEMBL gene id to gene Symbol in TCGA}
 \usage{
 id_conversion(profiles, toType = "SYMBOL")
 }
@@ -15,12 +15,10 @@ id_conversion(profiles, toType = "SYMBOL")
 a data.frame, gene symbols and their expression value
 }
 \description{
-Convert  ENSEMBL gene id to gene Symbol in TCGA
+Convert    ENSEMBL gene id to gene Symbol in TCGA
 }
 \examples{
-\dontrun{
 library(org.Hs.eg.db)
-profile <- GeoTcgaData::profile
+data(profile)
 result <- id_conversion(profile)
-}
 }

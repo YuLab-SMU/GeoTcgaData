@@ -22,16 +22,6 @@ Erqiang Hu
 
  Department of Bioinformatics, School of Basic Medical Sciences, Southern Medical University.
 
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/GeoTcgaData?color=green)](https://cran.r-project.org/package=GeoTcgaData)
-![](https://cranlogs.r-pkg.org/badges/grand-total/GeoTcgaData?color=green)
-![](https://cranlogs.r-pkg.org/badges/GeoTcgaData?color=green)
-![](https://cranlogs.r-pkg.org/badges/last-week/GeoTcgaData?color=green)
-[![Project Status: Active – The project has reached a stable, usable
-state and is being actively
-developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-
-
-
 
 ## :arrow\_double\_down: Installation
 
@@ -170,8 +160,8 @@ merge_result <- Merge_methy_tcga(Your_Path_to_DNA_Methylation_data)
 Then use `ChAMP` package to do difference analysis.
 
 ```{r eval=FALSE}
-if (!requireNamespace("ChAMP", quietly = TRUE))
-    BiocManager::install("ChAMP")
+# if (!requireNamespace("ChAMP", quietly = TRUE))
+#     BiocManager::install("ChAMP")
 library(ChAMP) # To avoid reporting errors
 diff_gene <- methyDiff(cpgData = merge_result, sampleGroup = sample(c("C","T"), 
     ncol(merge_result[[1]]), replace = TRUE))
@@ -356,6 +346,7 @@ When the user converts the Ensembl ID to other ids, the version number needs to 
 Especially, the function id_conversion could convert  ENSEMBL gene id to gene Symbol in TCGA. For example:
 
 ```{r}
+data(profile)
 result <- id_conversion(profile)
 ```
 
@@ -375,6 +366,7 @@ bitr(c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS"), fromType = "SYMBOL",
 2. The function `countToFpkm_matrix` and `countToTpm_matrix` could convert count data to FPKM or TPM data.
 
 ```{r}
+data(gene_cov)
 lung_squ_count2 <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), ncol = 3)
 rownames(lung_squ_count2) <- c("DISC1", "TCOF1", "SPPL3")
 colnames(lung_squ_count2) <- c("sample1", "sample2", "sample3")
@@ -417,4 +409,3 @@ names(clinical.BCRtab.all)
 ## get indexed data
 clinical <- GDCquery_clinic(project = "TCGA-ACC", type = "clinical")
 ```
-

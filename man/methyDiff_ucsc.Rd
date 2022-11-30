@@ -14,38 +14,41 @@ methyDiff_ucsc(
 )
 }
 \arguments{
-\item{methy}{data.frame of the methylation data, 
+\item{methy}{data.frame of the methylation data,
 which can be downloaded from UCSC Xena.}
 
 \item{sampleGroup}{a vector of "0" and "1" for group of samples.
 If null, the samples were divided into two groups: disease and normal.}
 
-\item{missing_value}{Method to  impute missing expression data, 
+\item{missing_value}{Method to    impute missing expression data,
 one of "zero" and "knn".}
 
-\item{model}{if "cpg", step1: calculate difference cpgs; 
+\item{model}{if "cpg", step1: calculate difference cpgs;
 step2: calculate difference genes.
-if "gene", step1: calculate the methylation level of genes; 
+if "gene", step1: calculate the methylation level of genes;
 step2: calculate difference genes.}
 
 \item{combineMethod}{method to combine the cpg pvalues.}
 
-\item{region}{region of genes, one of "Body", "TSS1500", 
+\item{region}{region of genes, one of "Body", "TSS1500",
 "TSS200", "3'UTR", "1stExon", "5'UTR", and "IGR".}
+}
+\value{
+data.frame
 }
 \description{
 Title
 }
 \examples{
-\dontrun{
+\donttest{
 methy_file <- "TCGA.THCA.sampleMap_HumanMethylation450.gz"
 methy <- data.table::fread(methy_file, sep = "\t", header = TRUE)
 library(ChAMP)
-myImport <- champ.import(directory = system.file("extdata", 
-  package = "ChAMPdata"))
+myImport <- champ.import(directory = system.file("extdata",
+    package = "ChAMPdata"))
 myfilter <- champ.filter(
-  beta = myImport$beta, pd = myImport$pd,
-  detP = myImport$detP, beadcount = myImport$beadcount
+    beta = myImport$beta, pd = myImport$pd,
+    detP = myImport$detP, beadcount = myImport$beadcount
 )
 cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
 result <- methyDiff_ucsc(methy, cpg_gene)

@@ -21,7 +21,8 @@ diff_RNA(
 
 \item{group}{sample groups}
 
-\item{method}{one of "DESeq2", "edgeR" , "limma", "dearseq" and "Wilcoxon".}
+\item{method}{one of "DESeq2", "edgeR" , "limma", "dearseq",
+"NOISeq" and "Wilcoxon".}
 
 \item{geneLength}{a vector of gene length.}
 
@@ -31,7 +32,7 @@ diff_RNA(
 
 \item{edgeRNorm}{if TRUE, use edgeR to do normalization for dearseq method.}
 
-\item{adjust.method}{character string specifying the method used to 
+\item{adjust.method}{character string specifying the method used to
 adjust p-values for multiple testing.
 See \link{p.adjust} for possible values.}
 
@@ -45,30 +46,30 @@ data.frame
 Do difference analysis of RNA-seq data
 }
 \examples{
-\dontrun{
+\donttest{
 library(TCGAbiolinks)
 
 query <- GDCquery(
-  project = "TCGA-ACC",
-  data.category = "Transcriptome Profiling",
-  data.type = "Gene Expression Quantification",
-  workflow.type = "STAR - Counts"
+    project = "TCGA-ACC",
+    data.category = "Transcriptome Profiling",
+    data.type = "Gene Expression Quantification",
+    workflow.type = "STAR - Counts"
 )
 
 GDCdownload(query,
-  method = "api", files.per.chunk = 3,
-  directory = Your_Path
+    method = "api", files.per.chunk = 3,
+    directory = Your_Path
 )
 
 dataRNA <- GDCprepare(
-  query = query, directory = Your_Path,
-  save = TRUE, save.filename = "dataRNA.RData"
+    query = query, directory = Your_Path,
+    save = TRUE, save.filename = "dataRNA.RData"
 )
 ## get raw count matrix
 dataPrep <- TCGAanalyze_Preprocessing(
-  object = dataRNA,
-  cor.cut = 0.6,
-  datatype = "STAR - Counts"
+    object = dataRNA,
+    cor.cut = 0.6,
+    datatype = "STAR - Counts"
 )
 
 # Use `diff_RNA` to do difference analysis.
@@ -78,8 +79,8 @@ library(cqn) # To avoid reporting errors: there is no function "rq"
 ## get gene length and GC content
 library(org.Hs.eg.db)
 genes_bitr <- bitr(rownames(gene_cov),
-  fromType = "ENTREZID", toType = "ENSEMBL",
-  OrgDb = org.Hs.eg.db, drop = TRUE
+    fromType = "ENTREZID", toType = "ENSEMBL",
+    OrgDb = org.Hs.eg.db, drop = TRUE
 )
 genes_bitr <- genes_bitr[!duplicated(genes_bitr[, 2]), ]
 gene_cov2 <- gene_cov[genes_bitr$ENTREZID, ]
@@ -89,10 +90,10 @@ dataPrep <- dataPrep[genes, ]
 geneLength <- gene_cov2(genes, "length")
 gccontent <- gene_cov2(genes, "GC")
 names(geneLength) <- names(gccontent) <- genes
-##  Difference analysis
+##    Difference analysis
 DEGAll <- diff_RNA(
-  counts = dataPrep, group = group,
-  geneLength = geneLength, gccontent = gccontent
+    counts = dataPrep, group = group,
+    geneLength = geneLength, gccontent = gccontent
 )
 # Use `clusterProfiler` to do enrichment analytics:
 diffGenes <- DEGAll$logFC
@@ -104,4 +105,12 @@ library(org.Hs.eg.db)
 gsego <- gseGO(gene = diffGenes, OrgDb = org.Hs.eg.db, keyType = "ENSEMBL")
 dotplot(gsego)
 }
+# use user-defined data
+df <- matrix(rnbinom(400, mu = 4, size = 10), 25, 16)
+df <- as.data.frame(df)
+rownames(df) <- paste0("gene", 1:25)
+colnames(df) <- paste0("sample", 1:16)
+group <- sample(c("group1", "group2"), 16, replace = TRUE)
+result <- diff_RNA(counts = df, group = group,
+    filte = FALSE, method = "Wilcoxon")
 }

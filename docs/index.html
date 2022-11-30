@@ -94,7 +94,7 @@
 <span><span class="co">#&gt;  =============================================================</span></span>
 <span><span class="co">#&gt;  Hello, friend! welcome to use GeoTcgaData!                   </span></span>
 <span><span class="co">#&gt;  -------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;  Version:1.1.1.992</span></span>
+<span><span class="co">#&gt;  Version:1.1.1.993</span></span>
 <span><span class="co">#&gt;  =============================================================</span></span></code></pre></div>
 <p>GEO and TCGA provide us with a wealth of data, such as RNA-seq, DNA Methylation, single nucleotide Variation and Copy number variation data. It’s easy to download data from TCGA using the gdc tool or <code>TCGAbiolinks</code>, and some software provides organized TCGA data, such as <a href="http://xena.ucsc.edu/" class="external-link">UCSC Xena</a> , <a href="https://cran.r-project.org/package=UCSCXenaTools" class="external-link">UCSCXenaTools</a>，and <a href="http://vip.sangerbox.com/" class="external-link">sangerbox</a>, but processing these data into a format suitable for bioinformatics analysis requires more work. This R package was developed to handle these data.</p>
 </div>
@@ -107,7 +107,7 @@
 <h2 id="rna-seq-data-differential-expression-analysis">RNA-seq data differential expression analysis<a class="anchor" aria-label="anchor" href="#rna-seq-data-differential-expression-analysis"></a>
 </h2>
 <p>It is convenient to use <a href="http://www.bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/analysis.html" class="external-link"><code>TCGAbiolinks</code></a> or <a href="https://bioconductor.org/packages/GDCRNATools/" class="external-link"><code>GDCRNATools</code></a> to download and analysis Gene expression data. <code>TCGAbiolinks</code> use <code>edgeR</code> package to do differential expression analysis, while <code>GDCRNATools</code> can implement three most commonly used methods: limma, edgeR , and DESeq2 to identify differentially expressed genes (DEGs).</p>
-<p>Alicia Oshlack et al. claimed that unlike the chip data, the RNA-seq data had one <a href="https://pubmed.ncbi.nlm.nih.gov/20132535/" class="external-link">bias</a>: the larger the transcript length / mean read count , the more likely it was to be identified as a differential gene, <a href="https://pubmed.ncbi.nlm.nih.gov/19371405/" class="external-link">while there was no such trend in the chip data</a>.</p>
+<p>Alicia Oshlack et. al. claimed that unlike the chip data, the RNA-seq data had one <a href="https://pubmed.ncbi.nlm.nih.gov/20132535/" class="external-link">bias</a>: the larger the transcript length / mean read count , the more likely it was to be identified as a differential gene, <a href="https://pubmed.ncbi.nlm.nih.gov/19371405/" class="external-link">while there was no such trend in the chip data</a>.</p>
 <p><img src="reference/figures/Alicia.jpg" width="890"></p>
 <p>However, when we use their chip data for difference analysis( using the limma package), we find that chip data has the same trend as RNA-seq data. And we also found this trend in the difference analysis results given by the data <a href="https://genome.cshlp.org/content/18/9/1509.long" class="external-link">authors</a>.</p>
 <p><img src="reference/figures/marioni_array_length_pvalue.jpg" width="890"></p>
@@ -304,9 +304,7 @@
 <div class="section level2">
 <h2 id="other-downstream-analyses">Other downstream analyses<a class="anchor" aria-label="anchor" href="#other-downstream-analyses"></a>
 </h2>
-<ol style="list-style-type: decimal">
-<li>The function <code>id_conversion_vector</code> could convert gene id from one of <code>symbol</code>, <code>RefSeq_ID</code>, <code>Ensembl_ID</code>, <code>NCBI_Gene_ID</code>, <code>UCSC_ID</code>, and <code>UniProt_ID</code> , etc. to another. Use <code><a href="reference/id_ava.html">id_ava()</a></code> to get all the convertible ids. For example:</li>
-</ol>
+<ol style="list-style-type: decimal"><li>The function <code>id_conversion_vector</code> could convert gene id from one of <code>symbol</code>, <code>RefSeq_ID</code>, <code>Ensembl_ID</code>, <code>NCBI_Gene_ID</code>, <code>UCSC_ID</code>, and <code>UniProt_ID</code> , etc. to another. Use <code><a href="reference/id_ava.html">id_ava()</a></code> to get all the convertible ids. For example:</li></ol>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/id_conversion_vector.html">id_conversion_vector</a></span><span class="op">(</span><span class="st">"symbol"</span>, <span class="st">"ensembl_gene_id"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A2ML1"</span>, <span class="st">"A2ML1-AS1"</span>, <span class="st">"A4GALT"</span>, <span class="st">"A12M1"</span>, <span class="st">"AAAS"</span><span class="op">)</span><span class="op">)</span> </span>
 <span><span class="co">#&gt; 80% were successfully converted.</span></span>
@@ -394,9 +392,7 @@
 <span><span class="co">#&gt; 3    A4GALT ENSG00000128274</span></span>
 <span><span class="co">#&gt; 4     A12M1            &lt;NA&gt;</span></span>
 <span><span class="co">#&gt; 5      AAAS ENSG00000094914</span></span></code></pre></div>
-<ol start="2" style="list-style-type: decimal">
-<li>The function <code>countToFpkm_matrix</code> and <code>countToTpm_matrix</code> could convert count data to FPKM or TPM data.</li>
-</ol>
+<ol start="2" style="list-style-type: decimal"><li>The function <code>countToFpkm_matrix</code> and <code>countToTpm_matrix</code> could convert count data to FPKM or TPM data.</li></ol>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lung_squ_count2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">8</span>, <span class="fl">9</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">lung_squ_count2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DISC1"</span>, <span class="st">"TCOF1"</span>, <span class="st">"SPPL3"</span><span class="op">)</span></span>
@@ -429,9 +425,7 @@
 <span><span class="co">#&gt; DISC1 104024.7 177787.5 197827.0</span></span>
 <span><span class="co">#&gt; TCOF1 264758.8 282810.2 287714.3</span></span>
 <span><span class="co">#&gt; SPPL3 631216.4 539402.3 514458.7</span></span></code></pre></div>
-<ol start="3" style="list-style-type: decimal">
-<li>The function <code>tcga_cli_deal</code> could combine clinical information obtained from TCGA and extract survival data. For example:</li>
-</ol>
+<ol start="3" style="list-style-type: decimal"><li>The function <code>tcga_cli_deal</code> could combine clinical information obtained from TCGA and extract survival data. For example:</li></ol>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tcga_cli</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/tcga_cli_deal.html">tcga_cli_deal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"extdata"</span>,<span class="st">"tcga_cli"</span><span class="op">)</span>,package<span class="op">=</span><span class="st">"GeoTcgaData"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Note:</strong> Now the combined clinical data can be downloaded directly from <a href="http://www.bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/clinical.html" class="external-link">TCGAbiolinks</a>.</p>
@@ -463,10 +457,16 @@
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.r-project.org/Licenses/Artistic-2.0" class="external-link">Artistic-2.0</a></li>
+<li><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></li>
 </ul>
 </div>
 
+<div class="community">
+<h2 data-toc-skip>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+</ul>
+</div>
 
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
@@ -478,7 +478,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Erqiang Hu <br><small class="roles"> Author, maintainer </small>  </li>
+<li>Erqiang Hu <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-1798-7513" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 

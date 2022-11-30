@@ -11,13 +11,27 @@ diff_RNA_ucsc(ucsc, ...)
 
 \item{...}{additional parameters}
 }
+\value{
+data.frame
+}
 \description{
 Do difference analysis of RNA-seq data downloaded from ucsc
 }
 \examples{
-\dontrun{
+\donttest{
 ucscfile <- data.table::fread("TCGA-BRCA.htseq_counts.tsv.gz")
 group <- sample(c("grp1", "grp2"), ncol(ucscfile) - 1, replace = TRUE)
 result <- diff_RNA_ucsc(ucscfile, group = group)
 }
+
+# use user-defined data
+df <- matrix(rnbinom(400, mu = 4, size = 10), 25, 16)
+df <- as.data.frame(df)
+rownames(df) <- paste0("gene", 1:25)
+colnames(df) <- paste0("sample", 1:16)
+df <- log2(df + 1)
+group <- sample(c("group1", "group2"), 16, replace = TRUE)
+df <- cbind(rownames(df), df)
+result <- diff_RNA_ucsc(ucsc = df, group = group,
+    filte = FALSE, method = "limma")
 }
