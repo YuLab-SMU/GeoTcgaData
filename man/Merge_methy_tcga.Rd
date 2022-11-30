@@ -17,6 +17,6 @@ a matrix, a combined methylation expression spectrum matrix
 Merge methylation data downloaded from TCGA
 }
 \examples{
-merge_result <- Merge_methy_tcga(system.file(file.path("extdata", "methy"), 
-  package = "GeoTcgaData"))
+merge_result <- Merge_methy_tcga(system.file(file.path("extdata", "methy"),
+    package = "GeoTcgaData"))
 }

@@ -4,12 +4,15 @@
 \alias{diff_SNP_tcga}
 \title{Do difference analysis of SNP data downloaded from TCGAbiolinks}
 \usage{
-diff_SNP_tcga(snpData, sampleType)
+diff_SNP_tcga(snpData, sampleGroup, combineMethod = NULL)
 }
 \arguments{
 \item{snpData}{data.frame of SNP data downloaded from TCGAbiolinks}
 
-\item{sampleType}{vector of sample group}
+\item{sampleGroup}{vector of sample group}
+
+\item{combineMethod}{Method of combining the pvalue of
+multiple snp in a gene.}
 }
 \value{
 data.frame
@@ -18,21 +21,26 @@ data.frame
 Do difference analysis of SNP data downloaded from TCGAbiolinks
 }
 \examples{
-\dontrun{
+\donttest{
 library(TCGAbiolinks)
 query <- GDCquery(
-  project = "TCGA-CHOL",
-  data.category = "Simple Nucleotide Variation",
-  access = "open",
-  legacy = FALSE,
-  data.type = "Masked Somatic Mutation",
-  workflow.type = "Aliquot Ensemble Somatic Variant Merging and Masking"
+    project = "TCGA-CHOL",
+    data.category = "Simple Nucleotide Variation",
+    access = "open",
+    legacy = FALSE,
+    data.type = "Masked Somatic Mutation",
+    workflow.type = "Aliquot Ensemble Somatic Variant Merging and Masking"
 )
 GDCdownload(query)
 data_snp <- GDCprepare(query)
 samples <- unique(data_snp$Tumor_Sample_Barcode)
-sampleType <- sample(c("A", "B"), length(samples), replace = TRUE)
-names(sampleType) <- samples
-pvalue <- diff_SNP_tcga(snpData = data_snp, sampleType = sampleType)
+sampleGroup <- sample(c("A", "B"), length(samples), replace = TRUE)
+names(sampleGroup) <- samples
+pvalue <- diff_SNP_tcga(snpData = data_snp, sampleGroup = sampleGroup)
 }
+# use demo data
+snpDf <- matrix(sample(c("mutation", NA), 100, replace = TRUE), 10, 10)
+snpDf <- as.data.frame(snpDf)
+sampleGroup <- sample(c("A", "B"), 10, replace = TRUE)
+result <- diff_SNP(snpDf, sampleGroup)
 }

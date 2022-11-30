@@ -1,18 +1,17 @@
 Package: GeoTcgaData
 Type: Package
-Title: Processing various types of data on GEO and TCGA
-Version: 1.1.1.993
-Author: Erqiang Hu
-Maintainer: Erqiang Hu <13766876214@163.com>
+Title: Processing Various Types of Data on GEO and TCGA
+Version: 0.99.0
+Authors@R: person(given = "Erqiang", family = "Hu", email = "13766876214@163.com", role  = c("aut", "cre"), comment = c(ORCID = "0000-0002-1798-7513"))
 Description: Gene Expression Omnibus(GEO) and The Cancer Genome Atlas (TCGA) 
     provide us with a wealth of data, such as RNA-seq, DNA Methylation, SNP
     and Copy number variation data. It's easy to download data from TCGA using the 
     gdc tool, but processing these data into a format suitable for bioinformatics 
     analysis requires more work. This R package was developed to handle these data.
-Depends: R (>= 3.6.0)
-License: GPL-3
+Depends: R (>= 4.2.0)
+License: Artistic-2.0
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 RoxygenNote: 7.2.1
 Suggests: 
     knitr,
@@ -31,7 +30,10 @@ Suggests:
     IlluminaHumanMethylation450kanno.ilmn12.hg19,
     dearseq,
     NOISeq,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    CATT,
+    TCGAbiolinks,
+    enrichplot
 VignetteBuilder: knitr
 Imports: 
     utils,
@@ -40,8 +42,12 @@ Imports:
     plyr,
     cqn,
     dplyr,
-    topconfects
+    topconfects,
+    stats
 Language: en-US
 URL: https://github.com/YuLab-SMU/GeoTcgaData
 BugReports: https://github.com/YuLab-SMU/GeoTcgaData/issues
+biocViews: GeneExpression, DifferentialExpression, RNASeq, 
+	CopyNumberVariation, Microarray, Software, DNAMethylation,
+    DifferentialMethylation, SNP, ATACSeq
 Config/testthat/edition: 3

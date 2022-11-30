@@ -16,14 +16,14 @@
 #'
 #' result <- gene_ave(file_gene_ave, 1)
 gene_ave <- function(file_gene_ave, k = 1) {
-  x <- file_gene_ave[, -k]
-  file_gene_ave <- as.matrix(file_gene_ave)
-  rownames(file_gene_ave) <- file_gene_ave[, k]
-  # x <- file_gene_ave
-  ID <- rownames(file_gene_ave)
-  ID <- factor(ID, levels = unique(ID))
+    x <- file_gene_ave[, -k]
+    file_gene_ave <- as.matrix(file_gene_ave)
+    rownames(file_gene_ave) <- file_gene_ave[, k]
+    # x <- file_gene_ave
+    ID <- rownames(file_gene_ave)
+    ID <- factor(ID, levels = unique(ID))
 
-  y <- rowsum(x, ID, reorder = FALSE, na.rm = TRUE)
-  n <- rowsum(1L - is.na(x), ID, reorder = FALSE)
-  return(y / n)
+    y <- rowsum(x, ID, reorder = FALSE, na.rm = TRUE)
+    n <- rowsum(1L - is.na(x), ID, reorder = FALSE)
+    return(y / n)
 }

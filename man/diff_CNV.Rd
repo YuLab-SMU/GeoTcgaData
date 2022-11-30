@@ -4,16 +4,20 @@
 \alias{diff_CNV}
 \title{Do difference analysis of gene level copy number variation data}
 \usage{
-diff_CNV(cnvData, sampleGroup, adjust.method = "BH", ...)
+diff_CNV(cnvData, sampleGroup, method = "Chisquare", adjust.method = "BH", ...)
 }
 \arguments{
 \item{cnvData}{data.frame of CNV data}
 
 \item{sampleGroup}{vector of sample group}
 
+\item{method}{one of "Chisquare", "fisher",
+and "CATT"(Cochran-Armitage trend test)}
+
 \item{adjust.method}{adjust.method.}
 
-\item{...}{parameters for fisher.test}
+\item{...}{parameters for "Chisquare", "fisher",
+and "CATT"(Cochran-Armitage trend test)}
 }
 \value{
 data.frame with pvalue and estimate
@@ -22,18 +26,18 @@ data.frame with pvalue and estimate
 Do difference analysis of gene level copy number variation data
 }
 \examples{
-\dontrun{
+\donttest{
 # use TCGAbiolinks data as example
 library(TCGAbiolinks)
 query <- GDCquery(
-    project = "TCGA-ACC",
-    data.category = "Copy Number Variation",
-    data.type = "Gene Level Copy Number",              
-    access = "open"
+        project = "TCGA-ACC",
+        data.category = "Copy Number Variation",
+        data.type = "Gene Level Copy Number",
+        access = "open"
 )
 GDCdownload(query)
 cnvData <- GDCprepare(query)
-aa <- assays(cnvData)$copy_number 
+aa <- assays(cnvData)$copy_number
 bb <- aa
 aa[bb == 2] <- 0
 aa[bb < 2] <- -1
@@ -48,11 +52,11 @@ rownames(cnvData) <- cnvData[, 1]
 cnvData <- cnvData[, -c(1, 2, 3)]
 sampleGroup <- sample(c("A", "B"), ncol(cnvData), replace = TRUE)
 diffCnv <- diff_CNV(cnvData, sampleGroup)
+}
 # use random data as example
 aa <- matrix(sample(c(0, 1, -1), 200, replace = TRUE), 25, 8)
 rownames(aa) <- paste0("gene", 1:25)
 colnames(aa) <- paste0("sample", 1:8)
 sampleGroup <- sample(c("A", "B"), ncol(aa), replace = TRUE)
 diffCnv <- diff_CNV(aa, sampleGroup)
-}
 }

@@ -22,22 +22,22 @@ data.frame
 arrayDiff
 }
 \examples{
-\dontrun{
+\donttest{
 library(GeoTcgaData)
 library(data.table)
 # Use real GEO data as example
-arrayData <- read.table("GSE54807_series_matrix.txt.gz", 
-  sep = "\t", header = TRUE, 
-    fill=TRUE, comment.char = "!", check.names=FALSE)
+arrayData <- read.table("GSE54807_series_matrix.txt.gz",
+    sep = "\t", header = TRUE,
+        fill=TRUE, comment.char = "!", check.names=FALSE)
 gpl <- fread("GPL6244-17930.txt", sep = "\t", header = TRUE)
 gpl <- gpl[, c("ID", "gene_assignment")]
 class(gpl) <- "data.frame"
 
-for (i in 1:nrow(gpl)) {
-    aa <- strsplit(gpl[i, 2], " // ")[[1]][5]
-	gpl[i, 2] <- as.character(strsplit(aa, " /// ")[[1]][1])
+for (i in seq_len(nrow(gpl))) {
+        aa <- strsplit(gpl[i, 2], " // ")[[1]][5]
+        gpl[i, 2] <- as.character(strsplit(aa, " /// ")[[1]][1])
 }
-gpl[,1] <- as.character(gpl[,1]) 
+gpl[,1] <- as.character(gpl[,1])
 arrayData[, 1] <- as.character(arrayData[, 1])
 rownames(gpl) <- gpl[, 1]
 arrayData[, 1] <- gpl[arrayData[, 1], 2]
@@ -59,11 +59,11 @@ arrayData <- arrayData[keep, ]
 
 group <- c(rep("group1", 12), rep("group2", 12))
 result <- arrayDiff(df = arrayData, group = group)
+}
 # Use random data as example
 arrayData <- matrix(runif(200), 25, 8)
 rownames(arrayData) <- paste0("gene", 1:25)
 colnames(arrayData) <- paste0("sample", 1:8)
 group <- c(rep("group1", 4), rep("group2", 4))
 result <- arrayDiff(df = arrayData, group = group)
-}
 }
