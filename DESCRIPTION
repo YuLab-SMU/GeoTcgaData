@@ -33,7 +33,9 @@ Suggests:
     testthat (>= 3.0.0),
     CATT,
     TCGAbiolinks,
-    enrichplot
+    enrichplot,
+    GEOquery,
+    BiocGenerics
 VignetteBuilder: knitr
 Imports: 
     utils,

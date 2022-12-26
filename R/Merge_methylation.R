@@ -58,7 +58,7 @@ get_methy_df <- function(filePath) {
 #' @param cpgData data.frame of cpg beta value
 #' @param sampleGroup vector of sample group
 #' @param combineMethod method to combine the cpg pvalues
-#' @param missing_value Method to    impute missing expression data,
+#' @param missing_value Method to  impute missing expression data,
 #' one of "zero" and "knn".
 #' @param region region of genes, one of "Body", "TSS1500", "TSS200",
 #' "3'UTR", "1stExon", "5'UTR", and "IGR".

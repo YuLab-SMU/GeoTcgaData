@@ -9,7 +9,7 @@ rep1(input_file, string)
 \arguments{
 \item{input_file}{input file, a data.frame or a matrix}
 
-\item{string}{a string,sep of the gene}
+\item{string}{a string, sep of the gene}
 }
 \value{
 a data.frame, when an id corresponds to multiple genes,

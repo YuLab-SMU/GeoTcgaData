@@ -21,7 +21,7 @@ methyDiff(
 
 \item{combineMethod}{method to combine the cpg pvalues}
 
-\item{missing_value}{Method to    impute missing expression data,
+\item{missing_value}{Method to  impute missing expression data,
 one of "zero" and "knn".}
 
 \item{region}{region of genes, one of "Body", "TSS1500", "TSS200",
