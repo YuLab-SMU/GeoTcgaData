@@ -63,15 +63,11 @@ larger the transcript length / mean read count , the more likely it was
 to be identified as a differential gene, [while there was no such trend
 in the chip data](https://pubmed.ncbi.nlm.nih.gov/19371405/).
 
-<img src="man/figures/Alicia.jpg" width="890"/>
-
 However, when we use their chip data for difference analysis( using the
 limma package), we find that chip data has the same trend as RNA-seq
 data. And we also found this trend in the difference analysis results
 given by the data
 [authors](https://genome.cshlp.org/content/18/9/1509.long).
-
-<img src="man/figures/marioni_array_length_pvalue.jpg" width="890"/>
 
 It is worse noting that [only technical replicate data, which has small
 gene dispersions, shows this
@@ -93,8 +89,6 @@ We use the [Marioni dataset](https://pubmed.ncbi.nlm.nih.gov/19371405/)
 to verify the correction effect of CQN and find that there is still a
 deviation after correction:
 
-<img src="man/figures/marioni_bin_de.jpg" width="890"/>
-
 [GOseq](http://bioconductor.org/packages/goseq/) based on [Wallenius’
 noncentral hypergeometric
 distribution](https://en.wikipedia.org/wiki/Wallenius%27_noncentral_hypergeometric_distribution)
@@ -102,11 +96,10 @@ can effectively correct the gene length deviation in enrichment
 analysis. However, the current RNA-seq data often have no gene length
 bias, but only the expression amount(read count) bias, GOseq may
 overcorrect these data, correcting originally unbiased data into reverse
-bias. <img src="man/figures/goseq.jpg" width="890"/>
+bias.
 
 GOseq also fails to correct for expression bias, therefore, read count
 bias correction is still a challenge for us.
-<img src="man/figures/goseq_marioni.jpg" width="890"/>
 
 use `TCGAbiolinks` to download TCGA data
 
@@ -235,8 +228,6 @@ if model = “gene”, step1: calculate the methylation level of genes;
 step2: calculate difference genes.
 
 We find that only model = “gene” has no deviation of CpG number.
-
-<img src="man/figures/methy.jpg" width="890"/>
 
 Use `clusterProfiler` to do enrichment analytics:
 
