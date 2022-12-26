@@ -1,4 +1,4 @@
-# GeoTcgaData 0.99.0
+# GeoTcgaData 0.99.1
 
 + fix return value of `arrayDiff` (2022_10_8, Sat)
 + fix gene length bug in `countToTpm_matrix()` and `countToFpkm_matrix()`(2022_9_22, Tue)
