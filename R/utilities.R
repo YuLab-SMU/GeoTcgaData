@@ -10,7 +10,7 @@
 #' arraylist <- get_geo_array("GSE781")
 #' }
 get_geo_array <- function(gse) {
-    gse <- GEOquery::getGEO("GSE781", GSEMatrix = FALSE, AnnotGPL = TRUE)
+    gse <- GEOquery::getGEO(gse, GSEMatrix = FALSE, AnnotGPL = TRUE)
     gselist <- vector("list", length(GEOquery::GPLList(gse)))
     names(gselist) <- names(GEOquery::GPLList(gse))
     gsmplatforms <- lapply(GEOquery::GSMList(gse),function(x) {GEOquery::Meta(x)$platform_id})
@@ -43,8 +43,8 @@ get_geo_array <- function(gse) {
 #' one of "zero" and "knn".
 #' @param string a string, sep of the gene
 #'
-#' @return
-#' @export matrix
+#' @return matrix
+#' @export 
 #'
 #' @examples
 #' \donttest{
@@ -76,7 +76,62 @@ array_preprocess <- function(x, missing_value = "knn", string = " /// ") {
 	## gene id conversion
 	x <- cbind(rownames(x), x)
     x <- rep1(x, string)
-    gene_ave(x)
+    # gene_ave(x)
 }
 
-
+#' cluster probes of Microarray data
+#'
+#' @param x matrix of Microarray data, the first is the name of the gene, 
+#' and the others are the expression value.
+#' @param clusterCutoff Pearson correlation threshold to cut off the hierarchical tree.
+#' @importFrom stats as.dist
+#' @importFrom stats cor
+#' @importFrom stats cutree
+#' @importFrom stats hclust
+#' @return data.frame
+#' @export 
+#'
+#' @examples
+#' \donttest{
+#' arraylist <- get_geo_array("GSE781")
+#' arraylist <- lapply(arraylist, array_preprocess)
+#' arraylist_cluster <- lapply(arraylist, cluster_array)
+#' }
+cluster_array <- function(x, clusterCutoff = 0.7) {
+    genes <- x[, 1]
+    uniqueGenes <- unique(genes)
+    x <- x[, -1]
+    matlist <- vector("list", length(uniqueGenes))
+    for (i in seq_len(length(uniqueGenes))) {
+        gene <- uniqueGenes[i]
+	    probes <- which(genes == gene)
+	    mat <-  x[probes, ]
+	    if (length(probes) == 1) {
+	        rownames(mat) <- gene
+	        matlist[[i]] <- mat
+	    } else {
+	    	probeCorrelation <- cor(t(mat),method = 'pearson')
+            ClusterResults <- hclust(as.dist(1-probeCorrelation), method = "complete", members = NULL)
+            #plot(ClusterResults)
+            Clusters <- cutree(ClusterResults, h = clusterCutoff)
+	        clusterDf <- matrix(0, length(unique(Clusters)), ncol(mat)) |> as.data.frame()
+	        for (j in seq_len(length(unique(Clusters)))) {
+	            tmpGeneProbes <-  which(Clusters == j)
+	            if (length(tmpGeneProbes) > 1) {
+	        	    clusterDf[j, ] <- colMeans(mat[tmpGeneProbes,])
+	        	} else {
+	        	    clusterDf[j, ] <- mat[tmpGeneProbes,]
+	        	}	    
+	        }
+	    	if (nrow(clusterDf) > 1) {
+	    	    rownames(clusterDf) <- paste(gene, seq(nrow(clusterDf)), sep = "_")
+	    	} else {
+	    	    rownames(clusterDf) <- gene
+	    	}
+	        
+	    	colnames(clusterDf) <- colnames(mat)	
+	        matlist[[i]] <- clusterDf
+	    }
+    }
+    matlist <- do.call("rbind", matlist)
+}

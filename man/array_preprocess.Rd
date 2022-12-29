@@ -14,6 +14,9 @@ one of "zero" and "knn".}
 
 \item{string}{a string, sep of the gene}
 }
+\value{
+matrix
+}
 \description{
 Preprocess of Microarray data
 }
