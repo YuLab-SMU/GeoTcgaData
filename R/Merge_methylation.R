@@ -53,15 +53,34 @@ get_methy_df <- function(filePath) {
     return(methyFile)
 }
 
+
+get_cpg_annotation <- function(region = "Body") {
+    ## library to avoid errors.
+    # library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+    ann <- minfi::getAnnotation(
+                IlluminaHumanMethylation450kanno.ilmn12.hg19::IlluminaHumanMethylation450kanno.ilmn12.hg19)
+    ann <- as.data.frame(ann)
+    cpg_gene <- ann[, c("Name", "UCSC_RefGene_Name", "UCSC_RefGene_Group")]
+    # cpg_gene <- cpg_gene[grep(region, cpg_gene$UCSC_RefGene_Group), ]
+
+    genelist <- strsplit(cpg_gene[, 2], ";")
+    regionlist <- strsplit(cpg_gene[, 3], ";")
+    geneLength <- unlist(lapply(genelist, length))
+    cpgs <- rep(cpg_gene[, 1], times = geneLength)
+    cpg_gene2 <- data.frame(cpg = cpgs, gene = unlist(genelist), region = unlist(regionlist))
+    cpg_gene2 <- cpg_gene2[grep(region, cpg_gene2$region), ]
+}
+
 #' Get methylation difference gene
 #'
 #' @param cpgData data.frame of cpg beta value
 #' @param sampleGroup vector of sample group
 #' @param combineMethod method to combine the cpg pvalues
-#' @param missing_value Method to  impute missing expression data,
+#' @param missing_value Method to impute missing expression data,
 #' one of "zero" and "knn".
+#' @param cpg2gene data.frame to annotate cpg locus to gene
 #' @param region region of genes, one of "Body", "TSS1500", "TSS200",
-#' "3'UTR", "1stExon", "5'UTR", and "IGR".
+#' "3'UTR", "1stExon", "5'UTR", and "IGR". Only used when cpg2gene is NULL.
 #' @param model if "cpg", step1: calculate difference cpgs;
 #' step2: calculate difference genes.
 #' if "gene", step1: calculate the methylation level of genes;
@@ -90,8 +109,10 @@ get_methy_df <- function(filePath) {
 #' }
 methyDiff <- function(cpgData, sampleGroup,
                     combineMethod = RobustRankAggreg::rhoScores,
-                    missing_value = "knn", region = "Body",
-                    model = "cpg",
+                    missing_value = "knn", 
+                    cpg2gene = NULL,
+                    region = "TSS1500",
+                    model = "gene",
                     adjust.method = "BH") {
     region <- match.arg(region, c("Body", "TSS1500", "TSS200",
         "3'UTR", "1stExon", "5'UTR", "IGR"))
@@ -111,20 +132,17 @@ methyDiff <- function(cpgData, sampleGroup,
 
     # normalize data
     myNorm <- ChAMP::champ.norm(beta = data.m, rgSet = NULL, mset = NULL)
-
+    if (!is.null(cpg2gene)) {
+        cpg_gene <- cpg2gene[!duplicated(cpg2gene[, 1]), ]
+        rownames(cpg_gene) <- cpg_gene[, 1]
+    } else {
+        cpg_gene <- get_cpg_annotation(region = region)
+    }
     if (model == "gene") {
-        ## library to avoid errors.
-        # library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
-        ann <-
-            minfi::getAnnotation(
-                IlluminaHumanMethylation450kanno.ilmn12.hg19::
-                IlluminaHumanMethylation450kanno.ilmn12.hg19)
-        ann <- as.data.frame(ann)
-        cpg_gene <- ann[, c("Name", "UCSC_RefGene_Name", "UCSC_RefGene_Group")]
-        regision <- unique(cpg_gene$UCSC_RefGene_Group)
-        regision <- regision[regision != ""]
-        regision <- unique(unlist(strsplit(regision, ";")))
-        cpg_gene <- cpg_gene[grep(region, cpg_gene$UCSC_RefGene_Group), ]
+        cpg_gene <-  split(cpg_gene[, 2], cpg_gene[, 1])   
+        genes <- unlist(lapply(cpg_gene, function(x) {paste(x,collapse = ";")}))
+        cpg_gene <- data.frame(cpg = names(cpg_gene), gene = genes)
+        rownames(cpg_gene) <- cpg_gene[, 1]
         myNorm <- as.data.frame(myNorm)
         myNorm$gene <- cpg_gene[rownames(myNorm), 2]
         # myNorm <- myNorm[, c(ncol(myNorm), 1:(ncol(myNorm) - 1))]
@@ -134,7 +152,6 @@ methyDiff <- function(cpgData, sampleGroup,
 
         myNorm$gene <- as.character(myNorm$gene)
         myNorm2 <- rep1(myNorm, ";")
-
         myNorm3 <- gene_ave(myNorm2)
 
         ## use limma to do differential expression analysis
@@ -146,25 +163,45 @@ methyDiff <- function(cpgData, sampleGroup,
         myDMP <- ChAMP::champ.DMP(beta = myNorm,
             pheno = sampleGroup, adjPVal = 1)
         myDMP <- as.data.frame(myDMP)
+
+        # use cpg_gene to annotate CpGs
+        pvalues <- cpg_gene
+        pvalues$pvalue <- myDMP[cpg_gene[, 1], 4]
+        # rownames(pvalues) <- pvalues[, 1]
+        pvalues <- pvalues[!is.na(pvalues$pvalue), ]
         # gene level difference analysis
-        pvalues <- myDMP[grep(region,
-            myDMP[, grep("feature", colnames(myDMP))]), c(14, 4)]
-        # pvalues <- myDMP[, c(14, 4)]
-        pvalues <- pvalues[pvalues[, 1] != "", ]
-        gene_pvalue <- stats::aggregate(pvalues[, 2],
-            by = list(pvalues[, 1]),
-            FUN = combineMethod
+        gene_pvalue <- stats::aggregate(pvalues[, 4],
+            by = list(pvalues[, 2]),
+            FUN = combine_pvalue, combineMethod = combineMethod
         )
+
+
+        ##################
+        # pvalues <- myDMP[grep(region,
+        #     myDMP[, grep("feature", colnames(myDMP))]), c(14, 4)]
+        # pvalues <- pvalues[pvalues[, 1] != "", ]
+        # gene_pvalue <- stats::aggregate(pvalues[, 2],
+        #     by = list(pvalues[, 1]),
+        #     # FUN = combineMethod
+        #     FUN = combine_pvalue, combineMethod = combineMethod
+        # )
+        #################
         # get logFC of genes
-        myNorm2 <- myNorm[rownames(myDMP), ]
+        myNorm2 <- myNorm[pvalues[, 1], ]
         myNorm2 <- stats::aggregate(myNorm2,
-            by = list(myDMP[, 14]), FUN = mean)
+            by = list(pvalues[, 2]), FUN = mean)
+        # myNorm2 <- myNorm[rownames(myDMP), ]
+        # myNorm2 <- stats::aggregate(myNorm2,
+        #     by = list(myDMP[, 14]), FUN = mean)
+
         myNorm2 <- myNorm2[myNorm2[, 1] != "", ]
         rownames(myNorm2) <- myNorm2[, 1]
         myNorm2 <- myNorm2[, -1]
         groups <- sort(unique(sampleGroup))
-        logFC <- rowMeans(myNorm2[, sampleGroup == groups[1]], na.rm = TRUE) -
-            rowMeans(myNorm2[, sampleGroup == groups[2]], na.rm = TRUE)
+        mean1 <- rowMeans(myNorm2[, sampleGroup == groups[1]], na.rm = TRUE)
+        mean2 <- rowMeans(myNorm2[, sampleGroup == groups[2]], na.rm = TRUE)
+        logFC <- mean1 - mean2            
+
         gene_pvalue$logFC <- logFC[gene_pvalue[, 1]]
         colnames(gene_pvalue) <- c("gene", "P.Value", "logFC")
         gene_pvalue$gene <- as.character(gene_pvalue$gene)

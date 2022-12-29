@@ -9,8 +9,9 @@ methyDiff(
   sampleGroup,
   combineMethod = RobustRankAggreg::rhoScores,
   missing_value = "knn",
-  region = "Body",
-  model = "cpg",
+  cpg2gene = NULL,
+  region = "TSS1500",
+  model = "gene",
   adjust.method = "BH"
 )
 }
@@ -21,11 +22,13 @@ methyDiff(
 
 \item{combineMethod}{method to combine the cpg pvalues}
 
-\item{missing_value}{Method to  impute missing expression data,
+\item{missing_value}{Method to impute missing expression data,
 one of "zero" and "knn".}
 
+\item{cpg2gene}{data.frame to annotate cpg locus to gene}
+
 \item{region}{region of genes, one of "Body", "TSS1500", "TSS200",
-"3'UTR", "1stExon", "5'UTR", and "IGR".}
+"3'UTR", "1stExon", "5'UTR", and "IGR". Only used when cpg2gene is NULL.}
 
 \item{model}{if "cpg", step1: calculate difference cpgs;
 step2: calculate difference genes.
