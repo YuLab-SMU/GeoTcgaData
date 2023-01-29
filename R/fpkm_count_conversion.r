@@ -1,24 +1,24 @@
-countToTpm <- function(counts, effLen) {
+countToTpm_internal <- function(counts, effLen) {
     rate <- log(counts) - log(effLen)
     denom <- log(sum(exp(rate)))
     exp(rate - denom + log(1e6))
 }
-countToFpkm <- function(counts, effLen) {
+countToFpkm_internal <- function(counts, effLen) {
     N <- sum(counts)
     exp(log(counts) + log(1e9) - log(effLen) - log(N))
 }
 
-fpkmToTpm <- function(fpkm) {
+fpkmToTpm_internal <- function(fpkm) {
     exp(log(fpkm) - log(sum(fpkm)) + log(1e6))
 }
 
-countToEffCounts <- function(counts, len, effLen) {
+countToEffCounts_internal <- function(counts, len, effLen) {
     counts * (len / effLen)
 }
 
 # if we have fpkm, then we can easily get the rate of counts/sum(counts).
 # we can't get the real count value.
-fpkmToCount <- function(fpkm, effLen, N = 1e9) {
+fpkmToCount_internal <- function(fpkm, effLen, N = 1e9) {
     # rate <- (fpkm * effLen)/10^9
     rate <- exp(log(fpkm) + log(effLen) - log(1e9))
     counts <- rate * N
@@ -42,11 +42,11 @@ fpkmToCount <- function(fpkm, effLen, N = 1e9) {
 #' lung_squ_count2 <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), ncol = 3)
 #' rownames(lung_squ_count2) <- c("DISC1", "TCOF1", "SPPL3")
 #' colnames(lung_squ_count2) <- c("sample1", "sample2", "sample3")
-#' result <- countToFpkm_matrix(lung_squ_count2,
+#' result <- countToFpkm(lung_squ_count2,
 #'     keyType = "SYMBOL",
 #'     gene_cov = gene_cov
 #' )
-countToFpkm_matrix <- function(counts_matrix, keyType = "SYMBOL", gene_cov) {
+countToFpkm <- function(counts_matrix, keyType = "SYMBOL", gene_cov) {
     gene_cov2 <- gene_cov
     if (keyType != "ENTREZID") {
         genes_bitr <- clusterProfiler::bitr(rownames(gene_cov),
@@ -63,7 +63,7 @@ countToFpkm_matrix <- function(counts_matrix, keyType = "SYMBOL", gene_cov) {
     genes_length <- as.numeric(gene_loc_len_new[, 1])
     counts_matrix_new2 <- counts_matrix_new
     for (i in seq_len(dim(counts_matrix_new2)[2])) {
-        counts_matrix_new2[, i] <- countToFpkm(
+        counts_matrix_new2[, i] <- countToFpkm_internal(
             as.numeric(counts_matrix_new2[, i]),
             genes_length)
     }
@@ -86,11 +86,11 @@ countToFpkm_matrix <- function(counts_matrix, keyType = "SYMBOL", gene_cov) {
 #' lung_squ_count2 <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), ncol = 3)
 #' rownames(lung_squ_count2) <- c("DISC1", "TCOF1", "SPPL3")
 #' colnames(lung_squ_count2) <- c("sample1", "sample2", "sample3")
-#' result <- countToTpm_matrix(lung_squ_count2,
+#' result <- countToTpm(lung_squ_count2,
 #'     keyType = "SYMBOL",
 #'     gene_cov = gene_cov
 #' )
-countToTpm_matrix <- function(counts_matrix, keyType = "SYMBOL", gene_cov) {
+countToTpm <- function(counts_matrix, keyType = "SYMBOL", gene_cov) {
     gene_cov2 <- gene_cov
     if (keyType != "ENTREZID") {
         genes_bitr <- clusterProfiler::bitr(rownames(gene_cov),
@@ -107,7 +107,7 @@ countToTpm_matrix <- function(counts_matrix, keyType = "SYMBOL", gene_cov) {
     genes_length <- as.numeric(gene_loc_len_new[, 1])
     counts_matrix_new2 <- counts_matrix_new
     for (i in seq_len(dim(counts_matrix_new2)[2])) {
-        counts_matrix_new2[, i] <- countToTpm(
+        counts_matrix_new2[, i] <- countToTpm_internal(
             as.numeric(counts_matrix_new2[, i]),
             genes_length)
     }
@@ -128,7 +128,7 @@ countToTpm_matrix <- function(counts_matrix, keyType = "SYMBOL", gene_cov) {
 #'     0.66, 0.77, 0.18, 0.29), ncol = 3)
 #' rownames(lung_squ_count2) <- c("DISC1", "TCOF1", "SPPL3")
 #' colnames(lung_squ_count2) <- c("sample1", "sample2", "sample3")
-#' result <- fpkmToTpm_matrix(lung_squ_count2)
-fpkmToTpm_matrix <- function(fpkm_matrix) {
-    fpkm_matrix_new <- apply(fpkm_matrix, 2, fpkmToTpm)
+#' result <- fpkmToTpm(lung_squ_count2)
+fpkmToTpm <- function(fpkm_matrix) {
+    fpkm_matrix_new <- apply(fpkm_matrix, 2, fpkmToTpm_internal)
 }

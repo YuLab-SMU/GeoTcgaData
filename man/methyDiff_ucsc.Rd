@@ -8,7 +8,8 @@ methyDiff_ucsc(
   methy,
   sampleGroup = NULL,
   missing_value = "knn",
-  model = c("cpg", "gene"),
+  model = "gene",
+  normMethod = "PBC",
   combineMethod = RobustRankAggreg::rhoScores,
   region = "Body"
 )
@@ -27,6 +28,8 @@ one of "zero" and "knn".}
 step2: calculate difference genes.
 if "gene", step1: calculate the methylation level of genes;
 step2: calculate difference genes.}
+
+\item{normMethod}{Method to do normalization: "PBC" or "BMIQ".}
 
 \item{combineMethod}{method to combine the cpg pvalues.}
 
@@ -53,4 +56,15 @@ myfilter <- champ.filter(
 cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
 result <- methyDiff_ucsc(methy, cpg_gene)
 }
+# use user defined data
+library(ChAMP)
+cpgData <- matrix(runif(2000), nrow = 200, ncol = 10)
+rownames(cpgData) <- paste0("cpg", seq_len(200))
+colnames(cpgData) <- paste0("sample", seq_len(10))
+sampleGroup <- c(rep("group1", 5), rep("group2", 5))
+names(sampleGroup) <- colnames(cpgData)
+cpg2gene <- data.frame(cpg = rownames(cpgData), 
+    gene = rep(paste0("gene", seq_len(20)), 10))
+result <- methyDiff(cpgData, sampleGroup, 
+    cpg2gene = cpg2gene, normMethod = NULL)
 }

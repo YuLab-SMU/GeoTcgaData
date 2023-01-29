@@ -29,7 +29,7 @@
 #' arrayData[, 1] <- gpl[arrayData[, 1], 2]
 #'
 #'
-#' arrayData <- rep2(arrayData," /// ")
+#' arrayData <- repRemove(arrayData," /// ")
 #'
 #' # Remove rows that do not correspond to genes
 #' arrayData <- arrayData[!is.na(arrayData[, 1]), ]

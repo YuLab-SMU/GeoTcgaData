@@ -53,15 +53,38 @@ get_methy_df <- function(filePath) {
     return(methyFile)
 }
 
+
+get_cpg_annotation <- function(region = "TSS1500") {
+    ## library to avoid errors.
+    # library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+    ann <- minfi::getAnnotation(
+                IlluminaHumanMethylation450kanno.ilmn12.hg19::IlluminaHumanMethylation450kanno.ilmn12.hg19)
+    ann <- as.data.frame(ann)
+    cpg_gene <- ann[, c("Name", "UCSC_RefGene_Name", "UCSC_RefGene_Group")]
+    # cpg_gene <- cpg_gene[grep(region, cpg_gene$UCSC_RefGene_Group), ]
+    cpg_gene <- cpg_gene[cpg_gene[, 2] != "", ]
+    genelist <- strsplit(cpg_gene[, 2], ";")
+    regionlist <- strsplit(cpg_gene[, 3], ";")
+    geneLength <- unlist(lapply(genelist, length))
+    cpgs <- rep(cpg_gene[, 1], times = geneLength)
+    cpg_gene2 <- data.frame(cpg = cpgs, gene = unlist(genelist), 
+        region = unlist(regionlist))
+    cpg_gene2 <- cpg_gene2[grep(region, cpg_gene2$region), ]
+    return(unique(cpg_gene2))
+}
+
 #' Get methylation difference gene
 #'
 #' @param cpgData data.frame of cpg beta value
 #' @param sampleGroup vector of sample group
-#' @param combineMethod method to combine the cpg pvalues
-#' @param missing_value Method to    impute missing expression data,
+#' @param combineMethod method to combine the cpg pvalues, 
+#' a function or one of "stouffer", "fisher" and "rhoScores".
+#' @param missing_value Method to impute missing expression data,
 #' one of "zero" and "knn".
+#' @param cpg2gene data.frame to annotate cpg locus to gene
+#' @param normMethod Method to do normalization: "PBC" or "BMIQ".
 #' @param region region of genes, one of "Body", "TSS1500", "TSS200",
-#' "3'UTR", "1stExon", "5'UTR", and "IGR".
+#' "3'UTR", "1stExon", "5'UTR", and "IGR". Only used when cpg2gene is NULL.
 #' @param model if "cpg", step1: calculate difference cpgs;
 #' step2: calculate difference genes.
 #' if "gene", step1: calculate the methylation level of genes;
@@ -70,11 +93,14 @@ get_methy_df <- function(filePath) {
 #' used to adjust p-values for multiple testing.
 #' See \link{p.adjust} for possible values.
 #' @importFrom stats p.adjust
+#' @importFrom metap sumz
+#' @importFrom metap sumlog
 #' @return data.frame
 #' @export
 #'
 #' @examples
 #' \donttest{
+#' # use TCGAbiolinks data
 #' library(TCGAbiolinks)
 #' query <- GDCquery(project = "TCGA-ACC",
 #'     data.category = "DNA Methylation",
@@ -88,10 +114,25 @@ get_methy_df <- function(filePath) {
 #'     sampleGroup = sample(c("C","T"),
 #'     ncol(merge_result[[1]]), replace = TRUE))
 #' }
+#' # use user defined data
+#' library(ChAMP)
+#' cpgData <- matrix(runif(2000), nrow = 200, ncol = 10)
+#' rownames(cpgData) <- paste0("cpg", seq_len(200))
+#' colnames(cpgData) <- paste0("sample", seq_len(10))
+#' sampleGroup <- c(rep("group1", 5), rep("group2", 5))
+#' names(sampleGroup) <- colnames(cpgData)
+#' cpg2gene <- data.frame(cpg = rownames(cpgData), 
+#'     gene = rep(paste0("gene", seq_len(20)), 10))
+#' result <- methyDiff(cpgData, sampleGroup, 
+#'     cpg2gene = cpg2gene, normMethod = NULL)
 methyDiff <- function(cpgData, sampleGroup,
-                    combineMethod = RobustRankAggreg::rhoScores,
-                    missing_value = "knn", region = "Body",
-                    model = "cpg",
+                    # combineMethod = RobustRankAggreg::rhoScores,
+                    combineMethod = "stouffer",
+                    missing_value = "knn", 
+                    cpg2gene = NULL,
+                    normMethod = "PBC", 
+                    region = "TSS1500",
+                    model = "gene",
                     adjust.method = "BH") {
     region <- match.arg(region, c("Body", "TSS1500", "TSS200",
         "3'UTR", "1stExon", "5'UTR", "IGR"))
@@ -110,21 +151,25 @@ methyDiff <- function(cpgData, sampleGroup,
     }
 
     # normalize data
-    myNorm <- ChAMP::champ.norm(beta = data.m, rgSet = NULL, mset = NULL)
+    myNorm <- data.m
+    if (!is.null(normMethod)) {
+        myNorm <- ChAMP::champ.norm(beta = data.m, rgSet = NULL, 
+            mset = NULL, method = normMethod)
+    }
+    if (!is.null(cpg2gene)) {
+        # cpg_gene <- cpg2gene[!duplicated(cpg2gene[, 1]), ]
+        # rownames(cpg_gene) <- cpg_gene[, 1]
+        cpg_gene <- cpg2gene
+    } else {
+        cpg_gene <- get_cpg_annotation(region = region)
+    }
+
 
     if (model == "gene") {
-        ## library to avoid errors.
-        # library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
-        ann <-
-            minfi::getAnnotation(
-                IlluminaHumanMethylation450kanno.ilmn12.hg19::
-                IlluminaHumanMethylation450kanno.ilmn12.hg19)
-        ann <- as.data.frame(ann)
-        cpg_gene <- ann[, c("Name", "UCSC_RefGene_Name", "UCSC_RefGene_Group")]
-        regision <- unique(cpg_gene$UCSC_RefGene_Group)
-        regision <- regision[regision != ""]
-        regision <- unique(unlist(strsplit(regision, ";")))
-        cpg_gene <- cpg_gene[grep(region, cpg_gene$UCSC_RefGene_Group), ]
+        cpg_gene <-  split(cpg_gene[, 2], cpg_gene[, 1])   
+        genes <- unlist(lapply(cpg_gene, function(x) {paste(x,collapse = ";")}))
+        cpg_gene <- data.frame(cpg = names(cpg_gene), gene = genes)
+        rownames(cpg_gene) <- cpg_gene[, 1]
         myNorm <- as.data.frame(myNorm)
         myNorm$gene <- cpg_gene[rownames(myNorm), 2]
         # myNorm <- myNorm[, c(ncol(myNorm), 1:(ncol(myNorm) - 1))]
@@ -133,8 +178,7 @@ methyDiff <- function(cpgData, sampleGroup,
 
 
         myNorm$gene <- as.character(myNorm$gene)
-        myNorm2 <- rep1(myNorm, ";")
-
+        myNorm2 <- repAssign(myNorm, ";")
         myNorm3 <- gene_ave(myNorm2)
 
         ## use limma to do differential expression analysis
@@ -146,25 +190,63 @@ methyDiff <- function(cpgData, sampleGroup,
         myDMP <- ChAMP::champ.DMP(beta = myNorm,
             pheno = sampleGroup, adjPVal = 1)
         myDMP <- as.data.frame(myDMP)
-        # gene level difference analysis
-        pvalues <- myDMP[grep(region,
-            myDMP[, grep("feature", colnames(myDMP))]), c(14, 4)]
-        # pvalues <- myDMP[, c(14, 4)]
-        pvalues <- pvalues[pvalues[, 1] != "", ]
-        gene_pvalue <- stats::aggregate(pvalues[, 2],
-            by = list(pvalues[, 1]),
-            FUN = combineMethod
-        )
+
+        # use cpg_gene to annotate CpGs
+        pvalues <- cpg_gene
+        pvalues$pvalue <- myDMP[cpg_gene[, 1], 4]
+        # rownames(pvalues) <- pvalues[, 1]
+        pvalues <- pvalues[!is.na(pvalues$pvalue), ]
+        
+        if (is.function(combineMethod)) {
+            gene_pvalue <- stats::aggregate(pvalues[, 4],
+                by = list(pvalues[, 2]),
+                # FUN = combine_pvalue, combineMethod = combineMethod
+                FUN = combineMethod
+            )
+            colnames(gene_pvalue) <- c("gene", "pvalue")
+        } else {
+            aa <- pvalues$pvalue
+            bb <- split(aa, pvalues$gene)
+            gene_pvalue <- data.frame(gene = names(bb), 
+                pvalue = unlist(lapply(bb, function(x) x[1])))
+            if (combineMethod == "stouffer") {
+                
+                myBetas <- myNorm[pvalues$cpg, ]
+                myBetas <- split(as.data.frame(myBetas), pvalues$gene)
+                correl <- lapply(myBetas, function(x) cor(t(x)))
+                weights <- lapply(correl, function(x) 1/apply(x^2,1,sum))
+                
+                for (i in seq_len(nrow(gene_pvalue))) {
+                    if (length(bb[[i]]) > 1) {
+                        gene_pvalue[i, 2] <- sumz(bb[[i]], weights[[i]])$p
+                    }       
+                }
+            }
+
+            if (combineMethod == "fisher") {
+                for (i in seq_len(nrow(gene_pvalue))) {
+                    if (length(bb[[i]]) > 1) {
+                        gene_pvalue[i, 2] <- sumlog(bb[[i]])$p
+                    }       
+                }
+            }
+        }
+        
+
+
         # get logFC of genes
-        myNorm2 <- myNorm[rownames(myDMP), ]
+        myNorm2 <- myNorm[pvalues[, 1], ]
         myNorm2 <- stats::aggregate(myNorm2,
-            by = list(myDMP[, 14]), FUN = mean)
+            by = list(pvalues[, 2]), FUN = mean)
+
         myNorm2 <- myNorm2[myNorm2[, 1] != "", ]
         rownames(myNorm2) <- myNorm2[, 1]
         myNorm2 <- myNorm2[, -1]
         groups <- sort(unique(sampleGroup))
-        logFC <- rowMeans(myNorm2[, sampleGroup == groups[1]], na.rm = TRUE) -
-            rowMeans(myNorm2[, sampleGroup == groups[2]], na.rm = TRUE)
+        mean1 <- rowMeans(myNorm2[, sampleGroup == groups[1]], na.rm = TRUE)
+        mean2 <- rowMeans(myNorm2[, sampleGroup == groups[2]], na.rm = TRUE)
+        logFC <- mean1 - mean2            
+
         gene_pvalue$logFC <- logFC[gene_pvalue[, 1]]
         colnames(gene_pvalue) <- c("gene", "P.Value", "logFC")
         gene_pvalue$gene <- as.character(gene_pvalue$gene)
@@ -181,7 +263,10 @@ methyDiff <- function(cpgData, sampleGroup,
 #' Suppressing output
 #'
 #' @param x some code
-#' @noRd
+#' @return result of the code
+#' @export
+#' @examples
+#' quiet(a <- 1)
 quiet <- function(x) {
     sink(tempfile())
     on.exit(sink())
@@ -197,6 +282,7 @@ quiet <- function(x) {
 #' If null, the samples were divided into two groups: disease and normal.
 #' @param missing_value Method to    impute missing expression data,
 #' one of "zero" and "knn".
+#' @param normMethod Method to do normalization: "PBC" or "BMIQ".
 #' @param model if "cpg", step1: calculate difference cpgs;
 #' step2: calculate difference genes.
 #' if "gene", step1: calculate the methylation level of genes;
@@ -204,7 +290,6 @@ quiet <- function(x) {
 #' @param combineMethod method to combine the cpg pvalues.
 #' @param region region of genes, one of "Body", "TSS1500",
 #' "TSS200", "3'UTR", "1stExon", "5'UTR", and "IGR".
-#' @importFrom dplyr `%>%`
 #' @return data.frame
 #' @export
 #'
@@ -222,8 +307,20 @@ quiet <- function(x) {
 #' cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
 #' result <- methyDiff_ucsc(methy, cpg_gene)
 #' }
+#' # use user defined data
+#' library(ChAMP)
+#' cpgData <- matrix(runif(2000), nrow = 200, ncol = 10)
+#' rownames(cpgData) <- paste0("cpg", seq_len(200))
+#' colnames(cpgData) <- paste0("sample", seq_len(10))
+#' sampleGroup <- c(rep("group1", 5), rep("group2", 5))
+#' names(sampleGroup) <- colnames(cpgData)
+#' cpg2gene <- data.frame(cpg = rownames(cpgData), 
+#'     gene = rep(paste0("gene", seq_len(20)), 10))
+#' result <- methyDiff(cpgData, sampleGroup, 
+#'     cpg2gene = cpg2gene, normMethod = NULL)
 methyDiff_ucsc <- function(methy, sampleGroup = NULL, missing_value = "knn",
-                            model = c("cpg", "gene"),
+                            model = "gene",
+                            normMethod = "PBC",
                             combineMethod = RobustRankAggreg::rhoScores,
                             region = "Body") {
     class(methy) <- "data.frame"
@@ -234,11 +331,11 @@ methyDiff_ucsc <- function(methy, sampleGroup = NULL, missing_value = "knn",
     if (is.null(group)) {
         group <- lapply(colnames(methy), function(x) {
             strsplit(x, "-")[[1]][4]
-        }) %>% unlist()
+        }) |> unlist()
 
         group <- substring(group, 1, 1)
     }
-    methyDiff(methy,
+    methyDiff(methy, normMethod = normMethod,
         sampleGroup = group, combineMethod = combineMethod,
         missing_value = missing_value, region = region, model = model
     )
@@ -287,4 +384,70 @@ Diff_limma <- function(df, group, adjust.method = "BH") {
 
     ## coef parameter is not necessory：
     # opTable(fit2, adjust='BH', number=Inf)
+}
+
+#' Get methylation difference gene
+#'
+#' @param se SummarizedExperiment object
+#' @param groupCol group column
+#' @param combineMethod method to combine the cpg pvalues, 
+#' a function or one of "stouffer", "fisher" and "rhoScores".
+#' @param missing_value Method to impute missing expression data,
+#' one of "zero" and "knn".
+#' @param cpg2gene data.frame to annotate cpg locus to gene
+#' @param normMethod Method to do normalization: "PBC" or "BMIQ".
+#' @param region region of genes, one of "Body", "TSS1500", "TSS200",
+#' "3'UTR", "1stExon", "5'UTR", and "IGR". Only used when cpg2gene is NULL.
+#' @param model if "cpg", step1: calculate difference cpgs;
+#' step2: calculate difference genes.
+#' if "gene", step1: calculate the methylation level of genes;
+#' step2: calculate difference genes.
+#' @param adjust.method character string specifying the method
+#' used to adjust p-values for multiple testing.
+#' See \link{p.adjust} for possible values.
+#' @importFrom stats p.adjust
+#' @importFrom SummarizedExperiment assays
+#' @importFrom SummarizedExperiment colData
+#' @importFrom metap sumz
+#' @return data.frame
+#' @export
+#' @examples
+#' library(ChAMP)
+#' cpgData <- matrix(runif(2000), nrow = 200, ncol = 10)
+#' rownames(cpgData) <- paste0("cpg", seq_len(200))
+#' colnames(cpgData) <- paste0("sample", seq_len(10))
+#' sampleGroup <- c(rep("group1", 5), rep("group2", 5))
+#' names(sampleGroup) <- colnames(cpgData)
+#' cpg2gene <- data.frame(cpg = rownames(cpgData), 
+#'     gene = rep(paste0("gene", seq_len(20)), 10))
+#' colData <- S4Vectors::DataFrame(
+#'     row.names = colnames(cpgData),
+#'     group = sampleGroup
+#' )
+#' data <- SummarizedExperiment::SummarizedExperiment(
+#'          assays=S4Vectors::SimpleList(counts=cpgData),
+#'          colData = colData)
+#' result <- methyDiff_SummarizedExperiment(se = data, 
+#'     groupCol = "group", normMethod = NULL, 
+#'     cpg2gene = cpg2gene)         
+        
+methyDiff_SummarizedExperiment  <- function(se, groupCol,
+                    combineMethod = "stouffer",
+                    missing_value = "knn", 
+                    cpg2gene = NULL,
+                    normMethod = "PBC",
+                    region = "TSS1500",
+                    model = "gene",
+                    adjust.method = "BH") {
+    cpgData <- assays(se)$counts
+    group <- colData(se)[, groupCol]
+    names(group) <- rownames(colData(se))
+    methyDiff(cpgData = cpgData, sampleGroup = group,
+        combineMethod = combineMethod,
+        missing_value = missing_value, 
+        cpg2gene = cpg2gene,
+        normMethod = normMethod,
+        region = region,
+        model = model,
+        adjust.method = "BH")
 }

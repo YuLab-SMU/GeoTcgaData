@@ -101,7 +101,7 @@
 <span class="r-in"><span><span class="va">arrayData</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">gpl</span><span class="op">[</span><span class="va">arrayData</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>, <span class="fl">2</span><span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">arrayData</span> <span class="op">&lt;-</span> <span class="fu"><a href="rep2.html">rep2</a></span><span class="op">(</span><span class="va">arrayData</span>,<span class="st">" /// "</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">arrayData</span> <span class="op">&lt;-</span> <span class="fu"><a href="repRemove.html">repRemove</a></span><span class="op">(</span><span class="va">arrayData</span>,<span class="st">" /// "</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Remove rows that do not correspond to genes</span></span></span>
 <span class="r-in"><span><span class="va">arrayData</span> <span class="op">&lt;-</span> <span class="va">arrayData</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">arrayData</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>, <span class="op">]</span></span></span>

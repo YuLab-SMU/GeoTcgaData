@@ -311,7 +311,7 @@ colnames(file_gene_ave) <- c("Gene", "GSM1629982", "GSM1629983")
 result <- gene_ave(file_gene_ave, 1)
 ```
 
-Multiple genes symbols may correspond to a same chip id. The result of function `rep1` is to assign the expression of this id to each gene, and function `rep2` deletes the expression. For example:
+Multiple genes symbols may correspond to a same chip id. The result of function `repAssign` is to assign the expression of this id to each gene, and function `repRemove` deletes the expression. For example:
 
 ```{r}
 aa <- c("MARCH1 /// MMA","MARC1","MARCH2 /// MARCH3","MARCH3 /// MARCH4","MARCH1")
@@ -319,16 +319,16 @@ bb <- c("2.969058399","4.722410064","8.165514853","8.24243893","8.60815086")
 cc <- c("3.969058399","5.722410064","7.165514853","6.24243893","7.60815086")
 input_file <- data.frame(aa=aa,bb=bb,cc=cc)
 
-rep1_result <- rep1(input_file," /// ")
-rep2_result <- rep2(input_file," /// ")
+repAssign_result <- repAssign(input_file," /// ")
+repRemove_result <- repRemove(input_file," /// ")
 ```
 
 ## Other downstream analyses
 
-1. The function `id_conversion_vector` could convert gene id from one of `symbol`, `RefSeq_ID`, `Ensembl_ID`, `NCBI_Gene_ID`, `UCSC_ID`, and `UniProt_ID` , etc. to another. Use `id_ava()` to get all the convertible ids. For example:
+1. The function `id_conversion` could convert gene id from one of `symbol`, `RefSeq_ID`, `Ensembl_ID`, `NCBI_Gene_ID`, `UCSC_ID`, and `UniProt_ID` , etc. to another. Use `id_ava()` to get all the convertible ids. For example:
 
 ```{r}
-id_conversion_vector("symbol", "ensembl_gene_id", c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS")) 
+id_conversion("symbol", "ensembl_gene_id", c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS")) 
 
 ```
 
@@ -339,12 +339,12 @@ Especially, the function id_conversion could convert  ENSEMBL gene id to gene Sy
 
 ```{r}
 data(profile)
-result <- id_conversion(profile)
+result <- id_conversion_TCGA(profile)
 ```
 
 The parameter profile is a data.frame or matrix of gene expression data in TCGA.
 
-**Note:** In previous versions(< 1.0.0) the `id_conversion` and `id_conversion_vector` used HGNC data to convert human gene id.  In future versions, we will use `clusterProfiler::bitr` for ID conversion. 
+**Note:** In previous versions(< 1.0.0) the `id_conversion` and `id_conversion` used HGNC data to convert human gene id.  In future versions, we will use `clusterProfiler::bitr` for ID conversion. 
 
 ```{r}
 library(clusterProfiler)
@@ -355,14 +355,14 @@ bitr(c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS"), fromType = "SYMBOL",
 
 
 
-2. The function `countToFpkm_matrix` and `countToTpm_matrix` could convert count data to FPKM or TPM data.
+2. The function `countToFpkm` and `countToTpm` could convert count data to FPKM or TPM data.
 
 ```{r}
 data(gene_cov)
 lung_squ_count2 <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), ncol = 3)
 rownames(lung_squ_count2) <- c("DISC1", "TCOF1", "SPPL3")
 colnames(lung_squ_count2) <- c("sample1", "sample2", "sample3")
-result <- countToFpkm_matrix(lung_squ_count2,
+result <- countToFpkm(lung_squ_count2,
   keyType = "SYMBOL",
   gene_cov = gene_cov
 )
@@ -373,7 +373,7 @@ result
 lung_squ_count2 <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), ncol = 3)
 rownames(lung_squ_count2) <- c("DISC1", "TCOF1", "SPPL3")
 colnames(lung_squ_count2) <- c("sample1", "sample2", "sample3")
-result <- countToTpm_matrix(lung_squ_count2,
+result <- countToTpm(lung_squ_count2,
   keyType = "SYMBOL",
   gene_cov = gene_cov
 )

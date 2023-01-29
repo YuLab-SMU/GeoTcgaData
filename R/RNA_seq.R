@@ -14,7 +14,6 @@
 #' @param useTopconfects if TRUE, use topconfects to provide a
 #'    more biologically useful ranked gene list.
 #' @return data.frame
-#' @importFrom magrittr %>%
 #' @importFrom plyr rename
 #' @import cqn
 #' @export
@@ -123,10 +122,13 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
 
     if (method == "DESeq2") {
         coldata <- data.frame(group)
+
         dds <- DESeq2::DESeqDataSetFromMatrix(
             countData = counts,
             colData = coldata, design = ~group
         )
+        
+
         if (correct) {
             cqnOffset <- cqn.subset$glm.offset
             cqnNormFactors <- exp(cqnOffset)
@@ -143,11 +145,11 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                 topconfects::deseq2_confects(DEGAll, step = 0.05)$table
             rownames(DEGAll_table) <- DEGAll_table$name
         }
-        DEGAll <- DEGAll %>%
-            DESeq2::results(pAdjustMethod = adjust.method) %>%
-            as.data.frame() %>%
-            rename(c("log2FoldChange" = "logFC")) %>%
-            rename(c("pvalue" = "P.Value")) %>%
+        DEGAll <- DEGAll |>
+            DESeq2::results(pAdjustMethod = adjust.method) |>
+            as.data.frame() |>
+            rename(c("log2FoldChange" = "logFC")) |>
+            rename(c("pvalue" = "P.Value")) |>
             rename(c("padj" = "adj.P.Val"))
         DEGAll$length <- geneLength[rownames(DEGAll)]
         DEGAll$gccontent <- gccontent[rownames(DEGAll)]
@@ -174,7 +176,7 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
             # design <- stats::model.matrix(~ group)
             design <- stats::model.matrix(~ d.mont$sample$group)
             if (min(table(d.mont$sample$group)) > 1) {
-                d.mont <- edgeR::estimateDisp(d.mont, design) %>%
+                d.mont <- edgeR::estimateDisp(d.mont, design) |>
                     edgeR::estimateGLMCommonDisp(design = design)
                 DEGAll <- edgeR::glmQLFit(d.mont, design = design)
                 DEGAll_table <- NULL
@@ -186,12 +188,12 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                     )$table
                     rownames(DEGAll_table) <- DEGAll_table$name
                 }
-                # edgeR::topTags(n = nrow(d.mont$counts)) %>%
-                DEGAll <- DEGAll %>%
-                    edgeR::glmQLFTest(coef = ncol(DEGAll$design)) %>%
-                    edgeR::topTags(n = Inf, adjust.method = adjust.method) %>%
-                    as.data.frame() %>%
-                    rename(c("FDR" = "adj.P.Val")) %>%
+                # edgeR::topTags(n = nrow(d.mont$counts)) |>
+                DEGAll <- DEGAll |>
+                    edgeR::glmQLFTest(coef = ncol(DEGAll$design)) |>
+                    edgeR::topTags(n = Inf, adjust.method = adjust.method) |>
+                    as.data.frame() |>
+                    rename(c("FDR" = "adj.P.Val")) |>
                     rename(c("PValue" = "P.Value"))
                 if (!is.null(DEGAll_table)) {
                     genes <- intersect(rownames(DEGAll), rownames(DEGAll_table))
@@ -200,11 +202,11 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                 }
             } else {
                 DEGAll <- edgeR::glmFit(d.mont, dispersion = 0)
-                DEGAll <- DEGAll %>%
-                    edgeR::glmLRT(coef = ncol(DEGAll$design)) %>%
-                    edgeR::topTags(n = Inf, adjust.method = adjust.method) %>%
-                    as.data.frame() %>%
-                    rename(c("FDR" = "adj.P.Val")) %>%
+                DEGAll <- DEGAll |>
+                    edgeR::glmLRT(coef = ncol(DEGAll$design)) |>
+                    edgeR::topTags(n = Inf, adjust.method = adjust.method) |>
+                    as.data.frame() |>
+                    rename(c("FDR" = "adj.P.Val")) |>
                     rename(c("PValue" = "P.Value"))
             }
         }
@@ -218,7 +220,7 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                 contrasts = comparison,
                 levels = design
             )
-            DEGAll <- limma::voom(d.mont, design = design, plot = FALSE) %>%
+            DEGAll <- limma::voom(d.mont, design = design, plot = FALSE) |>
                 limma::lmFit(design)
             DEGAll_table <- NULL
             if (useTopconfects) {
@@ -228,9 +230,9 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                 )$table
                 rownames(DEGAll_table) <- DEGAll_table$name
             }
-            DEGAll <- DEGAll %>%
-                limma::contrasts.fit(contrast.matrix) %>%
-                limma::eBayes() %>%
+            DEGAll <- DEGAll |>
+                limma::contrasts.fit(contrast.matrix) |>
+                limma::eBayes() |>
                 limma::topTable(number = Inf, adjust.method = adjust.method)
             if (!is.null(DEGAll_table)) {
                 genes <- intersect(rownames(DEGAll), rownames(DEGAll_table))
@@ -259,13 +261,13 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                     padjust_methods = adjust.method
                 )
             }
-            DEGAll <- DEGAll$pvals %>%
-                rename(c("adjPval" = "adj.P.Val")) %>%
+            DEGAll <- DEGAll$pvals |>
+                rename(c("adjPval" = "adj.P.Val")) |>
                 rename(c("rawPval" = "P.Value"))
         }
 
         if (method == "Wilcoxon") {
-            count_norm <- edgeR::cpm(d.mont, log = TRUE) %>% as.data.frame()
+            count_norm <- edgeR::cpm(d.mont, log = TRUE) |> as.data.frame()
             pvalues <- rep(0, nrow(count_norm))
 
             count_disease <- as.matrix(count_norm[, group == unique(group)[1]])
@@ -287,7 +289,7 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                 k = 0.5, norm = "tmm", factor = "conditions",
                 random.seed = 12345, filter = 1, cv.cutoff = 100, cpm = 1
             )
-            DEGAll <- NOISeq::degenes(res, q = 0, M = NULL) %>%
+            DEGAll <- NOISeq::degenes(res, q = 0, M = NULL) |>
                 rename(c("prob" = "P.Value"))
             DEGAll$adj.P.Val <- DEGAll$P.Value
         }
@@ -298,6 +300,68 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
 
     return(DEGAll)
 }
+
+#' Do difference analysis of RNA-seq data
+#'
+#' @param se SummarizedExperiment object
+#' @param groupCol group column
+#' @param method one of "DESeq2", "edgeR" , "limma", "dearseq",
+#' "NOISeq" and "Wilcoxon".
+#' @param geneLength a vector of gene length.
+#' @param gccontent a vector of gene GC content.
+#' @param filter if TRUE, use filterByExpr to filter genes.
+#' @param edgeRNorm if TRUE, use edgeR to do normalization for dearseq method.
+#' @param adjust.method character string specifying the method used to
+#' adjust p-values for multiple testing.
+#' See \link{p.adjust} for possible values.
+#' @param useTopconfects if TRUE, use topconfects to provide a
+#'    more biologically useful ranked gene list.
+#' @return data.frame
+#' @importFrom plyr rename
+#' @importFrom SummarizedExperiment assays
+#' @importFrom SummarizedExperiment colData
+#' @importFrom metap sumlog
+#' @import cqn
+#' @export
+#'
+#' @examples
+#' df <- matrix(rnbinom(400, mu = 4, size = 10), 25, 16)
+#' rownames(df) <- paste0("gene", 1:25)
+#' colnames(df) <- paste0("sample", 1:16)
+#' group <- sample(c("group1", "group2"), 16, replace = TRUE)
+#' 
+#' nrows <- 200; ncols <- 20
+#'  counts <- matrix(
+#'    runif(nrows * ncols, 1, 1e4), nrows,
+#'    dimnames = list(paste0("cg",1:200),paste0("S",1:20))
+#' )
+#' 
+#' colData <- S4Vectors::DataFrame(
+#'   row.names = paste0("sample", 1:16),
+#'   group = group
+#' )
+#' data <- SummarizedExperiment::SummarizedExperiment(
+#'          assays=S4Vectors::SimpleList(counts=df),
+#'          colData = colData)
+#' 
+#' result <- diff_RNA_SummarizedExperiment(se = data, groupCol = "group",
+#'     filte = FALSE, method = "Wilcoxon")    
+diff_RNA_SummarizedExperiment <- function(se, groupCol, 
+                    method = "limma", geneLength = NULL,
+                    gccontent = NULL, filter = TRUE, edgeRNorm = TRUE,
+                    adjust.method = "BH", useTopconfects = TRUE) {
+    # counts, group geneLength = NULL,gccontent = NULL
+    counts <- assays(se)$counts
+    group <- colData(se)[, groupCol]
+    names(group) <- rownames(colData(se))
+    diff_RNA(counts = counts, group = group, method = method, 
+        geneLength = geneLength, gccontent = gccontent, 
+        filter = filter, edgeRNorm = edgeRNorm,
+        adjust.method = adjust.method, 
+        useTopconfects = useTopconfects)
+
+}
+
 
 #' Do difference analysis of RNA-seq data downloaded from ucsc
 #'
