@@ -46,25 +46,25 @@
     <loc>/reference/differential_cnv.html</loc>
   </url>
   <url>
-    <loc>/reference/diff_CNV.html</loc>
+    <loc>/reference/differential_CNV.html</loc>
   </url>
   <url>
-    <loc>/reference/diff_gene.html</loc>
+    <loc>/reference/differential_gene.html</loc>
   </url>
   <url>
-    <loc>/reference/Diff_limma.html</loc>
+    <loc>/reference/differential_limma.html</loc>
   </url>
   <url>
-    <loc>/reference/diff_RNA.html</loc>
+    <loc>/reference/differential_RNA.html</loc>
   </url>
   <url>
-    <loc>/reference/diff_RNA_ucsc.html</loc>
+    <loc>/reference/differential_RNA_ucsc.html</loc>
   </url>
   <url>
-    <loc>/reference/diff_SNP.html</loc>
+    <loc>/reference/differential_SNP.html</loc>
   </url>
   <url>
-    <loc>/reference/diff_SNP_tcga.html</loc>
+    <loc>/reference/differential_SNP_tcga.html</loc>
   </url>
   <url>
     <loc>/reference/fpkmToTpm_matrix.html</loc>
@@ -103,7 +103,7 @@
     <loc>/reference/methyDiff.html</loc>
   </url>
   <url>
-    <loc>/reference/methyDiff_ucsc.html</loc>
+    <loc>/reference/methydifferential_ucsc.html</loc>
   </url>
   <url>
     <loc>/reference/module.html</loc>

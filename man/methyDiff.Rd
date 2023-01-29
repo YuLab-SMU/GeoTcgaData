@@ -61,7 +61,7 @@ GDCdownload(query, method = "api", files.per.chunk = 5,
     directory = Your_Path)
 merge_result <- Merge_methy_tcga(Your_Path_to_DNA_Methylation_data)
 library(ChAMP) # To avoid reporting errors
-diff_gene <- methyDiff(cpgData = merge_result,
+differential_gene <- methyDiff(cpgData = merge_result,
     sampleGroup = sample(c("C","T"),
     ncol(merge_result[[1]]), replace = TRUE))
 }

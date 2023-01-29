@@ -110,7 +110,7 @@ get_cpg_annotation <- function(region = "TSS1500") {
 #'     directory = Your_Path)
 #' merge_result <- Merge_methy_tcga(Your_Path_to_DNA_Methylation_data)
 #' library(ChAMP) # To avoid reporting errors
-#' diff_gene <- methyDiff(cpgData = merge_result,
+#' differential_gene <- methyDiff(cpgData = merge_result,
 #'     sampleGroup = sample(c("C","T"),
 #'     ncol(merge_result[[1]]), replace = TRUE))
 #' }
@@ -182,7 +182,7 @@ methyDiff <- function(cpgData, sampleGroup,
         myNorm3 <- gene_ave(myNorm2)
 
         ## use limma to do differential expression analysis
-        gene_pvalue <- Diff_limma(myNorm3, group = sampleGroup,
+        gene_pvalue <- differential_limma(myNorm3, group = sampleGroup,
             adjust.method = adjust.method)
         gene_pvalue$gene <- rownames(gene_pvalue)
     } else {
@@ -305,7 +305,7 @@ quiet <- function(x) {
 #'     detP = myImport$detP, beadcount = myImport$beadcount
 #' )
 #' cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
-#' result <- methyDiff_ucsc(methy, cpg_gene)
+#' result <- methydifferential_ucsc(methy, cpg_gene)
 #' }
 #' # use user defined data
 #' library(ChAMP)
@@ -318,7 +318,7 @@ quiet <- function(x) {
 #'     gene = rep(paste0("gene", seq_len(20)), 10))
 #' result <- methyDiff(cpgData, sampleGroup, 
 #'     cpg2gene = cpg2gene, normMethod = NULL)
-methyDiff_ucsc <- function(methy, sampleGroup = NULL, missing_value = "knn",
+methydifferential_ucsc <- function(methy, sampleGroup = NULL, missing_value = "knn",
                             model = "gene",
                             normMethod = "PBC",
                             combineMethod = RobustRankAggreg::rhoScores,
@@ -341,7 +341,7 @@ methyDiff_ucsc <- function(methy, sampleGroup = NULL, missing_value = "knn",
     )
 }
 
-#' Diff_limma
+#' differential_limma
 #'
 #' @param df data.frame of the omic data
 #' @param group a vector, group of samples.
@@ -354,8 +354,8 @@ methyDiff_ucsc <- function(methy, sampleGroup = NULL, missing_value = "knn",
 #' rownames(df) <- paste0("gene", 1:25)
 #' colnames(df) <- paste0("sample", 1:8)
 #' group <- sample(c("group1", "group2"), 8, replace = TRUE)
-#' result <- Diff_limma(df = df, group = group)
-Diff_limma <- function(df, group, adjust.method = "BH") {
+#' result <- differential_limma(df = df, group = group)
+differential_limma <- function(df, group, adjust.method = "BH") {
     groups <- unique(group)
     # if group is a numberic vector(even for c("0", "1")), will get errors.
     group <- gsub(groups[1], "nromal", group)
@@ -427,11 +427,11 @@ Diff_limma <- function(df, group, adjust.method = "BH") {
 #' data <- SummarizedExperiment::SummarizedExperiment(
 #'          assays=S4Vectors::SimpleList(counts=cpgData),
 #'          colData = colData)
-#' result <- methyDiff_SummarizedExperiment(se = data, 
+#' result <- methydifferential_SummarizedExperiment(se = data, 
 #'     groupCol = "group", normMethod = NULL, 
 #'     cpg2gene = cpg2gene)         
         
-methyDiff_SummarizedExperiment  <- function(se, groupCol,
+methydifferential_SummarizedExperiment  <- function(se, groupCol,
                     combineMethod = "stouffer",
                     missing_value = "knn", 
                     cpg2gene = NULL,

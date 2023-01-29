@@ -123,8 +123,8 @@ dataPrep <- TCGAanalyze_Preprocessing(object = dataRNA,
                                       datatype = "STAR - Counts")
 ```
 
-Use `diff_RNA` to do difference analysis. We provide the data of human
-gene length and GC content in `gene_cov`.
+Use `differential_RNA` to do difference analysis. We provide the data of
+human gene length and GC content in `gene_cov`.
 
 ``` r
 group <- sample(c("grp1", "grp2"), ncol(dataPrep), replace = TRUE)
@@ -142,7 +142,7 @@ geneLength <- gene_cov2[genes, "length"]
 gccontent <- gene_cov2[genes, "GC"]
 names(geneLength) <- names(gccontent) <- genes
 ##  Difference analysis
-DEGAll <- diff_RNA(counts = dataPrep, group = group, 
+DEGAll <- differential_RNA(counts = dataPrep, group = group, 
                    geneLength = geneLength, gccontent = gccontent)
 ```
 
@@ -191,7 +191,7 @@ Then use `ChAMP` package to do difference analysis.
 # if (!requireNamespace("ChAMP", quietly = TRUE))
 #     BiocManager::install("ChAMP")
 library(ChAMP) # To avoid reporting errors
-diff_gene <- methyDiff(cpgData = merge_result, sampleGroup = sample(c("C","T"), 
+differential_gene <- methyDiff(cpgData = merge_result, sampleGroup = sample(c("C","T"), 
     ncol(merge_result[[1]]), replace = TRUE))
 ```
 
@@ -200,8 +200,8 @@ install it successfully, you can download each dependent package
 separately(Source or Binary) and install it locally.
 
 If your methylation data was downloaded from [UCSC
-Xena](http://xena.ucsc.edu/), you can use `methyDiff_ucsc` to get
-differential genes.
+Xena](http://xena.ucsc.edu/), you can use `methydifferential_ucsc` to
+get differential genes.
 
 ``` r
 methy_file <- "TCGA.THCA.sampleMap_HumanMethylation450.gz"
@@ -216,7 +216,7 @@ cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
 # class(ann) <- "data.frame"
 # cpg_gene <- ann[,c("Name", "UCSC_RefGene_Name", "UCSC_RefGene_Group")]
 
-methy_df <- methyDiff_ucsc(methy, cpg_gene)
+methy_df <- methydifferential_ucsc(methy, cpg_gene)
 ```
 
 We provide three models to get methylation difference genes:
@@ -232,8 +232,8 @@ We find that only model = “gene” has no deviation of CpG number.
 Use `clusterProfiler` to do enrichment analytics:
 
 ``` r
-diff_gene$p.adj <- p.adjust(diff_gene$pvalue)
-genes <- diff_gene[diff_gene$p.adj < 0.05, "gene"]
+differential_gene$p.adj <- p.adjust(differential_gene$pvalue)
+genes <- differential_gene[differential_gene$p.adj < 0.05, "gene"]
 library(clusterProfiler)
 library(enrichplot)
 library(org.Hs.eg.db)
@@ -258,14 +258,14 @@ data <- GDCprepare(query = query,
 ```
 
 Do difference analysis of gene level copy number variation data using
-`diff_CNV`
+`differential_CNV`
 
 ``` r
 class(data) <- "data.frame"
 cnvData <- data[, -c(1,2,3)]
 rownames(cnvData) <- data[, 1]
 sampleGroup  = sample(c("A","B"), ncol(cnvData), replace = TRUE)
-diffCnv <- diff_CNV(cnvData, sampleGroup)
+diffCnv <- differential_CNV(cnvData, sampleGroup)
 ```
 
 Use `clusterProfiler` to do enrichment analytics:
@@ -297,13 +297,13 @@ data_snp <- GDCprepare(query = query,
                    directory =  Your_Path) 
 ```
 
-Use `diff_SNP_tcga` to do difference analysis
+Use `differential_SNP_tcga` to do difference analysis
 
 ``` r
 samples <- unique(data_snp$Tumor_Sample_Barcode)
 sampleType <- sample(c("A","B"), length(samples), replace = TRUE)
 names(sampleType) <- samples
-pvalue <- diff_SNP_tcga(snpData = data_snp, sampleType = sampleType)
+pvalue <- differential_SNP_tcga(snpData = data_snp, sampleType = sampleType)
 # merge pvalue
 ```
 

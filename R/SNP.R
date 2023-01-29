@@ -23,14 +23,14 @@
 #' samples <- unique(data_snp$Tumor_Sample_Barcode)
 #' sampleGroup <- sample(c("A", "B"), length(samples), replace = TRUE)
 #' names(sampleGroup) <- samples
-#' pvalue <- diff_SNP_tcga(snpData = data_snp, sampleGroup = sampleGroup)
+#' pvalue <- differential_SNP_tcga(snpData = data_snp, sampleGroup = sampleGroup)
 #' }
 #' # use demo data
 #' snpDf <- matrix(sample(c("mutation", NA), 100, replace = TRUE), 10, 10)
 #' snpDf <- as.data.frame(snpDf)
 #' sampleGroup <- sample(c("A", "B"), 10, replace = TRUE)
-#' result <- diff_SNP(snpDf, sampleGroup)
-diff_SNP <- function(snpDf, sampleGroup, combineMethod = min) {
+#' result <- differential_SNP(snpDf, sampleGroup)
+differential_SNP <- function(snpDf, sampleGroup, combineMethod = min) {
     snpDf[!is.na(snpDf)] <- "mutation"
     snpDf[is.na(snpDf)] <- "wild"
     sampleGroup <- sampleGroup[!is.na(sampleGroup)]
@@ -119,14 +119,14 @@ combine_pvalue <- function(snpResult, snp2gene, combineMethod = min) {
 #' samples <- unique(data_snp$Tumor_Sample_Barcode)
 #' sampleGroup <- sample(c("A", "B"), length(samples), replace = TRUE)
 #' names(sampleGroup) <- samples
-#' pvalue <- diff_SNP_tcga(snpData = data_snp, sampleGroup = sampleGroup)
+#' pvalue <- differential_SNP_tcga(snpData = data_snp, sampleGroup = sampleGroup)
 #' }
 #' # use demo data
 #' snpDf <- matrix(sample(c("mutation", NA), 100, replace = TRUE), 10, 10)
 #' snpDf <- as.data.frame(snpDf)
 #' sampleGroup <- sample(c("A", "B"), 10, replace = TRUE)
-#' result <- diff_SNP(snpDf, sampleGroup)
-diff_SNP_tcga <- function(snpData, sampleGroup, combineMethod = NULL) {
+#' result <- differential_SNP(snpDf, sampleGroup)
+differential_SNP_tcga <- function(snpData, sampleGroup, combineMethod = NULL) {
     Tumor_Sample_Barcode <- Variant_Classification <- NULL
     snpName <- paste(snpData$Hugo_Symbol, snpData$Start_Position, sep = "_")
     ## 提取有用的信息
@@ -147,7 +147,7 @@ diff_SNP_tcga <- function(snpData, sampleGroup, combineMethod = NULL) {
     sampleGroup <- sampleGroup[i]
     rownames(snpData) <- snpData$snp
     snpData <- snpData[, -1]
-    pvalue <- diff_SNP(snpDf = snpData, sampleGroup = sampleGroup,
+    pvalue <- differential_SNP(snpDf = snpData, sampleGroup = sampleGroup,
         combineMethod = combineMethod)
     return(pvalue)
 }
@@ -170,15 +170,15 @@ diff_SNP_tcga <- function(snpData, sampleGroup, combineMethod = NULL) {
 #' names(sampleGroup) <- colnames(snpData)
 #' snpData <- SNP_QC(snpData)
 #' sampleGroup <- sample(c("A", "B"), ncol(snpData ), replace = TRUE)
-#' result1 <- diff_SNP_GEO(snpData = snpData,
+#' result1 <- differential_SNP_GEO(snpData = snpData,
 #'     sampleGroup = sampleGroup, method = "Chisquare")
 #' }
 #' # use demo data
 #' snpDf <- matrix(sample(c("AA", "Aa", "aa"), 100, replace = TRUE), 10, 10)
 #' snpDf <- as.data.frame(snpDf)
 #' sampleGroup <- sample(c("A", "B"), 10, replace = TRUE)
-#' result <- diff_SNP_GEO(snpDf, sampleGroup, method = "fisher")
-diff_SNP_GEO <- function(snpData, sampleGroup, method = "Chisquare") {
+#' result <- differential_SNP_GEO(snpDf, sampleGroup, method = "fisher")
+differential_SNP_GEO <- function(snpData, sampleGroup, method = "Chisquare") {
     snpDf <- as.matrix(snpData)
     sampleGroup <- sampleGroup[!is.na(sampleGroup)]
     type1 <- which(sampleGroup == names(table(sampleGroup))[1])

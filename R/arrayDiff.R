@@ -55,7 +55,7 @@
 arrayDiff <- function(df, group, method = "limma", adjust.method = "BH") {
     method <- match.arg(method, c("limma", "ttest", "wilcox"))
     if (method == "limma") {
-        result <- Diff_limma(df, group, adjust.method = adjust.method)
+        result <- differential_limma(df, group, adjust.method = adjust.method)
     } else {
         groups <- unique(group)
         which1 <- which(group == groups[1])

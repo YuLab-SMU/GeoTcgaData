@@ -9,7 +9,6 @@
 #' and "CATT"(Cochran-Armitage trend test)
 #' @return data.frame with pvalue and estimate
 #' @export
-#'
 #' @examples
 #' \donttest{
 #' # use TCGAbiolinks data as example
@@ -28,7 +27,7 @@
 #' aa[bb < 2] <- -1
 #' aa[bb > 2] <- 1
 #' sampleGroup <- sample(c("A", "B"), ncol(cnvData), replace = TRUE)
-#' diffCnv <- diff_CNV(aa, sampleGroup)
+#' diffCnv <- differential_CNV(aa, sampleGroup)
 #'
 #' # Use sangerbox CNV data as example
 #' cnvData <- fread("Merge_GeneLevelCopyNumber.txt")
@@ -36,16 +35,15 @@
 #' rownames(cnvData) <- cnvData[, 1]
 #' cnvData <- cnvData[, -c(1, 2, 3)]
 #' sampleGroup <- sample(c("A", "B"), ncol(cnvData), replace = TRUE)
-#' diffCnv <- diff_CNV(cnvData, sampleGroup)
+#' diffCnv <- differential_CNV(cnvData, sampleGroup)
 #' }
 #' # use random data as example
 #' aa <- matrix(sample(c(0, 1, -1), 200, replace = TRUE), 25, 8)
 #' rownames(aa) <- paste0("gene", 1:25)
 #' colnames(aa) <- paste0("sample", 1:8)
 #' sampleGroup <- sample(c("A", "B"), ncol(aa), replace = TRUE)
-#' diffCnv <- diff_CNV(aa, sampleGroup)
-
-diff_CNV <- function(cnvData, sampleGroup,
+#' diffCnv <- differential_CNV(aa, sampleGroup)
+differential_CNV <- function(cnvData, sampleGroup,
                     method = "Chisquare",
                     adjust.method = "BH", ...) {
     type1 <- which(sampleGroup == unique(sampleGroup)[1])
@@ -97,6 +95,6 @@ diff_CNV <- function(cnvData, sampleGroup,
     result
 }
 
-# diff_CNV_segment <- function(cnvData, sampleType) {
+# differential_CNV_segment <- function(cnvData, sampleType) {
 
 # }
