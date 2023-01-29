@@ -120,7 +120,7 @@ dataPrep <- TCGAanalyze_Preprocessing(object = dataRNA,
     cor.cut = 0.6, datatype = "STAR - Counts")
 
 
-# Use `diff_RNA` to do difference analysis. We provide the data 
+# Use `differential_RNA` to do difference analysis. We provide the data 
 # of human gene length and GC content in `gene_cov`.
 group <- sample(c("grp1", "grp2"), ncol(dataPrep), replace = TRUE)
 library(cqn) # To avoid reporting errors: there is no function "rq"
@@ -138,7 +138,7 @@ geneLength <- gene_cov2[genes, "length"]
 gccontent <- gene_cov2[genes, "GC"]
 names(geneLength) <- names(gccontent) <- genes
 ##  Difference analysis
-DEGAll <- diff_RNA(counts = dataPrep, group = group, 
+DEGAll <- differential_RNA(counts = dataPrep, group = group, 
     geneLength = geneLength, gccontent = gccontent)
 
 # Use `clusterProfiler` to do enrichment analytics:
@@ -177,10 +177,10 @@ merge_result <- Merge_methy_tcga(Your_Path_to_DNA_Methylation_data)
 
 # Then use `methyDiff()` to do difference analysis.
 library(ChAMP) # To avoid reporting errors
-diff_gene <- methyDiff(cpgData = merge_result, sampleGroup = sample(c("C","T"), 
+differential_gene <- methyDiff(cpgData = merge_result, sampleGroup = sample(c("C","T"), 
     ncol(merge_result[[1]]), replace = TRUE))
 
-# use `methyDiff_ucsc` to do difference analysis   
+# use `methydifferential_ucsc` to do difference analysis   
 methy_file <- "TCGA.THCA.sampleMap_HumanMethylation450.gz"
 methy <- fread(methy_file, sep = "\t", header = T)
 library(ChAMP)
@@ -194,10 +194,10 @@ library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
 # class(ann) <- "data.frame"
 # cpg_gene <- ann[,c("Name", "UCSC_RefGene_Name", "UCSC_RefGene_Group")]
 
-methy_df <- methyDiff_ucsc(methy, cpg_gene)
+methy_df <- methydifferential_ucsc(methy, cpg_gene)
 # Use `clusterProfiler` to do enrichment analytics:
-diff_gene$p.adj <- p.adjust(diff_gene$pvalue)
-genes <- diff_gene[diff_gene$p.adj < 0.05, "gene"]
+differential_gene$p.adj <- p.adjust(differential_gene$pvalue)
+genes <- differential_gene[differential_gene$p.adj < 0.05, "gene"]
 library(clusterProfiler)
 library(enrichplot)
 library(org.Hs.eg.db)
@@ -235,12 +235,12 @@ GDCdownload(query, method = "api", files.per.chunk = 5, directory = Your_Path)
 data <- GDCprepare(query = query, 
     directory =  "Your_Path") 
 # Do difference analysis of gene level copy number 
-# variation data using `diff_CNV`
+# variation data using `differential_CNV`
 class(data) <- "data.frame"
 cnvData <- data[, -c(1,2,3)]
 rownames(cnvData) <- data[, 1]
 sampleGroup  <- sample(c("A","B"), ncol(cnvData), replace = TRUE)
-diffCnv <- diff_CNV(cnvData, sampleGroup)
+diffCnv <- differential_CNV(cnvData, sampleGroup)
 
 # Use `clusterProfiler` to do enrichment analytics:
 pvalues <- diffCnv$pvalue * sign(diffCnv$odds)
@@ -268,11 +268,11 @@ GDCdownload(query, method = "api", files.per.chunk = 5, directory = Your_Path)
 
 data_snp <- GDCprepare(query = query, 
     directory =  "Your_Path") 
-# Use `diff_SNP_tcga` to do difference analysis
+# Use `differential_SNP_tcga` to do difference analysis
 samples <- unique(data_snp$Tumor_Sample_Barcode)
 sampleType <- sample(c("A","B"), length(samples), replace = TRUE)
 names(sampleType) <- samples
-pvalue <- diff_SNP_tcga(snpData = data_snp, sampleType = sampleType)
+pvalue <- differential_SNP_tcga(snpData = data_snp, sampleType = sampleType)
 
 # Use `clusterProfiler` to do enrichment analysis
 pvalue2 <- sort(pvalue, decreasing = TRUE)

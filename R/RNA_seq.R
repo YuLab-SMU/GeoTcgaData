@@ -46,7 +46,7 @@
 #'     datatype = "STAR - Counts"
 #' )
 #'
-#' # Use `diff_RNA` to do difference analysis.
+#' # Use `differential_RNA` to do difference analysis.
 #' # We provide the data of human gene length and GC content in `gene_cov`.
 #' group <- sample(c("grp1", "grp2"), ncol(dataPrep), replace = TRUE)
 #' library(cqn) # To avoid reporting errors: there is no function "rq"
@@ -65,7 +65,7 @@
 #' gccontent <- gene_cov2(genes, "GC")
 #' names(geneLength) <- names(gccontent) <- genes
 #' ##    Difference analysis
-#' DEGAll <- diff_RNA(
+#' DEGAll <- differential_RNA(
 #'     counts = dataPrep, group = group,
 #'     geneLength = geneLength, gccontent = gccontent
 #' )
@@ -85,9 +85,9 @@
 #' rownames(df) <- paste0("gene", 1:25)
 #' colnames(df) <- paste0("sample", 1:16)
 #' group <- sample(c("group1", "group2"), 16, replace = TRUE)
-#' result <- diff_RNA(counts = df, group = group,
+#' result <- differential_RNA(counts = df, group = group,
 #'     filte = FALSE, method = "Wilcoxon")
-diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
+differential_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                     gccontent = NULL, filter = TRUE, edgeRNorm = TRUE,
                     adjust.method = "BH", useTopconfects = TRUE) {
     method <- match.arg(method, c("DESeq2", "edgeR", "limma",
@@ -344,9 +344,9 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
 #'          assays=S4Vectors::SimpleList(counts=df),
 #'          colData = colData)
 #' 
-#' result <- diff_RNA_SummarizedExperiment(se = data, groupCol = "group",
+#' result <- differential_RNA_SummarizedExperiment(se = data, groupCol = "group",
 #'     filte = FALSE, method = "Wilcoxon")    
-diff_RNA_SummarizedExperiment <- function(se, groupCol, 
+differential_RNA_SummarizedExperiment <- function(se, groupCol, 
                     method = "limma", geneLength = NULL,
                     gccontent = NULL, filter = TRUE, edgeRNorm = TRUE,
                     adjust.method = "BH", useTopconfects = TRUE) {
@@ -354,7 +354,7 @@ diff_RNA_SummarizedExperiment <- function(se, groupCol,
     counts <- assays(se)$counts
     group <- colData(se)[, groupCol]
     names(group) <- rownames(colData(se))
-    diff_RNA(counts = counts, group = group, method = method, 
+    differential_RNA(counts = counts, group = group, method = method, 
         geneLength = geneLength, gccontent = gccontent, 
         filter = filter, edgeRNorm = edgeRNorm,
         adjust.method = adjust.method, 
@@ -374,7 +374,7 @@ diff_RNA_SummarizedExperiment <- function(se, groupCol,
 #' \donttest{
 #' ucscfile <- data.table::fread("TCGA-BRCA.htseq_counts.tsv.gz")
 #' group <- sample(c("grp1", "grp2"), ncol(ucscfile) - 1, replace = TRUE)
-#' result <- diff_RNA_ucsc(ucscfile, group = group)
+#' result <- differential_RNA_ucsc(ucscfile, group = group)
 #' }
 #'
 #' # use user-defined data
@@ -385,13 +385,13 @@ diff_RNA_SummarizedExperiment <- function(se, groupCol,
 #' df <- log2(df + 1)
 #' group <- sample(c("group1", "group2"), 16, replace = TRUE)
 #' df <- cbind(rownames(df), df)
-#' result <- diff_RNA_ucsc(ucsc = df, group = group,
+#' result <- differential_RNA_ucsc(ucsc = df, group = group,
 #'     filte = FALSE, method = "limma")
-diff_RNA_ucsc <- function(ucsc, ...) {
+differential_RNA_ucsc <- function(ucsc, ...) {
     class(ucsc) <- "data.frame"
     ucsc[, 1] <- gsub("\\..*", "", ucsc[, 1])
     rownames(ucsc) <- ucsc[, 1]
     ucsc <- ucsc[, -1]
     ucsc <- round(2^ucsc) - 1
-    diff_RNA(ucsc, ...)
+    differential_RNA(ucsc, ...)
 }
