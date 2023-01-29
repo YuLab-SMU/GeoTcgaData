@@ -20,3 +20,10 @@ data.frame
 \description{
 combine pvalues of SNP difference analysis result
 }
+\examples{
+snpResult <- data.frame(pvalue = runif(100), estimate = runif(100))
+rownames(snpResult) <- paste0("snp", seq_len(100))
+snp2gene <- data.frame(snp = rownames(snpResult), 
+    gene = rep(paste0("gene", seq_len(20)), 5))
+result <- combine_pvalue(snpResult, snp2gene)
+}

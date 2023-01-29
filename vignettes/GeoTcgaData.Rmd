@@ -1,5 +1,5 @@
 ---
-title: "The useage of GeoTcgaData"
+title: "GeoTcgaData"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{GeoTcgaData}

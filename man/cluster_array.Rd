@@ -10,7 +10,8 @@ cluster_array(x, clusterCutoff = 0.7)
 \item{x}{matrix of Microarray data, the first is the name of the gene, 
 and the others are the expression value.}
 
-\item{clusterCutoff}{Pearson correlation threshold to cut off the hierarchical tree.}
+\item{clusterCutoff}{Pearson correlation threshold 
+to cut off the hierarchical tree.}
 }
 \value{
 data.frame
