@@ -1,7 +1,7 @@
 Package: GeoTcgaData
 Type: Package
 Title: Processing Various Types of Data on GEO and TCGA
-Version: 0.99.1
+Version: 0.99.2
 Authors@R: person(given = "Erqiang", family = "Hu", email = "13766876214@163.com", role  = c("aut", "cre"), comment = c(ORCID = "0000-0002-1798-7513"))
 Description: Gene Expression Omnibus(GEO) and The Cancer Genome Atlas (TCGA) 
     provide us with a wealth of data, such as RNA-seq, DNA Methylation, SNP
@@ -11,7 +11,6 @@ Description: Gene Expression Omnibus(GEO) and The Cancer Genome Atlas (TCGA)
 Depends: R (>= 4.2.0)
 License: Artistic-2.0
 Encoding: UTF-8
-LazyData: false
 RoxygenNote: 7.2.1
 Suggests: 
     knitr,
@@ -40,10 +39,8 @@ VignetteBuilder: knitr
 Imports: 
     utils,
     data.table,
-    magrittr,
     plyr,
     cqn,
-    dplyr,
     topconfects,
     stats,
     metap,

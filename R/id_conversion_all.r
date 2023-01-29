@@ -25,11 +25,11 @@ id_ava <- function() {
 #' @export
 #'
 #' @examples
-#' id_conversion_vector(
+#' id_conversion(
 #'     "symbol", "ensembl_gene_id",
 #'     c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS")
 #' )
-id_conversion_vector <- function(from, to, IDs, na.rm = FALSE) {
+id_conversion <- function(from, to, IDs, na.rm = FALSE) {
     from <- match.arg(from, id_ava())
     to <- match.arg(to, id_ava())
     loc <- which(hgnc_file[, from] %in% IDs)

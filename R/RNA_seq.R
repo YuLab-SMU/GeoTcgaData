@@ -14,7 +14,6 @@
 #' @param useTopconfects if TRUE, use topconfects to provide a
 #'    more biologically useful ranked gene list.
 #' @return data.frame
-#' @importFrom magrittr %>%
 #' @importFrom plyr rename
 #' @import cqn
 #' @export
@@ -146,11 +145,11 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                 topconfects::deseq2_confects(DEGAll, step = 0.05)$table
             rownames(DEGAll_table) <- DEGAll_table$name
         }
-        DEGAll <- DEGAll %>%
-            DESeq2::results(pAdjustMethod = adjust.method) %>%
-            as.data.frame() %>%
-            rename(c("log2FoldChange" = "logFC")) %>%
-            rename(c("pvalue" = "P.Value")) %>%
+        DEGAll <- DEGAll |>
+            DESeq2::results(pAdjustMethod = adjust.method) |>
+            as.data.frame() |>
+            rename(c("log2FoldChange" = "logFC")) |>
+            rename(c("pvalue" = "P.Value")) |>
             rename(c("padj" = "adj.P.Val"))
         DEGAll$length <- geneLength[rownames(DEGAll)]
         DEGAll$gccontent <- gccontent[rownames(DEGAll)]
@@ -177,7 +176,7 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
             # design <- stats::model.matrix(~ group)
             design <- stats::model.matrix(~ d.mont$sample$group)
             if (min(table(d.mont$sample$group)) > 1) {
-                d.mont <- edgeR::estimateDisp(d.mont, design) %>%
+                d.mont <- edgeR::estimateDisp(d.mont, design) |>
                     edgeR::estimateGLMCommonDisp(design = design)
                 DEGAll <- edgeR::glmQLFit(d.mont, design = design)
                 DEGAll_table <- NULL
@@ -189,12 +188,12 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                     )$table
                     rownames(DEGAll_table) <- DEGAll_table$name
                 }
-                # edgeR::topTags(n = nrow(d.mont$counts)) %>%
-                DEGAll <- DEGAll %>%
-                    edgeR::glmQLFTest(coef = ncol(DEGAll$design)) %>%
-                    edgeR::topTags(n = Inf, adjust.method = adjust.method) %>%
-                    as.data.frame() %>%
-                    rename(c("FDR" = "adj.P.Val")) %>%
+                # edgeR::topTags(n = nrow(d.mont$counts)) |>
+                DEGAll <- DEGAll |>
+                    edgeR::glmQLFTest(coef = ncol(DEGAll$design)) |>
+                    edgeR::topTags(n = Inf, adjust.method = adjust.method) |>
+                    as.data.frame() |>
+                    rename(c("FDR" = "adj.P.Val")) |>
                     rename(c("PValue" = "P.Value"))
                 if (!is.null(DEGAll_table)) {
                     genes <- intersect(rownames(DEGAll), rownames(DEGAll_table))
@@ -203,11 +202,11 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                 }
             } else {
                 DEGAll <- edgeR::glmFit(d.mont, dispersion = 0)
-                DEGAll <- DEGAll %>%
-                    edgeR::glmLRT(coef = ncol(DEGAll$design)) %>%
-                    edgeR::topTags(n = Inf, adjust.method = adjust.method) %>%
-                    as.data.frame() %>%
-                    rename(c("FDR" = "adj.P.Val")) %>%
+                DEGAll <- DEGAll |>
+                    edgeR::glmLRT(coef = ncol(DEGAll$design)) |>
+                    edgeR::topTags(n = Inf, adjust.method = adjust.method) |>
+                    as.data.frame() |>
+                    rename(c("FDR" = "adj.P.Val")) |>
                     rename(c("PValue" = "P.Value"))
             }
         }
@@ -221,7 +220,7 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                 contrasts = comparison,
                 levels = design
             )
-            DEGAll <- limma::voom(d.mont, design = design, plot = FALSE) %>%
+            DEGAll <- limma::voom(d.mont, design = design, plot = FALSE) |>
                 limma::lmFit(design)
             DEGAll_table <- NULL
             if (useTopconfects) {
@@ -231,9 +230,9 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                 )$table
                 rownames(DEGAll_table) <- DEGAll_table$name
             }
-            DEGAll <- DEGAll %>%
-                limma::contrasts.fit(contrast.matrix) %>%
-                limma::eBayes() %>%
+            DEGAll <- DEGAll |>
+                limma::contrasts.fit(contrast.matrix) |>
+                limma::eBayes() |>
                 limma::topTable(number = Inf, adjust.method = adjust.method)
             if (!is.null(DEGAll_table)) {
                 genes <- intersect(rownames(DEGAll), rownames(DEGAll_table))
@@ -262,13 +261,13 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                     padjust_methods = adjust.method
                 )
             }
-            DEGAll <- DEGAll$pvals %>%
-                rename(c("adjPval" = "adj.P.Val")) %>%
+            DEGAll <- DEGAll$pvals |>
+                rename(c("adjPval" = "adj.P.Val")) |>
                 rename(c("rawPval" = "P.Value"))
         }
 
         if (method == "Wilcoxon") {
-            count_norm <- edgeR::cpm(d.mont, log = TRUE) %>% as.data.frame()
+            count_norm <- edgeR::cpm(d.mont, log = TRUE) |> as.data.frame()
             pvalues <- rep(0, nrow(count_norm))
 
             count_disease <- as.matrix(count_norm[, group == unique(group)[1]])
@@ -290,7 +289,7 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                 k = 0.5, norm = "tmm", factor = "conditions",
                 random.seed = 12345, filter = 1, cv.cutoff = 100, cpm = 1
             )
-            DEGAll <- NOISeq::degenes(res, q = 0, M = NULL) %>%
+            DEGAll <- NOISeq::degenes(res, q = 0, M = NULL) |>
                 rename(c("prob" = "P.Value"))
             DEGAll$adj.P.Val <- DEGAll$P.Value
         }
@@ -318,7 +317,6 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
 #' @param useTopconfects if TRUE, use topconfects to provide a
 #'    more biologically useful ranked gene list.
 #' @return data.frame
-#' @importFrom magrittr %>%
 #' @importFrom plyr rename
 #' @importFrom SummarizedExperiment assays
 #' @importFrom SummarizedExperiment colData

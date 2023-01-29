@@ -37,10 +37,10 @@
     <loc>/reference/classify_sample.html</loc>
   </url>
   <url>
-    <loc>/reference/countToFpkm_matrix.html</loc>
+    <loc>/reference/countToFpkm.html</loc>
   </url>
   <url>
-    <loc>/reference/countToTpm_matrix.html</loc>
+    <loc>/reference/countToTpm.html</loc>
   </url>
   <url>
     <loc>/reference/differential_cnv.html</loc>
@@ -88,7 +88,7 @@
     <loc>/reference/id_conversion.html</loc>
   </url>
   <url>
-    <loc>/reference/id_conversion_vector.html</loc>
+    <loc>/reference/id_conversion.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
@@ -115,10 +115,10 @@
     <loc>/reference/profile.html</loc>
   </url>
   <url>
-    <loc>/reference/rep1.html</loc>
+    <loc>/reference/repAssign.html</loc>
   </url>
   <url>
-    <loc>/reference/rep2.html</loc>
+    <loc>/reference/repRemove.html</loc>
   </url>
   <url>
     <loc>/reference/tcga_cli_deal.html</loc>

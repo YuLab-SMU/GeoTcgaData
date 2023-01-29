@@ -178,7 +178,7 @@ methyDiff <- function(cpgData, sampleGroup,
 
 
         myNorm$gene <- as.character(myNorm$gene)
-        myNorm2 <- rep1(myNorm, ";")
+        myNorm2 <- repAssign(myNorm, ";")
         myNorm3 <- gene_ave(myNorm2)
 
         ## use limma to do differential expression analysis
@@ -290,7 +290,6 @@ quiet <- function(x) {
 #' @param combineMethod method to combine the cpg pvalues.
 #' @param region region of genes, one of "Body", "TSS1500",
 #' "TSS200", "3'UTR", "1stExon", "5'UTR", and "IGR".
-#' @importFrom dplyr `%>%`
 #' @return data.frame
 #' @export
 #'
@@ -332,7 +331,7 @@ methyDiff_ucsc <- function(methy, sampleGroup = NULL, missing_value = "knn",
     if (is.null(group)) {
         group <- lapply(colnames(methy), function(x) {
             strsplit(x, "-")[[1]][4]
-        }) %>% unlist()
+        }) |> unlist()
 
         group <- substring(group, 1, 1)
     }

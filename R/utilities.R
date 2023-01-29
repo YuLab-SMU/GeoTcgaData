@@ -78,7 +78,7 @@ array_preprocess <- function(x, missing_value = "knn", string = " /// ") {
 
     ## gene id conversion
     x <- cbind(rownames(x), x)
-    x <- rep1(x, string)
+    x <- repAssign(x, string)
     # gene_ave(x)
 }
 
