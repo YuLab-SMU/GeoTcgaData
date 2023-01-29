@@ -1,7 +1,7 @@
 #' Handle the case where one id corresponds to multiple genes
 #'
 #' @param input_file input file, a data.frame or a matrix
-#' @param string a string,sep of the gene
+#' @param string a string, sep of the gene
 #'
 #' @return a data.frame, when an id corresponds to multiple genes,
 #' the expression value is assigned to each gene

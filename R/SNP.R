@@ -71,6 +71,13 @@ diff_SNP <- function(snpDf, sampleGroup, combineMethod = min) {
 #' pvalue of multiple snp in a gene.
 #' @return data.frame
 #' @export
+#' @examples
+#' snpResult <- data.frame(pvalue = runif(100), estimate = runif(100))
+#' rownames(snpResult) <- paste0("snp", seq_len(100))
+#' snp2gene <- data.frame(snp = rownames(snpResult), 
+#'     gene = rep(paste0("gene", seq_len(20)), 5))
+#' result <- combine_pvalue(snpResult, snp2gene)
+
 combine_pvalue <- function(snpResult, snp2gene, combineMethod = min) {
         pvalue <- snpResult$pvalue
         estimate <- snpResult$estimate

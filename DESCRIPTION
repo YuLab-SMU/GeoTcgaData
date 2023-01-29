@@ -33,7 +33,9 @@ Suggests:
     testthat (>= 3.0.0),
     CATT,
     TCGAbiolinks,
-    enrichplot
+    enrichplot,
+    GEOquery,
+    BiocGenerics
 VignetteBuilder: knitr
 Imports: 
     utils,
@@ -43,11 +45,13 @@ Imports:
     cqn,
     dplyr,
     topconfects,
-    stats
+    stats,
+    metap,
+    SummarizedExperiment
 Language: en-US
 URL: https://github.com/YuLab-SMU/GeoTcgaData
 BugReports: https://github.com/YuLab-SMU/GeoTcgaData/issues
 biocViews: GeneExpression, DifferentialExpression, RNASeq, 
 	CopyNumberVariation, Microarray, Software, DNAMethylation,
-    DifferentialMethylation, SNP, ATACSeq
+    DifferentialMethylation, SNP, ATACSeq, MethylationArray
 Config/testthat/edition: 3

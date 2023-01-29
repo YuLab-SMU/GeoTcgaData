@@ -123,10 +123,13 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
 
     if (method == "DESeq2") {
         coldata <- data.frame(group)
+
         dds <- DESeq2::DESeqDataSetFromMatrix(
             countData = counts,
             colData = coldata, design = ~group
         )
+        
+
         if (correct) {
             cqnOffset <- cqn.subset$glm.offset
             cqnNormFactors <- exp(cqnOffset)
@@ -298,6 +301,69 @@ diff_RNA <- function(counts, group, method = "limma", geneLength = NULL,
 
     return(DEGAll)
 }
+
+#' Do difference analysis of RNA-seq data
+#'
+#' @param se SummarizedExperiment object
+#' @param groupCol group column
+#' @param method one of "DESeq2", "edgeR" , "limma", "dearseq",
+#' "NOISeq" and "Wilcoxon".
+#' @param geneLength a vector of gene length.
+#' @param gccontent a vector of gene GC content.
+#' @param filter if TRUE, use filterByExpr to filter genes.
+#' @param edgeRNorm if TRUE, use edgeR to do normalization for dearseq method.
+#' @param adjust.method character string specifying the method used to
+#' adjust p-values for multiple testing.
+#' See \link{p.adjust} for possible values.
+#' @param useTopconfects if TRUE, use topconfects to provide a
+#'    more biologically useful ranked gene list.
+#' @return data.frame
+#' @importFrom magrittr %>%
+#' @importFrom plyr rename
+#' @importFrom SummarizedExperiment assays
+#' @importFrom SummarizedExperiment colData
+#' @importFrom metap sumlog
+#' @import cqn
+#' @export
+#'
+#' @examples
+#' df <- matrix(rnbinom(400, mu = 4, size = 10), 25, 16)
+#' rownames(df) <- paste0("gene", 1:25)
+#' colnames(df) <- paste0("sample", 1:16)
+#' group <- sample(c("group1", "group2"), 16, replace = TRUE)
+#' 
+#' nrows <- 200; ncols <- 20
+#'  counts <- matrix(
+#'    runif(nrows * ncols, 1, 1e4), nrows,
+#'    dimnames = list(paste0("cg",1:200),paste0("S",1:20))
+#' )
+#' 
+#' colData <- S4Vectors::DataFrame(
+#'   row.names = paste0("sample", 1:16),
+#'   group = group
+#' )
+#' data <- SummarizedExperiment::SummarizedExperiment(
+#'          assays=S4Vectors::SimpleList(counts=df),
+#'          colData = colData)
+#' 
+#' result <- diff_RNA_SummarizedExperiment(se = data, groupCol = "group",
+#'     filte = FALSE, method = "Wilcoxon")    
+diff_RNA_SummarizedExperiment <- function(se, groupCol, 
+                    method = "limma", geneLength = NULL,
+                    gccontent = NULL, filter = TRUE, edgeRNorm = TRUE,
+                    adjust.method = "BH", useTopconfects = TRUE) {
+    # counts, group geneLength = NULL,gccontent = NULL
+    counts <- assays(se)$counts
+    group <- colData(se)[, groupCol]
+    names(group) <- rownames(colData(se))
+    diff_RNA(counts = counts, group = group, method = method, 
+        geneLength = geneLength, gccontent = gccontent, 
+        filter = filter, edgeRNorm = edgeRNorm,
+        adjust.method = adjust.method, 
+        useTopconfects = useTopconfects)
+
+}
+
 
 #' Do difference analysis of RNA-seq data downloaded from ucsc
 #'
