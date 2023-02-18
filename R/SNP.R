@@ -77,7 +77,6 @@ differential_SNP <- function(snpDf, sampleGroup, combineMethod = min) {
 #' snp2gene <- data.frame(snp = rownames(snpResult), 
 #'     gene = rep(paste0("gene", seq_len(20)), 5))
 #' result <- combine_pvalue(snpResult, snp2gene)
-
 combine_pvalue <- function(snpResult, snp2gene, combineMethod = min) {
         pvalue <- snpResult$pvalue
         estimate <- snpResult$estimate
@@ -129,15 +128,12 @@ combine_pvalue <- function(snpResult, snp2gene, combineMethod = min) {
 differential_SNP_tcga <- function(snpData, sampleGroup, combineMethod = NULL) {
     Tumor_Sample_Barcode <- Variant_Classification <- NULL
     snpName <- paste(snpData$Hugo_Symbol, snpData$Start_Position, sep = "_")
-    ## 提取有用的信息
-    snpData <- snpData[, c("Hugo_Symbol", "Start_Position", "Chromosome",
-            "Variant_Classification", "Tumor_Sample_Barcode",
-            "Variant_Type", "dbSNP_RS", "Mutation_Status",
-            # "MAX_AF",
-            "Reference_Allele", "Tumor_Seq_Allele1", "Tumor_Seq_Allele2",
-            "Match_Norm_Validation_Allele1", "Match_Norm_Validation_Allele2")]
-
-
+    # snpData <- snpData[, c("Hugo_Symbol", "Start_Position", "Chromosome",
+    #         "Variant_Classification", "Tumor_Sample_Barcode",
+    #         "Variant_Type", "dbSNP_RS", "Mutation_Status",
+    #         # "MAX_AF",
+    #         "Reference_Allele", "Tumor_Seq_Allele1", "Tumor_Seq_Allele2",
+    #         "Match_Norm_Validation_Allele1", "Match_Norm_Validation_Allele2")]
     snpData <- snpData[, c("Variant_Classification", "Tumor_Sample_Barcode")]
     snpData$snp <- snpName
     snpData <- tidyr::spread(snpData, Tumor_Sample_Barcode,
@@ -280,7 +276,7 @@ SNP_QC <- function(snpData, geon = 0.02, mind = 0.02, maf = 0.05,
     snpData_mat <- as.matrix(snpData)
     ## filter by 0.2
     aa <- snpData_mat |> apply(MARGIN = 2, FUN = function(x) {
-        table(x)[miss] / length(x)
+            table(x)[miss] / length(x)
         }
     )
 

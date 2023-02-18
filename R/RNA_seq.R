@@ -3,7 +3,7 @@
 #' @param counts a dataframe or numeric matrix of raw counts data
 #' @param group sample groups
 #' @param method one of "DESeq2", "edgeR" , "limma", "dearseq",
-#' "NOISeq" and "Wilcoxon".
+#' "NOISeq", "Wilcoxon", and "auto".
 #' @param geneLength a vector of gene length.
 #' @param gccontent a vector of gene GC content.
 #' @param filter if TRUE, use filterByExpr to filter genes.
@@ -91,10 +91,16 @@ differential_RNA <- function(counts, group, method = "limma", geneLength = NULL,
                     gccontent = NULL, filter = TRUE, edgeRNorm = TRUE,
                     adjust.method = "BH", useTopconfects = TRUE) {
     method <- match.arg(method, c("DESeq2", "edgeR", "limma",
-        "dearseq", "Wilcoxon", "NOISeq"))
+        "dearseq", "Wilcoxon", "NOISeq", "auto"))
     cols <- !duplicated(colnames(counts))
     counts <- counts[, cols]
     group <- group[cols]
+    if (min(table(group)) > 4 && method == "auto") {
+        method <- "Wilcoxon"
+    } else {
+        method <- "limma"
+    }
+
     ## use cqn to correct the bias
     correct<- TRUE
     uCovar <- NULL

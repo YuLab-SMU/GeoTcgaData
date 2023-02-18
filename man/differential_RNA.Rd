@@ -22,7 +22,7 @@ differential_RNA(
 \item{group}{sample groups}
 
 \item{method}{one of "DESeq2", "edgeR" , "limma", "dearseq",
-"NOISeq" and "Wilcoxon".}
+"NOISeq", "Wilcoxon", and "auto".}
 
 \item{geneLength}{a vector of gene length.}
 

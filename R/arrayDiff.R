@@ -1,4 +1,4 @@
-#' arrayDiff
+#' differential_array
 #'
 #' @param df data.frame of the omic data
 #' @param group a vector, group of samples.
@@ -44,15 +44,15 @@
 #' arrayData <- arrayData[keep, ]
 #'
 #' group <- c(rep("group1", 12), rep("group2", 12))
-#' result <- arrayDiff(df = arrayData, group = group)
+#' result <- differential_array(df = arrayData, group = group)
 #' }
 #' # Use random data as example
 #' arrayData <- matrix(runif(200), 25, 8)
 #' rownames(arrayData) <- paste0("gene", 1:25)
 #' colnames(arrayData) <- paste0("sample", 1:8)
 #' group <- c(rep("group1", 4), rep("group2", 4))
-#' result <- arrayDiff(df = arrayData, group = group)
-arrayDiff <- function(df, group, method = "limma", adjust.method = "BH") {
+#' result <- differential_array(df = arrayData, group = group)
+differential_array <- function(df, group, method = "limma", adjust.method = "BH") {
     method <- match.arg(method, c("limma", "ttest", "wilcox"))
     if (method == "limma") {
         result <- differential_limma(df, group, adjust.method = adjust.method)

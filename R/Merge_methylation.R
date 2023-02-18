@@ -133,7 +133,8 @@ methyDiff <- function(cpgData, sampleGroup,
                     normMethod = "PBC", 
                     region = "TSS1500",
                     model = "gene",
-                    adjust.method = "BH") {
+                    adjust.method = "BH",
+                    adjPvalCutoff = 0.05) {
     region <- match.arg(region, c("Body", "TSS1500", "TSS200",
         "3'UTR", "1stExon", "5'UTR", "IGR"))
     model <- match.arg(model, c("cpg", "gene"))
@@ -254,6 +255,7 @@ methyDiff <- function(cpgData, sampleGroup,
             method = adjust.method)
         rownames(gene_pvalue) <- gene_pvalue$gene
     }
+    gene_pvalue <- gene_pvalue[gene_pvalue$adj.P.Val < adjPvalCutoff, ]
     return(gene_pvalue)
 }
 
