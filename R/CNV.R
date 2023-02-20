@@ -12,6 +12,7 @@
 #' and "CATT"(Cochran-Armitage trend test)
 #' @return data.frame with pvalue and estimate
 #' @export
+#' 
 #' @examples
 #' \donttest{
 #' # use TCGAbiolinks data as example
