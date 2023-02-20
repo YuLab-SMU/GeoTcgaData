@@ -11,6 +11,7 @@ A matrix with 176 rows and 3 column
 module
 }
 \description{
-a matrix of module name, gene symbols, and the number of gene symbols
+It is a randomly generated expression data 
+used as an example of functions in this package.
 }
 \keyword{datasets}

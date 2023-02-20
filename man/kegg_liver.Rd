@@ -11,6 +11,8 @@ A matrix with 100 rows and 150 column
 kegg_liver
 }
 \description{
+It is a randomly generated expression data 
+used as an example of functions in this package.
 the first column represents the gene symbol
 }
 \details{

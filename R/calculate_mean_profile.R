@@ -1,8 +1,8 @@
-
 #' Average the values of same genes in gene expression profile
 #'
-#' @param file_gene_ave a data.frame
-#' @param k a number
+#' @param file_gene_ave a data.frame of gene expression data, 
+#' each column is a sample, and each row is a gene. 
+#' @param k a number, indicates which is the gene column.
 #'
 #' @return a data.frame, the values of same genes in gene expression profile
 #' @export

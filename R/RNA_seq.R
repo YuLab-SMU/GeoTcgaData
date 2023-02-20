@@ -1,100 +1,59 @@
-#' Do difference analysis of RNA-seq data
+#' @rdname differential_RNA
+#' @exportMethod differential_RNA
+setMethod("differential_RNA", signature(counts = "matrix"),
+            function(counts,  ...) {
+                differential_RNA.matrix(counts,  ...)
+            })
+
+
+#' @rdname differential_RNA
+#' @exportMethod differential_RNA
+setMethod("differential_RNA", signature(counts = "data.frame"),
+            function(counts,  ...) {
+                differential_RNA.matrix(counts,  ...)
+            })
+
+
+#' @rdname differential_RNA
+#' @exportMethod differential_RNA
+setMethod("differential_RNA", signature(counts = "SummarizedExperiment"),
+            function(counts,  ...) {
+                differential_RNA.SummarizedExperiment(counts,  ...)
+            })
+
+
+
+
+
+#' @rdname differential_RNA
 #'
-#' @param counts a dataframe or numeric matrix of raw counts data
-#' @param group sample groups
-#' @param method one of "DESeq2", "edgeR" , "limma", "dearseq",
-#' "NOISeq" and "Wilcoxon".
-#' @param geneLength a vector of gene length.
-#' @param gccontent a vector of gene GC content.
-#' @param filter if TRUE, use filterByExpr to filter genes.
-#' @param edgeRNorm if TRUE, use edgeR to do normalization for dearseq method.
-#' @param adjust.method character string specifying the method used to
-#' adjust p-values for multiple testing.
-#' See \link{p.adjust} for possible values.
-#' @param useTopconfects if TRUE, use topconfects to provide a
-#'    more biologically useful ranked gene list.
-#' @return data.frame
 #' @importFrom plyr rename
 #' @import cqn
-#' @export
-#'
-#' @examples
-#' \donttest{
-# use `TCGAbiolinks` to download TCGA data
-#' library(TCGAbiolinks)
-#'
-#' query <- GDCquery(
-#'     project = "TCGA-ACC",
-#'     data.category = "Transcriptome Profiling",
-#'     data.type = "Gene Expression Quantification",
-#'     workflow.type = "STAR - Counts"
-#' )
-#'
-#' GDCdownload(query,
-#'     method = "api", files.per.chunk = 3,
-#'     directory = Your_Path
-#' )
-#'
-#' dataRNA <- GDCprepare(
-#'     query = query, directory = Your_Path,
-#'     save = TRUE, save.filename = "dataRNA.RData"
-#' )
-#' ## get raw count matrix
-#' dataPrep <- TCGAanalyze_Preprocessing(
-#'     object = dataRNA,
-#'     cor.cut = 0.6,
-#'     datatype = "STAR - Counts"
-#' )
-#'
-#' # Use `differential_RNA` to do difference analysis.
-#' # We provide the data of human gene length and GC content in `gene_cov`.
-#' group <- sample(c("grp1", "grp2"), ncol(dataPrep), replace = TRUE)
-#' library(cqn) # To avoid reporting errors: there is no function "rq"
-#' ## get gene length and GC content
-#' library(org.Hs.eg.db)
-#' genes_bitr <- bitr(rownames(gene_cov),
-#'     fromType = "ENTREZID", toType = "ENSEMBL",
-#'     OrgDb = org.Hs.eg.db, drop = TRUE
-#' )
-#' genes_bitr <- genes_bitr[!duplicated(genes_bitr[, 2]), ]
-#' gene_cov2 <- gene_cov[genes_bitr$ENTREZID, ]
-#' rownames(gene_cov2) <- genes_bitr$ENSEMBL
-#' genes <- intersect(rownames(dataPrep), rownames(gene_cov2))
-#' dataPrep <- dataPrep[genes, ]
-#' geneLength <- gene_cov2(genes, "length")
-#' gccontent <- gene_cov2(genes, "GC")
-#' names(geneLength) <- names(gccontent) <- genes
-#' ##    Difference analysis
-#' DEGAll <- differential_RNA(
-#'     counts = dataPrep, group = group,
-#'     geneLength = geneLength, gccontent = gccontent
-#' )
-#' # Use `clusterProfiler` to do enrichment analytics:
-#' diffGenes <- DEGAll$logFC
-#' names(diffGenes) <- rownames(DEGAll)
-#' diffGenes <- sort(diffGenes, decreasing = TRUE)
-#' library(clusterProfiler)
-#' library(enrichplot)
-#' library(org.Hs.eg.db)
-#' gsego <- gseGO(gene = diffGenes, OrgDb = org.Hs.eg.db, keyType = "ENSEMBL")
-#' dotplot(gsego)
-#' }
-#' # use user-defined data
-#' df <- matrix(rnbinom(400, mu = 4, size = 10), 25, 16)
-#' df <- as.data.frame(df)
-#' rownames(df) <- paste0("gene", 1:25)
-#' colnames(df) <- paste0("sample", 1:16)
-#' group <- sample(c("group1", "group2"), 16, replace = TRUE)
-#' result <- differential_RNA(counts = df, group = group,
-#'     filte = FALSE, method = "Wilcoxon")
-differential_RNA <- function(counts, group, method = "limma", geneLength = NULL,
+differential_RNA.matrix <- function(counts, group, method = "limma", 
+                    geneLength = NULL,
                     gccontent = NULL, filter = TRUE, edgeRNorm = TRUE,
-                    adjust.method = "BH", useTopconfects = TRUE) {
+                    adjust.method = "BH", useTopconfects = TRUE, 
+                    ucscData = FALSE) {
     method <- match.arg(method, c("DESeq2", "edgeR", "limma",
-        "dearseq", "Wilcoxon", "NOISeq"))
+        "dearseq", "Wilcoxon", "NOISeq", "auto"))
+
+    if (ucscData) {
+        class(counts) <- "data.frame"
+        counts[, 1] <- gsub("\\..*", "", counts[, 1])
+        rownames(counts) <- counts[, 1]
+        counts <- counts[, -1]
+        counts <- round(2^counts) - 1
+    }
+
     cols <- !duplicated(colnames(counts))
     counts <- counts[, cols]
     group <- group[cols]
+    if (min(table(group)) > 4 && method == "auto") {
+        method <- "Wilcoxon"
+    } else {
+        method <- "limma"
+    }
+
     ## use cqn to correct the bias
     correct<- TRUE
     uCovar <- NULL
@@ -301,52 +260,17 @@ differential_RNA <- function(counts, group, method = "limma", geneLength = NULL,
     return(DEGAll)
 }
 
-#' Do difference analysis of RNA-seq data
-#'
+#' @rdname differential_RNA
 #' @param se SummarizedExperiment object
 #' @param groupCol group column
-#' @param method one of "DESeq2", "edgeR" , "limma", "dearseq",
-#' "NOISeq" and "Wilcoxon".
-#' @param geneLength a vector of gene length.
-#' @param gccontent a vector of gene GC content.
-#' @param filter if TRUE, use filterByExpr to filter genes.
-#' @param edgeRNorm if TRUE, use edgeR to do normalization for dearseq method.
-#' @param adjust.method character string specifying the method used to
-#' adjust p-values for multiple testing.
-#' See \link{p.adjust} for possible values.
-#' @param useTopconfects if TRUE, use topconfects to provide a
-#'    more biologically useful ranked gene list.
-#' @return data.frame
 #' @importFrom plyr rename
 #' @importFrom SummarizedExperiment assays
 #' @importFrom SummarizedExperiment colData
 #' @importFrom metap sumlog
+#' @importFrom utils methods
+#' @import methods
 #' @import cqn
-#' @export
-#'
-#' @examples
-#' df <- matrix(rnbinom(400, mu = 4, size = 10), 25, 16)
-#' rownames(df) <- paste0("gene", 1:25)
-#' colnames(df) <- paste0("sample", 1:16)
-#' group <- sample(c("group1", "group2"), 16, replace = TRUE)
-#' 
-#' nrows <- 200; ncols <- 20
-#'  counts <- matrix(
-#'    runif(nrows * ncols, 1, 1e4), nrows,
-#'    dimnames = list(paste0("cg",1:200),paste0("S",1:20))
-#' )
-#' 
-#' colData <- S4Vectors::DataFrame(
-#'   row.names = paste0("sample", 1:16),
-#'   group = group
-#' )
-#' data <- SummarizedExperiment::SummarizedExperiment(
-#'          assays=S4Vectors::SimpleList(counts=df),
-#'          colData = colData)
-#' 
-#' result <- differential_RNA_SummarizedExperiment(se = data, groupCol = "group",
-#'     filte = FALSE, method = "Wilcoxon")    
-differential_RNA_SummarizedExperiment <- function(se, groupCol, 
+differential_RNA.SummarizedExperiment <- function(se, groupCol, 
                     method = "limma", geneLength = NULL,
                     gccontent = NULL, filter = TRUE, edgeRNorm = TRUE,
                     adjust.method = "BH", useTopconfects = TRUE) {
@@ -362,36 +286,3 @@ differential_RNA_SummarizedExperiment <- function(se, groupCol,
 
 }
 
-
-#' Do difference analysis of RNA-seq data downloaded from ucsc
-#'
-#' @param ucsc a dataframe or numeric matrix of ucsc RNA-seq data
-#' @param ... additional parameters
-#' @return data.frame
-#' @export
-#'
-#' @examples
-#' \donttest{
-#' ucscfile <- data.table::fread("TCGA-BRCA.htseq_counts.tsv.gz")
-#' group <- sample(c("grp1", "grp2"), ncol(ucscfile) - 1, replace = TRUE)
-#' result <- differential_RNA_ucsc(ucscfile, group = group)
-#' }
-#'
-#' # use user-defined data
-#' df <- matrix(rnbinom(400, mu = 4, size = 10), 25, 16)
-#' df <- as.data.frame(df)
-#' rownames(df) <- paste0("gene", 1:25)
-#' colnames(df) <- paste0("sample", 1:16)
-#' df <- log2(df + 1)
-#' group <- sample(c("group1", "group2"), 16, replace = TRUE)
-#' df <- cbind(rownames(df), df)
-#' result <- differential_RNA_ucsc(ucsc = df, group = group,
-#'     filte = FALSE, method = "limma")
-differential_RNA_ucsc <- function(ucsc, ...) {
-    class(ucsc) <- "data.frame"
-    ucsc[, 1] <- gsub("\\..*", "", ucsc[, 1])
-    rownames(ucsc) <- ucsc[, 1]
-    ucsc <- ucsc[, -1]
-    ucsc <- round(2^ucsc) - 1
-    differential_RNA(ucsc, ...)
-}

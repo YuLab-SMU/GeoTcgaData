@@ -6,15 +6,8 @@ hgnc_file <- dplyr::select(hgnc_file, -c("alias_symbol", "alias_name",
 class(hgnc_file) <- "data.frame"
 gene_loc_len <- GeoTcgaData:::gene_loc_len
 hgnc <- GeoTcgaData:::hgnc
-# genePos <- GeoTcgaData:::genePos
-# genePos <- as.data.frame(genePos)
-# genePos$start <- as.integer(genePos$start)
-# genePos$end <- as.integer(genePos$end)
-# genePos$gene_len <- as.integer(genePos$gene_len)
 genePos <- GeoTcgaData:::genePos
 hgnc_file <- GeoTcgaData:::hgnc_file
-# usethis::use_data(hgnc_file, gene_loc_len, hgnc, genePos, internal = TRUE,
-#   compress = "xz", overwrite = TRUE)
 usethis::use_data(hgnc_file, hgnc, gene_loc_len, 
   internal = TRUE, compress = "xz", overwrite = TRUE)
 

@@ -14,7 +14,10 @@ useing the tools gdc}
 a matrix, a combined methylation expression spectrum matrix
 }
 \description{
-Merge methylation data downloaded from TCGA
+When the methylation data is downloaded from TCGA, 
+each sample is saved in a folder, which contains the methylation value file 
+and the descriptive file. This function can directly 
+extract and consolidate all folders.
 }
 \examples{
 merge_result <- Merge_methy_tcga(system.file(file.path("extdata", "methy"),

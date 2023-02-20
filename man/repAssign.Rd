@@ -7,7 +7,8 @@
 repAssign(input_file, string)
 }
 \arguments{
-\item{input_file}{input file, a data.frame or a matrix}
+\item{input_file}{input file, a data.frame or a matrix, 
+the first column should be genes.}
 
 \item{string}{a string, sep of the gene}
 }

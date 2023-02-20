@@ -11,6 +11,8 @@ A matrix with 32 rows and 20 column
 ventricle
 }
 \description{
+It is a randomly generated expression data 
+used as an example of functions in this package.
 the first column represents the gene symbol
 }
 \details{
