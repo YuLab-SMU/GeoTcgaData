@@ -1,6 +1,7 @@
 #' Handle the case where one id corresponds to multiple genes
 #'
-#' @param input_file input file, a data.frame or a matrix
+#' @param input_file input file, a data.frame or a matrix, 
+#' the first column should be genes.
 #' @param string a string, sep of the gene
 #'
 #' @return a data.frame, when an id corresponds to multiple genes,
@@ -33,7 +34,8 @@ repAssign <- function(input_file, string) {
 
 #' Handle the case where one id corresponds to multiple genes
 #'
-#' @param input_file input file, a data.frame or a matrix
+#' @param input_file input file, a data.frame or a matrix, 
+#' the first column should be genes.
 #' @param string a string,sep of the gene
 #'
 #' @return a data.frame, when an id corresponds to multiple genes,

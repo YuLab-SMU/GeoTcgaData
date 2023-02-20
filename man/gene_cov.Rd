@@ -11,6 +11,8 @@ A data.frame with 27341 rows and 2 column
 gene_cov
 }
 \description{
-a data.frame of gene length and GC content
+the gene length and GC content data comes from 
+TxDb.Hsapiens.UCSC.hg38.knownGene and
+BSgenome.Hsapiens.UCSC.hg38
 }
 \keyword{datasets}

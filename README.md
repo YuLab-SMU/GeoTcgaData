@@ -15,14 +15,6 @@ Medical University.
 
 ## :arrow_double_down: Installation
 
-Get the released version from CRAN:
-
-``` r
-install.packages("GeoTcgaData")
-```
-
-Or the development version from github:
-
 ``` r
 if(!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
@@ -185,13 +177,13 @@ example:
 merge_result <- Merge_methy_tcga(Your_Path_to_DNA_Methylation_data)
 ```
 
-Then use `ChAMP` package to do difference analysis.
+Then use differential_methy() to do difference analysis.
 
 ``` r
 # if (!requireNamespace("ChAMP", quietly = TRUE))
 #     BiocManager::install("ChAMP")
 library(ChAMP) # To avoid reporting errors
-differential_gene <- methyDiff(cpgData = merge_result, sampleGroup = sample(c("C","T"), 
+differential_gene <- differential_methy(cpgData = merge_result, sampleGroup = sample(c("C","T"), 
     ncol(merge_result[[1]]), replace = TRUE))
 ```
 
@@ -216,7 +208,7 @@ cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
 # class(ann) <- "data.frame"
 # cpg_gene <- ann[,c("Name", "UCSC_RefGene_Name", "UCSC_RefGene_Group")]
 
-methy_df <- methydifferential_ucsc(methy, cpg_gene)
+methy_df <- differential_methy(methy, cpg_gene, ucscData = TRUE)
 ```
 
 We provide three models to get methylation difference genes:
@@ -348,27 +340,8 @@ repRemove_result <- repRemove(input_file," /// ")
 
 ## Other downstream analyses
 
-1.  The function `id_conversion` could convert gene id from one of
-    `symbol`, `RefSeq_ID`, `Ensembl_ID`, `NCBI_Gene_ID`, `UCSC_ID`, and
-    `UniProt_ID` , etc. to another. Use `id_ava()` to get all the
-    convertible ids. For example:
-
-``` r
-id_conversion("symbol", "ensembl_gene_id", c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS")) 
-#> 80% were successfully converted.
-#>        from              to
-#> 1     A2ML1 ENSG00000166535
-#> 2 A2ML1-AS1 ENSG00000256661
-#> 3    A4GALT ENSG00000128274
-#> 4      AAAS ENSG00000094914
-```
-
-When the user converts the Ensembl ID to other ids, the version number
-needs to be removed. For example, “ENSG00000186092.4” doesn’t work, you
-need to change it to “ENSG00000186092”.
-
-Especially, the function id_conversion could convert ENSEMBL gene id to
-gene Symbol in TCGA. For example:
+1.  Especially, the function id_conversion could convert ENSEMBL gene id
+    to gene Symbol in TCGA. For example:
 
 ``` r
 data(profile)
@@ -495,13 +468,6 @@ result
 #> DISC1 104024.7 177787.5 197827.0
 #> TCOF1 264758.8 282810.2 287714.3
 #> SPPL3 631216.4 539402.3 514458.7
-```
-
-3.  The function `tcga_cli_deal` could combine clinical information
-    obtained from TCGA and extract survival data. For example:
-
-``` r
-tcga_cli <- tcga_cli_deal(system.file(file.path("extdata","tcga_cli"),package="GeoTcgaData"))
 ```
 
 **Note:** Now the combined clinical data can be downloaded directly from

@@ -11,9 +11,9 @@ A data.frame with 10779 rows and 2 column
 geneExpress
 }
 \description{
+It is a randomly generated expression data 
+used as an example of functions in this package.
 the rowname is gene symbols
-}
-\details{
 the columns are gene expression values
 }
 \keyword{datasets}

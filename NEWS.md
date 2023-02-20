@@ -1,7 +1,7 @@
 # GeoTcgaData 0.99.2
 
 + use SummarizedExperiment input (2023-1-29, Sun)
-+ fix return value of `arrayDiff` (2022-10-8, Sat)
++ fix return value of `differential_array` (2022-10-8, Sat)
 + fix gene length bug in `countToTpm()` and `countToFpkm()`(2022_9_22, Tue)
 + fix a bug in `id_conversion` (2022-8-27, Sat)
 + fix a bug in `differential_RNA(useTopconfects = TRUE)` (2022-8-12, Fir)

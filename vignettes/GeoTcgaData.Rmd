@@ -97,59 +97,37 @@ into reverse bias.
 GOseq also fails to correct for expression bias, therefore, read count bias 
 correction is still a challenge for us.
 
+```{r, message=FALSE, warning=FALSE}
+# use user-defined data
+df <- matrix(rnbinom(400, mu = 4, size = 10), 25, 16)
+df <- as.data.frame(df)
+rownames(df) <- paste0("gene", 1:25)
+colnames(df) <- paste0("sample", 1:16)
+group <- sample(c("group1", "group2"), 16, replace = TRUE)
+result <- differential_RNA(counts = df, group = group,
+    filte = FALSE, method = "Wilcoxon")
+# use SummarizedExperiment object input
+df <- matrix(rnbinom(400, mu = 4, size = 10), 25, 16)
+rownames(df) <- paste0("gene", 1:25)
+colnames(df) <- paste0("sample", 1:16)
+group <- sample(c("group1", "group2"), 16, replace = TRUE)
 
+nrows <- 200; ncols <- 20
+counts <- matrix(
+    runif(nrows * ncols, 1, 1e4), nrows,
+    dimnames = list(paste0("cg",1:200),paste0("S",1:20))
+)
 
-use `TCGAbiolinks` data:  
+colData <- S4Vectors::DataFrame(
+  row.names = paste0("sample", 1:16),
+  group = group
+)
+data <- SummarizedExperiment::SummarizedExperiment(
+         assays=S4Vectors::SimpleList(counts=df),
+         colData = colData)
 
-```{r, eval=FALSE, message=FALSE, warning=FALSE}
-# use `TCGAbiolinks` to download TCGA data
-library(TCGAbiolinks)
-                
-query <- GDCquery(project = "TCGA-ACC",
-                data.category = "Transcriptome Profiling",
-                data.type = "Gene Expression Quantification", 
-                workflow.type = "STAR - Counts")
-                
-GDCdownload(query, method = "api", files.per.chunk = 3, 
-    directory = Your_Path)
-
-dataRNA <- GDCprepare(query = query, directory = Your_Path,
-                    save = TRUE, save.filename = "dataRNA.RData")
-## get raw count matrix                         
-dataPrep <- TCGAanalyze_Preprocessing(object = dataRNA,
-    cor.cut = 0.6, datatype = "STAR - Counts")
-
-
-# Use `differential_RNA` to do difference analysis. We provide the data 
-# of human gene length and GC content in `gene_cov`.
-group <- sample(c("grp1", "grp2"), ncol(dataPrep), replace = TRUE)
-library(cqn) # To avoid reporting errors: there is no function "rq"
-## get gene length and GC content
-library(org.Hs.eg.db)
-genes_bitr <- bitr(rownames(gene_cov), fromType = "ENTREZID", 
-    toType = "ENSEMBL", 
-    OrgDb = org.Hs.eg.db, drop = TRUE)
-genes_bitr <- genes_bitr[!duplicated(genes_bitr[,2]), ]
-gene_cov2 <- gene_cov[genes_bitr$ENTREZID, ]
-rownames(gene_cov2) <- genes_bitr$ENSEMBL
-genes <- intersect(rownames(dataPrep), rownames(gene_cov2))
-dataPrep <- dataPrep[genes, ]
-geneLength <- gene_cov2[genes, "length"]
-gccontent <- gene_cov2[genes, "GC"]
-names(geneLength) <- names(gccontent) <- genes
-##  Difference analysis
-DEGAll <- differential_RNA(counts = dataPrep, group = group, 
-    geneLength = geneLength, gccontent = gccontent)
-
-# Use `clusterProfiler` to do enrichment analytics:
-diffGenes <- DEGAll$logFC
-names(diffGenes) <- rownames(DEGAll)
-diffGenes <- sort(diffGenes, decreasing = TRUE)
-library(clusterProfiler)
-library(enrichplot)
-library(org.Hs.eg.db)
-gsego <- gseGO(gene = diffGenes, OrgDb = org.Hs.eg.db, keyType = "ENSEMBL")
-dotplot(gsego)
+result <- differential_RNA(counts = data, groupCol = "group",
+    filte = FALSE, method = "Wilcoxon") 
 ```
 
 
@@ -160,49 +138,37 @@ use `TCGAbiolinks` data.
 The codes may need to be modified if `TCGAbiolinks` updates. 
 So please read its documents.
 
-```{r, eval=FALSE, message=FALSE, warning=FALSE}
-# download data
-library(TCGAbiolinks)
-query <- GDCquery(project = "TCGA-ACC",
-    data.category = "DNA Methylation",
-    data.type = "Methylation Beta Value",
-    platform = "Illumina Human Methylation 450")
-GDCdownload(query, method = "api", files.per.chunk = 5, directory = Your_Path)
-
-# The function Merge_methy_tcga could Merge methylation data
-# downloaded from TCGA official website or TCGAbiolinks. 
-# This makes it easier to extract differentially methylated
-# genes in the downstream analysis. For example:
-merge_result <- Merge_methy_tcga(Your_Path_to_DNA_Methylation_data)
-
-# Then use `methyDiff()` to do difference analysis.
-library(ChAMP) # To avoid reporting errors
-differential_gene <- methyDiff(cpgData = merge_result, sampleGroup = sample(c("C","T"), 
-    ncol(merge_result[[1]]), replace = TRUE))
-
-# use `methydifferential_ucsc` to do difference analysis   
-methy_file <- "TCGA.THCA.sampleMap_HumanMethylation450.gz"
-methy <- fread(methy_file, sep = "\t", header = T)
+```{r, message=FALSE, warning=FALSE}
+# use user defined data
 library(ChAMP)
-myImport <- champ.import(directory=system.file("extdata",package="ChAMPdata"))
-myfilter <- champ.filter(beta=myImport$beta,pd=myImport$pd,
-    detP=myImport$detP,beadcount=myImport$beadcount)
-cpg_gene <- hm450.manifest.hg19[, c("probeID", "gene_HGNC")]
-## or use IlluminaHumanMethylation450kanno.ilmn12.hg19 to get annotation data
-library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
-# ann <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
-# class(ann) <- "data.frame"
-# cpg_gene <- ann[,c("Name", "UCSC_RefGene_Name", "UCSC_RefGene_Group")]
-
-methy_df <- methydifferential_ucsc(methy, cpg_gene)
-# Use `clusterProfiler` to do enrichment analytics:
-differential_gene$p.adj <- p.adjust(differential_gene$pvalue)
-genes <- differential_gene[differential_gene$p.adj < 0.05, "gene"]
-library(clusterProfiler)
-library(enrichplot)
-library(org.Hs.eg.db)
-ego <- enrichGO(gene = genes, OrgDb = org.Hs.eg.db, keyType = "SYMBOL")
-dotplot(ego)
+cpgData <- matrix(runif(2000), nrow = 200, ncol = 10)
+rownames(cpgData) <- paste0("cpg", seq_len(200))
+colnames(cpgData) <- paste0("sample", seq_len(10))
+sampleGroup <- c(rep("group1", 5), rep("group2", 5))
+names(sampleGroup) <- colnames(cpgData)
+cpg2gene <- data.frame(cpg = rownames(cpgData), 
+    gene = rep(paste0("gene", seq_len(20)), 10))
+result <- differential_methy(cpgData, sampleGroup, 
+    cpg2gene = cpg2gene, normMethod = NULL)
+# use SummarizedExperiment object input
+library(ChAMP)
+cpgData <- matrix(runif(2000), nrow = 200, ncol = 10)
+rownames(cpgData) <- paste0("cpg", seq_len(200))
+colnames(cpgData) <- paste0("sample", seq_len(10))
+sampleGroup <- c(rep("group1", 5), rep("group2", 5))
+names(sampleGroup) <- colnames(cpgData)
+cpg2gene <- data.frame(cpg = rownames(cpgData), 
+    gene = rep(paste0("gene", seq_len(20)), 10))
+colData <- S4Vectors::DataFrame(
+    row.names = colnames(cpgData),
+    group = sampleGroup
+)
+data <- SummarizedExperiment::SummarizedExperiment(
+         assays=S4Vectors::SimpleList(counts=cpgData),
+         colData = colData)
+result <- differential_methy(cpgData = data, 
+    groupCol = "group", normMethod = NULL, 
+    cpg2gene = cpg2gene)  
 ```
 **Note:** `ChAMP`has a large number of dependent packages.
 If you cannot install it  successfully, you can download each dependent package 
@@ -223,64 +189,32 @@ We find that only model = "gene" has no deviation of CpG number.
 
 use TCGAbiolinks to download TCGA data(Gene Level Copy Number Scores)
 
-```{r, eval=FALSE, message=FALSE, warning=FALSE}
-# download data
-library(TCGAbiolinks)
-query <- GDCquery(project = "TCGA-LGG",
-        data.category = "Copy Number Variation",
-        data.type = "Gene Level Copy Number Scores")
-
-GDCdownload(query, method = "api", files.per.chunk = 5, directory = Your_Path)
-
-data <- GDCprepare(query = query, 
-    directory =  "Your_Path") 
-# Do difference analysis of gene level copy number 
-# variation data using `differential_CNV`
-class(data) <- "data.frame"
-cnvData <- data[, -c(1,2,3)]
-rownames(cnvData) <- data[, 1]
-sampleGroup  <- sample(c("A","B"), ncol(cnvData), replace = TRUE)
-diffCnv <- differential_CNV(cnvData, sampleGroup)
-
-# Use `clusterProfiler` to do enrichment analytics:
-pvalues <- diffCnv$pvalue * sign(diffCnv$odds)
-genes <- rownames(diffCnv)[diffCnv$pvalue < 0.05]
-library(clusterProfiler)
-library(enrichplot)
-library(org.Hs.eg.db)
-ego <- enrichGO(gene = genes, OrgDb = org.Hs.eg.db, keyType = "ENSEMBL")
-dotplot(ego)
+```{r, message=FALSE, warning=FALSE}
+# use random data as example
+aa <- matrix(sample(c(0, 1, -1), 200, replace = TRUE), 25, 8)
+rownames(aa) <- paste0("gene", 1:25)
+colnames(aa) <- paste0("sample", 1:8)
+sampleGroup <- sample(c("A", "B"), ncol(aa), replace = TRUE)
+diffCnv <- differential_CNV(aa, sampleGroup)
 ```
 
 
 
 ### Difference analysis of single nucleotide Variation data 
+We provide SNP_QC function to do quality control of SNP data
+```{r, message=FALSE, warning=FALSE}
+snpDf <- matrix(sample(c("AA", "Aa", "aa"), 100, replace = TRUE), 10, 10)
+snpDf <- as.data.frame(snpDf)
+sampleGroup <- sample(c("A", "B"), 10, replace = TRUE)
+result <- SNP_QC(snpDf)
+```
 
-```{r, eval=FALSE, message=FALSE, warning=FALSE}
-# download data
-library(TCGAbiolinks)
-query <- GDCquery(project = "TCGA-ACC",
-    data.category = "Simple Nucleotide Variation",
-    data.type = "Masked Somatic Mutation",
-    workflow.type = "MuSE Variant Aggregation and Masking")
-
-GDCdownload(query, method = "api", files.per.chunk = 5, directory = Your_Path)
-
-data_snp <- GDCprepare(query = query, 
-    directory =  "Your_Path") 
-# Use `differential_SNP_tcga` to do difference analysis
-samples <- unique(data_snp$Tumor_Sample_Barcode)
-sampleType <- sample(c("A","B"), length(samples), replace = TRUE)
-names(sampleType) <- samples
-pvalue <- differential_SNP_tcga(snpData = data_snp, sampleType = sampleType)
-
-# Use `clusterProfiler` to do enrichment analysis
-pvalue2 <- sort(pvalue, decreasing = TRUE)
-library(clusterProfiler)
-library(enrichplot)
-library(org.Hs.eg.db)
-gsego <- gseGO(pvalue2, OrgDb = org.Hs.eg.db, keyType = "SYMBOL")
-dotplot(gsego)
+Then use differential_SNP to do differential analysis.
+```{r, message=FALSE, warning=FALSE}
+#' snpDf <- matrix(sample(c("mutation", NA), 100, replace = TRUE), 10, 10)
+#' snpDf <- as.data.frame(snpDf)
+#' sampleGroup <- sample(c("A", "B"), 10, replace = TRUE)
+#' result <- differential_SNP(snpDf, sampleGroup)
 ```
 
 
@@ -313,21 +247,7 @@ repRemove_result <- repRemove(input_file," /// ")
 
 ### Other downstream analyses
 
-1. The function `id_conversion` could convert gene id from one 
-of `symbol`, `RefSeq_ID`, `Ensembl_ID`, `NCBI_Gene_ID`, `UCSC_ID`, 
-and `UniProt_ID` , etc. to another. Use `id_ava()` to get all the 
-convertible ids. For example:
-
-```{r}
-id_conversion("symbol", "ensembl_gene_id", c("A2ML1", "A2ML1-AS1", 
-    "A4GALT", "A12M1", "AAAS")) 
-```
-
-When the user converts the Ensembl ID to other ids, the version number needs 
-to be removed. For example, "ENSG00000186092.4" doesn't work, you need to 
-change it to "ENSG00000186092".
-
-Especially, the function `id_conversion` could convert  ENSEMBL gene id to 
+1. The function `id_conversion_TCGA` could convert  ENSEMBL gene id to 
 gene Symbol in TCGA. For example:
 
 ```{r, message=FALSE, warning=FALSE}
@@ -339,15 +259,8 @@ The parameter `profile` is a data.frame or matrix of gene expression
 data in TCGA.
 
 **Note:** In previous versions(< 1.0.0) the `id_conversion` and 
-`id_conversion` used HGNC data to convert human gene id.  
+`id_conversion_TCGA` used HGNC data to convert human gene id.  
 In future versions, we will use `clusterProfiler::bitr` for ID conversion. 
-
-```{r}
-library(clusterProfiler)
-library(org.Hs.eg.db)
-bitr(c("A2ML1", "A2ML1-AS1", "A4GALT", "A12M1", "AAAS"), fromType = "SYMBOL", 
-    toType = "ENSEMBL", OrgDb = org.Hs.eg.db, drop = FALSE)
-```
 
 
 2. The function `countToFpkm` and `countToTpm` could convert 
@@ -370,30 +283,6 @@ rownames(lung_squ_count2) <- c("DISC1","TCOF1","SPPL3")
 colnames(lung_squ_count2) <- c("sample1","sample2","sample3")
 result <- countToTpm(lung_squ_count2, keyType = "SYMBOL", 
     gene_cov = gene_cov)
-```
-3. The function `tcga_cli_deal` could combine clinical information obtained 
-from TCGA and extract survival data. For example:
-
-```{r, message=FALSE, warning=FALSE}
-tcga_cli <- tcga_cli_deal(system.file(file.path("extdata","tcga_cli"),
-    package="GeoTcgaData"))
-```
-
-**Note:** Now the combined clinical data can be downloaded 
-directly from TCGAbiolinks.
-```{r, eval=FALSE, message=FALSE, warning=FALSE}
-library(TCGAbiolinks)
-## get BCR Biotab data
-query <- GDCquery(project = "TCGA-ACC", 
-    data.category = "Clinical",
-    data.type = "Clinical Supplement", 
-    data.format = "BCR Biotab")
-GDCdownload(query)
-clinical.BCRtab.all <- GDCprepare(query)
-names(clinical.BCRtab.all)
-
-## get indexed data
-clinical <- GDCquery_clinic(project = "TCGA-ACC", type = "clinical")
 ```
 
 ```{r}

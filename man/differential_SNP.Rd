@@ -7,7 +7,8 @@
 differential_SNP(snpDf, sampleGroup, combineMethod = min)
 }
 \arguments{
-\item{snpDf}{data.frame of SNP data.}
+\item{snpDf}{data.frame of SNP data, each column is a sample, 
+and each row is a SNP.}
 
 \item{sampleGroup}{vector of sample group.}
 
@@ -36,7 +37,8 @@ data_snp <- GDCprepare(query)
 samples <- unique(data_snp$Tumor_Sample_Barcode)
 sampleGroup <- sample(c("A", "B"), length(samples), replace = TRUE)
 names(sampleGroup) <- samples
-pvalue <- differential_SNP_tcga(snpData = data_snp, sampleGroup = sampleGroup)
+pvalue <- differential_SNP_tcga(snpData = data_snp, 
+    sampleGroup = sampleGroup)
 }
 # use demo data
 snpDf <- matrix(sample(c("mutation", NA), 100, replace = TRUE), 10, 10)

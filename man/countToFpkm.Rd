@@ -10,9 +10,10 @@ countToFpkm(counts_matrix, keyType = "SYMBOL", gene_cov)
 \item{counts_matrix}{a matrix, colnames of counts_matrix are sample name,
 rownames of counts_matrix are gene symbols}
 
-\item{keyType}{keyType}
+\item{keyType}{keyType, one of keytypes(org.Hs.eg.db).}
 
-\item{gene_cov}{gene_cov}
+\item{gene_cov}{data.frame of two column, the first column is gene length, 
+the second column is gene GC content}
 }
 \value{
 a matrix

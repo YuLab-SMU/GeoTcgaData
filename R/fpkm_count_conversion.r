@@ -31,10 +31,11 @@ fpkmToCount_internal <- function(fpkm, effLen, N = 1e9) {
 #'
 #' @param counts_matrix a matrix, colnames of counts_matrix are sample name,
 #' rownames of counts_matrix are gene symbols
-#' @param keyType keyType
-#' @param gene_cov gene_cov
+#' @param keyType keyType, one of keytypes(org.Hs.eg.db).
+#' @param gene_cov data.frame of two column, the first column is gene length, 
+#' the second column is gene GC content
 #'
-#' @return    a matrix
+#' @return a matrix
 #' @export
 #'
 #' @examples
@@ -75,8 +76,9 @@ countToFpkm <- function(counts_matrix, keyType = "SYMBOL", gene_cov) {
 #'
 #' @param counts_matrix a matrix, colnames of counts_matrix are sample name,
 #' rownames of counts_matrix are gene symbols
-#' @param keyType keyType
-#' @param gene_cov gene_cov
+#' @param keyType keyType, one of keytypes(org.Hs.eg.db).
+#' @param gene_cov data.frame of two column, the first column is gene length, 
+#' the second column is gene GC content
 #'
 #' @return a matrix
 #' @export

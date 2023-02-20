@@ -36,7 +36,8 @@ data_snp <- GDCprepare(query)
 samples <- unique(data_snp$Tumor_Sample_Barcode)
 sampleGroup <- sample(c("A", "B"), length(samples), replace = TRUE)
 names(sampleGroup) <- samples
-pvalue <- differential_SNP_tcga(snpData = data_snp, sampleGroup = sampleGroup)
+pvalue <- differential_SNP_tcga(snpData = data_snp, 
+    sampleGroup = sampleGroup)
 }
 # use demo data
 snpDf <- matrix(sample(c("mutation", NA), 100, replace = TRUE), 10, 10)

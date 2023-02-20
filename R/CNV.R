@@ -1,14 +1,18 @@
 #' Do difference analysis of gene level copy number variation data
 #'
-#' @param cnvData data.frame of CNV data
+#' @param cnvData data.frame of CNV data, each column is a sample, 
+#' and each row is a CNV. 
 #' @param sampleGroup vector of sample group
-#' @param method one of "Chisquare", "fisher",
+#' @param method method to do diffenenital analysis, 
+#' one of "Chisquare", "fisher",
 #' and "CATT"(Cochran-Armitage trend test)
-#' @param adjust.method adjust.method.
+#' @param adjust.method adjust.method, one of "holm", "hochberg", "hommel", 
+#' "bonferroni", "BH", "BY", "fdr", and "none". 
 #' @param ... parameters for "Chisquare", "fisher",
 #' and "CATT"(Cochran-Armitage trend test)
 #' @return data.frame with pvalue and estimate
 #' @export
+#' 
 #' @examples
 #' \donttest{
 #' # use TCGAbiolinks data as example
@@ -78,15 +82,6 @@ differential_CNV <- function(cnvData, sampleGroup,
         }
     }
 
-    #     fish <- tryCatch({
-    #         stats::fisher.test(df, ...)
-    #     }, warning = function(w){
-    #     }, error = function(e){
-    #             list(p.value = 1, estimate = 0)
-    #     },finally = {
-    #     })
-    #     P.Value[i] <- fish$p.value
-    # }
     adj.P.Val <- stats::p.adjust(pvalue, method = adjust.method)
     gene <- gsub("\\..*", "", rownames(cnvData))
     result <- data.frame(gene = gene, P.Value = pvalue,
@@ -95,6 +90,3 @@ differential_CNV <- function(cnvData, sampleGroup,
     result
 }
 
-# differential_CNV_segment <- function(cnvData, sampleType) {
-
-# }

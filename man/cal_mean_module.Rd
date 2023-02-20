@@ -7,9 +7,11 @@
 cal_mean_module(geneExpress, module)
 }
 \arguments{
-\item{geneExpress}{a data.frame}
+\item{geneExpress}{a data.frame of gene expression data. 
+Each column is a sample, and each row is a gene.}
 
-\item{module}{a data.frame}
+\item{module}{a data.frame of two column. The first column is module name, 
+the second column are genes in this module.}
 }
 \value{
 a data.frame, means the mean of gene expression value in
