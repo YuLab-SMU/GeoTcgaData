@@ -1,6 +1,7 @@
 #' Do difference analysis of SNP data
 #'
-#' @param snpDf data.frame of SNP data.
+#' @param snpDf data.frame of SNP data, each column is a sample, 
+#' and each row is a SNP. 
 #' @param sampleGroup vector of sample group.
 #' @param combineMethod Method of combining the
 #' pvalue of multiple snp in a gene.
@@ -23,7 +24,8 @@
 #' samples <- unique(data_snp$Tumor_Sample_Barcode)
 #' sampleGroup <- sample(c("A", "B"), length(samples), replace = TRUE)
 #' names(sampleGroup) <- samples
-#' pvalue <- differential_SNP_tcga(snpData = data_snp, sampleGroup = sampleGroup)
+#' pvalue <- differential_SNP_tcga(snpData = data_snp, 
+#'     sampleGroup = sampleGroup)
 #' }
 #' # use demo data
 #' snpDf <- matrix(sample(c("mutation", NA), 100, replace = TRUE), 10, 10)
@@ -118,7 +120,8 @@ combine_pvalue <- function(snpResult, snp2gene, combineMethod = min) {
 #' samples <- unique(data_snp$Tumor_Sample_Barcode)
 #' sampleGroup <- sample(c("A", "B"), length(samples), replace = TRUE)
 #' names(sampleGroup) <- samples
-#' pvalue <- differential_SNP_tcga(snpData = data_snp, sampleGroup = sampleGroup)
+#' pvalue <- differential_SNP_tcga(snpData = data_snp, 
+#'     sampleGroup = sampleGroup)
 #' }
 #' # use demo data
 #' snpDf <- matrix(sample(c("mutation", NA), 100, replace = TRUE), 10, 10)
@@ -251,7 +254,7 @@ get_hwe <- function(x) {
     stats::chisq.test(df)$p.value
 }
 
-#' Do difference analysis of SNP data downloaded from TCGAbiolinks
+#' Do quality control of SNP data downloaded from TCGAbiolinks
 #'
 #' @param snpData data.frame of SNP data downloaded from TCGAbiolinks
 #' @param geon filters out all variants with missing call rates

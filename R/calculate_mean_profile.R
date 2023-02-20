@@ -1,9 +1,8 @@
-
-
 #' Average the values of same genes in gene expression profile
 #'
-#' @param file_gene_ave a data.frame
-#' @param k a number
+#' @param file_gene_ave a data.frame of gene expression data, 
+#' each column is a sample, and each row is a gene. 
+#' @param k a number, indicates which is the gene column.
 #'
 #' @return a data.frame, the values of same genes in gene expression profile
 #' @export
@@ -26,29 +25,5 @@ gene_ave <- function(file_gene_ave, k = 1) {
 
     y <- rowsum(x, ID, reorder = FALSE, na.rm = TRUE)
     n <- rowsum(1L - is.na(x), ID, reorder = FALSE)
-    return(y / n)
-}
-
-#' Average the values of same genes in gene expression profile
-#'
-#' @param file_gene_ave a matrix, rownames are genes, colnames are samples
-#' @param k a number
-#'
-#' @return a data.frame, the values of same genes in gene expression profile
-#' @export
-#'
-#' @examples
-#' aa <- c("MARCH1", "MARC1", "MARCH1", "MARCH1", "MARCH1")
-#' bb <- c(2.969058399, 4.722410064, 8.165514853, 8.24243893, 8.60815086)
-#' cc <- c(3.969058399, 5.722410064, 7.165514853, 6.24243893, 7.60815086)
-#' file_gene_ave <- as.matrix(data.frame(bb = bb, cc = cc))
-#' rownames(file_gene_ave) <- aa
-#'
-#' result <- gene_ave(file_gene_ave)
-gene_ave2 <- function(file_gene_ave) {
-    ID <- rownames(file_gene_ave)
-    ID <- factor(ID, levels = unique(ID))
-    y <- rowsum(file_gene_ave, ID, reorder = FALSE, na.rm = TRUE)
-    n <- rowsum(1L - is.na(file_gene_ave), ID, reorder = FALSE)
     return(y / n)
 }

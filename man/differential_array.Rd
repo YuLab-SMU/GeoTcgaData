@@ -2,24 +2,27 @@
 % Please edit documentation in R/arrayDiff.R
 \name{differential_array}
 \alias{differential_array}
-\title{differential_array}
+\title{Differential analysis of Microarray data}
 \usage{
 differential_array(df, group, method = "limma", adjust.method = "BH")
 }
 \arguments{
-\item{df}{data.frame of the omic data}
+\item{df}{data.frame of the omic data, each column is a sample, 
+and each row is a gene.}
 
 \item{group}{a vector, group of samples.}
 
-\item{method}{one of "limma", "ttest", "wilcox"}
+\item{method}{method to do differential analysis, 
+one of "limma", "ttest", "wilcox".}
 
-\item{adjust.method}{adjust.method.}
+\item{adjust.method}{adjust.method, one of "holm", "hochberg", "hommel", 
+"bonferroni", "BH", "BY", "fdr", and "none".}
 }
 \value{
 data.frame
 }
 \description{
-differential_array
+Differential analysis of Microarray data
 }
 \examples{
 \donttest{

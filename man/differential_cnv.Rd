@@ -13,14 +13,17 @@ differential_CNV(
 )
 }
 \arguments{
-\item{cnvData}{data.frame of CNV data}
+\item{cnvData}{data.frame of CNV data, each column is a sample, 
+and each row is a CNV.}
 
 \item{sampleGroup}{vector of sample group}
 
-\item{method}{one of "Chisquare", "fisher",
+\item{method}{method to do diffenenital analysis, 
+one of "Chisquare", "fisher",
 and "CATT"(Cochran-Armitage trend test)}
 
-\item{adjust.method}{adjust.method.}
+\item{adjust.method}{adjust.method, one of "holm", "hochberg", "hommel", 
+"bonferroni", "BH", "BY", "fdr", and "none".}
 
 \item{...}{parameters for "Chisquare", "fisher",
 and "CATT"(Cochran-Armitage trend test)}

@@ -7,7 +7,9 @@
 id_conversion_TCGA(profiles, toType = "SYMBOL")
 }
 \arguments{
-\item{profiles}{a data.frame}
+\item{profiles}{a data.frame of gene expression data, 
+each column is a sample, 
+and each row is a gene.}
 
 \item{toType}{one of 'keytypes(org.Hs.eg.db)'}
 }

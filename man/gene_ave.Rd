@@ -7,9 +7,10 @@
 gene_ave(file_gene_ave, k = 1)
 }
 \arguments{
-\item{file_gene_ave}{a data.frame}
+\item{file_gene_ave}{a data.frame of gene expression data, 
+each column is a sample, and each row is a gene.}
 
-\item{k}{a number}
+\item{k}{a number, indicates which is the gene column.}
 }
 \value{
 a data.frame, the values of same genes in gene expression profile

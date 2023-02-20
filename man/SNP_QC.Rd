@@ -2,7 +2,7 @@
 % Please edit documentation in R/SNP.R
 \name{SNP_QC}
 \alias{SNP_QC}
-\title{Do difference analysis of SNP data downloaded from TCGAbiolinks}
+\title{Do quality control of SNP data downloaded from TCGAbiolinks}
 \usage{
 SNP_QC(
   snpData,
@@ -34,7 +34,7 @@ equilibrium exact test p-value below the provided threshold}
 data.frame
 }
 \description{
-Do difference analysis of SNP data downloaded from TCGAbiolinks
+Do quality control of SNP data downloaded from TCGAbiolinks
 }
 \examples{
 # use demo data
