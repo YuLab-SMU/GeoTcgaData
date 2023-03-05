@@ -1,41 +1,83 @@
+#' Get methylation difference gene
+#'
+#' @title differential_methy
 #' @rdname differential_methy
-#' @exportMethod differential_methy
-setMethod("differential_methy", signature(cpgData = "matrix"),
-            function(cpgData,  ...) {
-                differential_methy.matrix(cpgData,  ...)
-            })
-
-
-#' @rdname differential_methy
-#' @exportMethod differential_methy
-setMethod("differential_methy", signature(cpgData = "data.frame"),
-            function(cpgData,  ...) {
-                differential_methy.matrix(cpgData,  ...)
-            })
-
-
-#' @rdname differential_methy
-#' @exportMethod differential_methy
-setMethod("differential_methy", signature(cpgData = "list"),
-            function(cpgData,  ...) {
-                differential_methy.matrix(cpgData[[1]],  ...)
-            })
-
-
-#' @rdname differential_methy
-#' @exportMethod differential_methy
-setMethod("differential_methy", signature(cpgData = "SummarizedExperiment"),
-            function(cpgData,  ...) {
-                differential_methy.SummarizedExperiment(cpgData,  ...)
-            })
-
-
-
-#' @rdname differential_methy
+#' @param cpgData data.frame of cpg beta value, , or SummarizedExperiment object
+#' @param sampleGroup vector of sample group
+#' @param groupCol group column
+#' @param combineMethod method to combine the cpg pvalues, 
+#' a function or one of "stouffer", "fisher" and "rhoScores".
+#' @param missing_value Method to impute missing expression data,
+#' one of "zero" and "knn".
+#' @param cpg2gene data.frame to annotate cpg locus to gene
+#' @param normMethod Method to do normalization: "PBC" or "BMIQ".
+#' @param region region of genes, one of "Body", "TSS1500", "TSS200",
+#' "3'UTR", "1stExon", "5'UTR", and "IGR". Only used when cpg2gene is NULL.
+#' @param model if "cpg", step1: calculate difference cpgs;
+#' step2: calculate difference genes.
+#' if "gene", step1: calculate the methylation level of genes;
+#' step2: calculate difference genes.
+#' @param adjust.method character string specifying the method
+#' used to adjust p-values for multiple testing.
+#' See \link{p.adjust} for possible values.
+#' @param ucscData Logical, whether the data comes from UCSC Xena.
+#' @param adjPvalCutoff adjusted pvalue cutoff
 #' @importFrom stats p.adjust
 #' @importFrom metap sumz
 #' @importFrom metap sumlog
-differential_methy.matrix  <- function(cpgData, sampleGroup,
+#' @importFrom stats p.adjust
+#' @importFrom metap sumz
+#' @importFrom metap sumlog
+#' @return data.frame
+#' @export
+#' @examples
+#' \donttest{
+#' # use TCGAbiolinks data
+#' library(TCGAbiolinks)
+#' query <- GDCquery(project = "TCGA-ACC",
+#'     data.category = "DNA Methylation",
+#'     data.type = "Methylation Beta Value",
+#'     platform = "Illumina Human Methylation 450")
+#' GDCdownload(query, method = "api", files.per.chunk = 5,
+#'     directory = Your_Path)
+#' merge_result <- Merge_methy_tcga(Your_Path_to_DNA_Methylation_data)
+#' library(ChAMP) # To avoid reporting errors
+#' differential_gene <- differential_methy(cpgData = merge_result,
+#'     sampleGroup = sample(c("C","T"),
+#'     ncol(merge_result[[1]]), replace = TRUE))
+#' }
+#' # use user defined data
+#' library(ChAMP)
+#' cpgData <- matrix(runif(2000), nrow = 200, ncol = 10)
+#' rownames(cpgData) <- paste0("cpg", seq_len(200))
+#' colnames(cpgData) <- paste0("sample", seq_len(10))
+#' sampleGroup <- c(rep("group1", 5), rep("group2", 5))
+#' names(sampleGroup) <- colnames(cpgData)
+#' cpg2gene <- data.frame(cpg = rownames(cpgData), 
+#'     gene = rep(paste0("gene", seq_len(20)), 10))
+#' result <- differential_methy(cpgData, sampleGroup, 
+#'     cpg2gene = cpg2gene, normMethod = NULL)
+#' # use SummarizedExperiment object input
+#' library(ChAMP)
+#' cpgData <- matrix(runif(2000), nrow = 200, ncol = 10)
+#' rownames(cpgData) <- paste0("cpg", seq_len(200))
+#' colnames(cpgData) <- paste0("sample", seq_len(10))
+#' sampleGroup <- c(rep("group1", 5), rep("group2", 5))
+#' names(sampleGroup) <- colnames(cpgData)
+#' cpg2gene <- data.frame(cpg = rownames(cpgData), 
+#'     gene = rep(paste0("gene", seq_len(20)), 10))
+#' colData <- S4Vectors::DataFrame(
+#'     row.names = colnames(cpgData),
+#'     group = sampleGroup
+#' )
+#' data <- SummarizedExperiment::SummarizedExperiment(
+#'          assays=S4Vectors::SimpleList(counts=cpgData),
+#'          colData = colData)
+#' result <- differential_methy(cpgData = data, 
+#'     groupCol = "group", normMethod = NULL, 
+#'     cpg2gene = cpg2gene)  
+differential_methy  <- function(cpgData, sampleGroup,
+                    groupCol,
                     # combineMethod = RobustRankAggreg::rhoScores,
                     combineMethod = "stouffer",
                     missing_value = "knn", 
@@ -49,6 +91,18 @@ differential_methy.matrix  <- function(cpgData, sampleGroup,
     region <- match.arg(region, c("Body", "TSS1500", "TSS200",
         "3'UTR", "1stExon", "5'UTR", "IGR"))
     model <- match.arg(model, c("cpg", "gene"))
+
+    if (inherits(cpgData,  "SummarizedExperiment")) {
+        cpgData2 <- cpgData
+        cpgData <- assays(cpgData2)$counts
+        sampleGroup <- colData(cpgData2)[, groupCol]
+        names(sampleGroup) <- rownames(colData(cpgData2))
+    } else {
+        if (inherits(cpgData,  "SummarizedExperiment")) { 
+            cpgData <- cpgData[[1]]
+        }
+    }
+
 
     if (ucscData) {
         class(methy) <- "data.frame"
@@ -183,31 +237,6 @@ differential_methy.matrix  <- function(cpgData, sampleGroup,
 }
 
 
-#' @rdname differential_methy
-#' @param groupCol group column
-#' @importFrom stats p.adjust
-#' @importFrom metap sumz
-#' @importFrom metap sumlog
-differential_methy.SummarizedExperiment <- function(cpgData, groupCol,
-                    combineMethod = "stouffer",
-                    missing_value = "knn", 
-                    cpg2gene = NULL,
-                    normMethod = "PBC",
-                    region = "TSS1500",
-                    model = "gene",
-                    adjust.method = "BH") {
-    cpgData2 <- assays(cpgData)$counts
-    group <- colData(cpgData)[, groupCol]
-    names(group) <- rownames(colData(cpgData))
-    differential_methy.matrix(cpgData = cpgData2, sampleGroup = group,
-        combineMethod = combineMethod,
-        missing_value = missing_value, 
-        cpg2gene = cpg2gene,
-        normMethod = normMethod,
-        region = region,
-        model = model,
-        adjust.method = "BH")
-}
 
 #' differential_limma
 #'
