@@ -1,7 +1,7 @@
 Package: GeoTcgaData
 Type: Package
 Title: Processing Various Types of Data on GEO and TCGA
-Version: 0.99.5
+Version: 1.99.0
 Authors@R: person(given = "Erqiang", family = "Hu", email = "13766876214@163.com", role  = c("aut", "cre"), comment = c(ORCID = "0000-0002-1798-7513"))
 Description: Gene Expression Omnibus(GEO) and The Cancer Genome Atlas (TCGA) 
     provide us with a wealth of data, such as RNA-seq, DNA Methylation, SNP
