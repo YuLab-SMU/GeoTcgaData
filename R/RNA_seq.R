@@ -21,7 +21,6 @@
 #' @importFrom plyr rename
 #' @importFrom SummarizedExperiment assays
 #' @importFrom SummarizedExperiment colData
-#' @importFrom metap sumlog
 #' @importFrom utils methods
 #' @import methods
 #' @import cqn

@@ -23,11 +23,6 @@
 #' @param ucscData Logical, whether the data comes from UCSC Xena.
 #' @param adjPvalCutoff adjusted pvalue cutoff
 #' @importFrom stats p.adjust
-#' @importFrom metap sumz
-#' @importFrom metap sumlog
-#' @importFrom stats p.adjust
-#' @importFrom metap sumz
-#' @importFrom metap sumlog
 #' @return data.frame
 #' @export
 #' @examples
@@ -196,7 +191,7 @@ differential_methy  <- function(cpgData, sampleGroup,
                 
                 for (i in seq_len(nrow(gene_pvalue))) {
                     if (length(bb[[i]]) > 1) {
-                        gene_pvalue[i, 2] <- sumz(bb[[i]], weights[[i]])$p
+                        gene_pvalue[i, 2] <- metap::sumz(bb[[i]], weights[[i]])$p
                     }       
                 }
             }
@@ -204,7 +199,7 @@ differential_methy  <- function(cpgData, sampleGroup,
             if (combineMethod == "fisher") {
                 for (i in seq_len(nrow(gene_pvalue))) {
                     if (length(bb[[i]]) > 1) {
-                        gene_pvalue[i, 2] <- sumlog(bb[[i]])$p
+                        gene_pvalue[i, 2] <- metap::sumlog(bb[[i]])$p
                     }       
                 }
             }
